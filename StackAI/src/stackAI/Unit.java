@@ -195,6 +195,10 @@ public class Unit extends Thread implements Comparable<Unit> {
 		}
 	}
 	
+	public void respond () {
+		
+	}
+	
 	public boolean isWounded() {
 		return wounded;
 	}

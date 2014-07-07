@@ -7,10 +7,12 @@ import java.util.Collections;
 
 public class Behaviour extends Thread {
 	
+	private String name;
 	private Unit parent;
 	private ArrayList<Response> allResponses;
 	
-	public Behaviour (Unit inParent) {
+	public Behaviour (String inName, Unit inParent) {
+		name = inName;
 		parent = inParent;
 		allResponses = new ArrayList<>();
 	}
