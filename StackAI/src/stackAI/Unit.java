@@ -42,8 +42,6 @@ public class Unit extends Thread implements Comparable<Unit> {
 	public List<Threat> allThreats;
 	private Unit enemyTarget;
 	public boolean aiming;
-
-	private ArrayList<Response> allResponses;
 	
 	public Unit (String inName, String inType, String inRank) {
 		name = inName;
@@ -108,8 +106,6 @@ public class Unit extends Thread implements Comparable<Unit> {
 		allThreats = new ArrayList<>();
 		enemyTarget = null;
 		aiming = false;
-		
-		allResponses = new ArrayList<>();
 	}
 	
 	public String getUnitName () {
@@ -210,40 +206,6 @@ public class Unit extends Thread implements Comparable<Unit> {
 	public void joinSquad (Squad groupToJoin) {
 		squad = groupToJoin;
 	}
-	
-	public void addResponse (Response inResponse) {
-		allResponses.add(inResponse);
-		int responseIndex = allResponses.indexOf(inResponse);
-		inResponse.setPriority(responseIndex);
-		Collections.sort(allResponses);
-	}
-	
-	public void displayResponseOrder () {
-		System.out.println(name + "'s current response order:");
-		for(Response aResponse : allResponses) {
-			
-			int index = allResponses.indexOf(aResponse);
-			System.out.println(index + " - " + aResponse.getName() + " Successes: " + aResponse.getSuccesses() + " Attempts: " + aResponse.getAttempts());
-		}
-		System.out.println("");
-	}
-	
-	public Response respond () throws InterruptedException {
-		for(Response aResponse : allResponses) {
-			System.out.println(name + " - " + aResponse.getName() + "..."); //debug
-			boolean success = aResponse.checkAllConditionsMet(this);
-			
-			if(success == true) {
-				System.out.println(name + " chose to " + aResponse.getDescription() + "."); //debug
-				aResponse.attemptResponse(this);
-				//improveResponse(aResponse);
-				return aResponse;
-			}
-		}
-		
-		System.out.println(name + " doesn't know what to do.\n");
-		return null;
-	}
 
 	private void status() {
 		String outputString = name;
@@ -252,29 +214,6 @@ public class Unit extends Thread implements Comparable<Unit> {
 		outputString += ", ThreatLevel: " + threatLevel;
 		
 		System.out.println(outputString);
-	}
-	
-	public void improveResponse (Response looksLike) {
-		int responseIndex = allResponses.indexOf(looksLike);
-		
-		if (responseIndex == 0) {
-			return;
-		}
-		
-		Response toImprove = allResponses.get(responseIndex);
-		Response responseAbove = allResponses.get(responseIndex - 1);
-		
-		int comparison = toImprove.compareTo(responseAbove);
-		
-		if(comparison <= 0) {
-			return;
-		}
-		
-		Collections.swap(allResponses, responseIndex, responseIndex - 1);
-	}
-	
-	public void improveAllResponses () {
-		Collections.sort(allResponses);
 	}
 	
 	public void refresh (List<Unit> allFriendlies, List<Unit> allEnemies) {
@@ -404,19 +343,6 @@ public class Unit extends Thread implements Comparable<Unit> {
 	public void killConfirmed (Unit enemy) {
 		squad.enemyKilled(enemy);
 		System.out.println(name + " has killed " + enemy.name);
-	}
-	
-	public int saveAllConditionsIdCode () {
-		int sumOfAllConditions = 0;
-		
-		for(Condition aCondition : allConditions) {
-			if(aCondition.test(this) == true) {
-				int id = aCondition.getId();
-				sumOfAllConditions += Math.pow(id, 2.0);
-			}
-		}
-		
-		return sumOfAllConditions;
 	}
 	
 	public int makeAssessment () {
