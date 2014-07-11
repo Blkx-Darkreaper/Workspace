@@ -1,4 +1,5 @@
-package stackAI;
+package infantrySquadCombat;
+import static infantrySquadCombat.Global.*;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -6,8 +7,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static stackAI.Global.*;
 
 public class UnitTest {
 		

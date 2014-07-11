@@ -1,4 +1,4 @@
-package stackAI;
+package infantrySquadCombat;
 import java.util.ArrayList;
 import java.util.List;
 

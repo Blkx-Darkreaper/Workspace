@@ -1,6 +1,6 @@
-package stackAI;
-import static stackAI.Global.allConditions;
-import static stackAI.Global.allResponses;
+package infantrySquadCombat;
+import static infantrySquadCombat.Global.allConditions;
+import static infantrySquadCombat.Global.allResponses;
 
 import java.util.ArrayList;
 import java.util.Collections;

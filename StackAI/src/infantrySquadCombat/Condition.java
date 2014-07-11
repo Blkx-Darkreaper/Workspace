@@ -1,4 +1,4 @@
-package stackAI;
+package infantrySquadCombat;
 
 public class Condition {
 	private final int id;

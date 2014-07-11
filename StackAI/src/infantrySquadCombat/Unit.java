@@ -1,9 +1,9 @@
-package stackAI;
+package infantrySquadCombat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static stackAI.Global.*;
+import static infantrySquadCombat.Global.*;
 
 public class Unit extends Thread implements Comparable<Unit> {
 	private String name;
