@@ -9,7 +9,7 @@ public class Bullet extends Projectile {
 
 	public Bullet(ImageIcon icon, int startingX, int startingY, Aircraft inOwner) {
 		super(icon, startingX, startingY);
-		super.setAirspeed(2);
+		super.setAirspeed(6);
 		owner = inOwner;
 	}
 	
