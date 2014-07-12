@@ -5,19 +5,19 @@ import static ACM.Board.*;
 
 public class Bullet extends Projectile {
 	
-	protected Aircraft owner;
+	protected Aircraft master;
 
 	public Bullet(ImageIcon icon, int startingX, int startingY, Aircraft inOwner) {
 		super(icon, startingX, startingY);
 		super.setAirspeed(6);
-		owner = inOwner;
+		master = inOwner;
 	}
 	
 	public void outOfRange() {
 		boolean outOfRange = checkOutOfRange();
 		
 		if(outOfRange == true) {
-			owner.allProjectiles.remove(this);
+			master.allProjectiles.remove(this);
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class Bullet extends Projectile {
 	}
 	
 	public void destroy () {
-		owner = null;
+		master = null;
 		super.destroy();
 	}
 }

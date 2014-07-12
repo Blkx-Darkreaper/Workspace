@@ -9,7 +9,7 @@ public class Entity {
 
 	protected int x, y;
 	protected Image image;
-	protected Entity owner;
+	protected Entity master;
 	
 	public Entity (ImageIcon icon) {
 		image = icon.getImage();
@@ -36,15 +36,15 @@ public class Entity {
 	}
 	
 	public Entity getOwner() {
-		return owner;
+		return master;
 	}
 	
 	public void setOwner(Entity inOwner) {
-		owner = inOwner;
+		master = inOwner;
 	}
 	
 	public void destroy() {
-		owner = null;
+		master = null;
 	}
 	
 	public Rectangle getBounds() {
