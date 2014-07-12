@@ -9,6 +9,10 @@ public class Aircraft extends Projectile {
 
 	private final int MAX_AIRSPEED = 5;
 	private final int STALL_SPEED = 1;
+	
+	private int pitch = 0;
+	private int bank = 0;
+	
 	protected List<Projectile> allProjectiles;
 
 	public Aircraft(ImageIcon icon) {

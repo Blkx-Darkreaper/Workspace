@@ -51,7 +51,7 @@ public class Player extends Character {
 				break;
 			}
 			
-			ImageIcon bulletIcon = new ImageIcon("I:/bullet.png");
+			ImageIcon bulletIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/ACM/bullet.png");
 			Image image = craft.getImage();
 			int playerX = PLAYER_START_POSITION + image.getWidth(null) - (bulletIcon.getIconWidth() + 5);
 			int playerY = craft.getY() + image.getHeight(null) / 2;

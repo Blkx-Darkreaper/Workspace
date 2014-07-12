@@ -17,12 +17,12 @@ public class Board extends JPanel implements ActionListener {
 	private int position;
 
 	public Board() {
-		ImageIcon playerIcon = new ImageIcon("I:/fighter-blue.png");
+		ImageIcon playerIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/ACM/bluefighter-level.png");
 		Aircraft playerCraft = new Aircraft(playerIcon);
 		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
-		ImageIcon banditIcon = new ImageIcon("I:/fighter-red.png");
+		ImageIcon banditIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/ACM/fighter-red.png");
 		Aircraft bandit =  new Aircraft(banditIcon, 100, 150, 2);
 		allBandits.add(bandit);
 		
@@ -31,7 +31,7 @@ public class Board extends JPanel implements ActionListener {
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
-		ImageIcon backgroundIcon = new ImageIcon("I:/mountains-background.png");
+		ImageIcon backgroundIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/ACM/mountains-background.png");
 		background = backgroundIcon.getImage();
 		position = 0;
 		SCREEN_WIDTH = background.getWidth(null);
