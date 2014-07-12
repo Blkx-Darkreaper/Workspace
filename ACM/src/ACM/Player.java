@@ -13,7 +13,7 @@ public class Player extends Character {
 	private boolean playerFiring = false;
 	
 	public Player(Aircraft inPlane) {
-		craft = inPlane;
+		super(inPlane);
 	}
 	
 	public Aircraft getPlayerCraft() {
