@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
 import static ACM.Global.*;
-
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
@@ -19,15 +18,16 @@ public class Board extends JPanel implements ActionListener {
 
 	public Board() {
 		ImageIcon playerIcon = new ImageIcon("I:/fighter-blue.png");
-		player = new Player(playerIcon);
+		Aircraft playerCraft = new Aircraft(playerIcon);
+		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = new ImageIcon("I:/fighter-red.png");
 		Aircraft bandit =  new Aircraft(banditIcon, 100, 150, 2);
 		allBandits.add(bandit);
 		
-		//Aircraft bandit2 =  new Aircraft(banditIcon, 300, 50, 3);
-		//allBandits.add(bandit2);
+		Aircraft bandit2 =  new Aircraft(banditIcon, 300, 50, 3);
+		allBandits.add(bandit2);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -42,23 +42,23 @@ public class Board extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		scrollHorizontal();
-		player.moveVertically();
+		player.getPlayerCraft().moveVertically();
 		
 		for(Aircraft aBandit : allBandits) {
-			aBandit.moveRelative(player);
+			aBandit.moveRelative(player.getPlayerCraft());
 			for(Projectile aProjectile : aBandit.allProjectiles) {
-				aProjectile.moveRelative(player);
+				aProjectile.moveRelative(player.getPlayerCraft());
 			}
 		}
 		
-		for(Projectile aProjectile : player.allProjectiles) {
-			aProjectile.moveRelative(player);
+		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
+			aProjectile.moveRelative(player.getPlayerCraft());
 		}
 		repaint();
 	}
 
 	private void scrollHorizontal() {
-		position += player.getAirspeed();
+		position += player.getPlayerCraft().getAirspeed();
 	}
 
 	public void paint(Graphics g) {
@@ -75,26 +75,48 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void detectCollisions () {
+		Aircraft playerCraft = player.getPlayerCraft();
+		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
 		for(Aircraft aBandit : allBandits) {
-			for(Projectile aProjectile : player.allProjectiles) {
+			for(Projectile aProjectile : allFriendlyProjectiles) {
 				boolean collision = aBandit.checkForCollision(aProjectile);
 				
-				if(collision == true) {
-					allBandits.remove(aBandit);
-					player.allProjectiles.remove(aProjectile);
+				if(collision == false) {
+					continue;
 				}
+				
+				allBandits.remove(aBandit);
+				aProjectile.destroy();
+				allFriendlyProjectiles.remove(aProjectile);
+			}
+			
+			List<Projectile> allEnemyProjectiles = aBandit.allProjectiles;
+			for(Projectile aProjectile : allEnemyProjectiles) {
+				boolean collision = playerCraft.checkForCollision(aProjectile);
+				
+				if(collision == false) {
+					continue;
+				}
+				
+				JOptionPane.showMessageDialog(null, "You have been shot down!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+				playerCraft = null;
+				aProjectile.destroy();
+				allEnemyProjectiles.remove(aProjectile);
 			}
 		}
+		
+		
+		
 	}
 
 	private void paintBallistics(Graphics2D g2d) {
-		for(Projectile aProjectile : player.allProjectiles) {
+		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
 			g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), aProjectile.getY(), null);
 		}
 	}
 
 	private void paintPlayer(Graphics2D g2d) {
-		g2d.drawImage(player.getImage(), PLAYER_START_POSITION, player.getY(), null);
+		g2d.drawImage(player.getPlayerCraft().getImage(), PLAYER_START_POSITION, player.getPlayerCraft().getY(), null);
 	}
 	
 	private void paintEnemies(Graphics2D g2d) {

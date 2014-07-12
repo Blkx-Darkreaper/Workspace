@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Character {
 
-	List<Response> training;
-	List<Response> experience;
+	protected Aircraft craft;
+	private List<Response> training;
+	private List<Response> experience;
 }

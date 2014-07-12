@@ -34,6 +34,10 @@ public class Aircraft extends Projectile {
 		allProjectiles = new ArrayList<>();
 	}
 	
+	public List<Projectile> getAllProjectiles() {
+		return allProjectiles;
+	}
+	
 	public void move() {
 		if(airspeed < STALL_SPEED) {
 			airspeed = STALL_SPEED;

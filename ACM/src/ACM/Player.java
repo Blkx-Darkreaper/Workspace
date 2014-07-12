@@ -1,16 +1,23 @@
 package ACM;
 
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.security.AllPermission;
+
 import static ACM.Global.*;
+
 import javax.swing.ImageIcon;
 
-public class Player extends Aircraft {
+public class Player extends Character {
 	
 	private boolean playerFiring = false;
 	
-	public Player(ImageIcon icon) {
-		super(icon);
+	public Player(Aircraft inPlane) {
+		craft = inPlane;
+	}
+	
+	public Aircraft getPlayerCraft() {
+		return (Aircraft) craft;
 	}
 	
 	public boolean getPlayerFiring () {
@@ -26,18 +33,18 @@ public class Player extends Aircraft {
 
 		switch (key) {
 		case KeyEvent.VK_LEFT:
-			airspeed -= 1;
+			craft.airspeed -= 1;
 			//dx = -1;
 			break;
 		case KeyEvent.VK_RIGHT:
-			airspeed += 1;
+			craft.airspeed += 1;
 			//dx = 1;
 			break;
 		case KeyEvent.VK_UP:
-			dy = -1;
+			craft.dy = -1;
 			break;
 		case KeyEvent.VK_DOWN:
-			dy = 1;
+			craft.dy = 1;
 			break;
 		case KeyEvent.VK_SPACE:
 			if(getPlayerFiring() == true) {
@@ -45,11 +52,12 @@ public class Player extends Aircraft {
 			}
 			
 			ImageIcon bulletIcon = new ImageIcon("I:/bullet.png");
+			Image image = craft.getImage();
 			int playerX = PLAYER_START_POSITION + image.getWidth(null) - (bulletIcon.getIconWidth() + 5);
-			int playerY = getY() + image.getHeight(null) / 2;
+			int playerY = craft.getY() + image.getHeight(null) / 2;
 			
-			Bullet aBullet = new Bullet(bulletIcon, playerX, playerY, this);
-			allProjectiles.add(aBullet);
+			Bullet aBullet = new Bullet(bulletIcon, playerX, playerY, craft);
+			craft.allProjectiles.add(aBullet);
 			setPlayerFiring(true);
 			break;
 		}
@@ -61,12 +69,12 @@ public class Player extends Aircraft {
 		switch (key) {
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
-			airspeed += 0;
+			craft.airspeed += 0;
 			//dx = 0;
 			break;
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_DOWN:
-			dy = 0;
+			craft.dy = 0;
 			break;
 		case KeyEvent.VK_SPACE:
 			setPlayerFiring(false);

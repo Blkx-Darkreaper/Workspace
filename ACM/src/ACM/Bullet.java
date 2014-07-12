@@ -5,7 +5,7 @@ import static ACM.Board.*;
 
 public class Bullet extends Projectile {
 	
-	private Aircraft owner;
+	protected Aircraft owner;
 
 	public Bullet(ImageIcon icon, int startingX, int startingY, Aircraft inOwner) {
 		super(icon, startingX, startingY);
@@ -27,5 +27,10 @@ public class Bullet extends Projectile {
 		}
 		
 		return false;
+	}
+	
+	public void destroy () {
+		owner = null;
+		super.destroy();
 	}
 }
