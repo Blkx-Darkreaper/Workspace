@@ -5,17 +5,18 @@ import static SandBox.Global.*;
 public class Material {
 
 	private String name;
-	private int mass;
+	private String state;
+	private int mass; //kg
 	private int volumetricTemperatureExpansionCoefficient;
-	private int heatCapacity;
-	private int heatTransferCoefficient;
+	private int heatCapacity; //J/K
+	private int heatTransferCoefficient; //W/Km2
 	private int albedo;
-	private int permeability;
+	private int permeability; //m2
 	
-	private int temperature;
-	private int volume;
-	private int pressure;
-	private int density;
+	private int temperature; //K
+	private int volume; //m3
+	private int pressure; //Pa
+	private int density; //kg/m3
 	
 	public Material (String inName) {
 		name = inName;
@@ -74,11 +75,16 @@ public class Material {
 		int intialDensity = density;
 		
 		int finalTemperature = temperature + tempChange;
+		temperature = finalTemperature;
+		
+		if(state == "solid") {
+			return;
+		}
+		
 		int finalDensity = intialDensity / (1 + volumetricTemperatureExpansionCoefficient*tempChange);
 		int finalVolume = mass / finalDensity;
 		int finalPressure = initialPressure * initialVolume * finalTemperature / (initialTemperature * finalVolume);
 		
-		temperature = finalTemperature;
 		volume = finalVolume;
 		pressure = finalPressure;
 		density = finalDensity;

@@ -7,12 +7,12 @@ import java.awt.Image;
 public class Block {
 
 	private Image image;
-	private int elevation;
+	private int elevation; //m
 	private Material material;
-	private boolean onSurface;
+	private boolean surfaceLayer;
 	
-	private int groundWaterVolume;
-	private int groundWaterTemp;
+	private int groundWaterVolume; //m3
+	private int groundWaterTemp; //K
 	
 	public Block (int inElevation, Material inMaterial, int inGroundWaterVolume, int inGroundWaterTemp) {
 		elevation = inElevation;
@@ -22,11 +22,11 @@ public class Block {
 	}
 	
 	public boolean getOnSurface () {
-		return onSurface;
+		return surfaceLayer;
 	}
 	
 	public void setOnSurface (boolean condition) {
-		onSurface = condition;
+		surfaceLayer = condition;
 	}
 	
 	public void calculate () {
@@ -43,6 +43,7 @@ public class Block {
 		
 		int absorbedEnergy = solarEnergy / albedo;
 		int tempChange = absorbedEnergy / heatCapacity;
+		material.changeTemp(tempChange);
 		
 		int reflectedEnergy = solarEnergy - absorbedEnergy;
 		
