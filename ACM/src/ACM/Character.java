@@ -6,7 +6,7 @@ import static ACM.Global.*;
 
 public class Character {
 
-	protected Aircraft craft;
+	protected Projectile craft;
 	private Situation perception;
 	private List<Response> training;
 	private List<Response> experience;

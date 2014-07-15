@@ -1,11 +1,15 @@
 package ACM;
 
+import java.util.List;
+
 import javax.swing.ImageIcon;
 
 public class Projectile extends Entity {
 	
 	protected int dx, dy;
 	protected int airspeed;
+	
+	protected List<Projectile> allProjectiles;
 
 	public Projectile(ImageIcon icon) {
 		super(icon);

@@ -12,8 +12,6 @@ public class Aircraft extends Projectile {
 	
 	private int pitch = 0;
 	private int bank = 0;
-	
-	protected List<Projectile> allProjectiles;
 
 	public Aircraft(ImageIcon icon) {
 		super(icon);
@@ -42,6 +40,7 @@ public class Aircraft extends Projectile {
 		return allProjectiles;
 	}
 	
+	@Override
 	public void move() {
 		if(airspeed < STALL_SPEED) {
 			airspeed = STALL_SPEED;
@@ -60,6 +59,7 @@ public class Aircraft extends Projectile {
 		}
 	}
 	
+	@Override
 	public void moveVertically() {
 		if(airspeed < STALL_SPEED) {
 			airspeed = STALL_SPEED;
@@ -78,7 +78,8 @@ public class Aircraft extends Projectile {
 		}
 	}
 	
-	public void moveRelative (Aircraft other) {
+	@Override
+	public void moveRelative (Projectile other) {
 		if(airspeed < STALL_SPEED) {
 			airspeed = STALL_SPEED;
 		}

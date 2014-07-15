@@ -5,12 +5,12 @@ import static ACM.Board.*;
 
 public class Bullet extends Projectile {
 	
-	protected Aircraft master;
+	protected Projectile master;
 
-	public Bullet(ImageIcon icon, int startingX, int startingY, Aircraft inOwner) {
+	public Bullet(ImageIcon icon, int startingX, int startingY, Projectile inMaster) {
 		super(icon, startingX, startingY);
 		super.setAirspeed(6);
-		master = inOwner;
+		master = inMaster;
 	}
 	
 	public void outOfRange() {
