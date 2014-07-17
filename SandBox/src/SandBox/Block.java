@@ -4,54 +4,78 @@ import static SandBox.Global.*;
 
 import java.awt.Image;
 
-public class Block {
+public class Block extends Material {
 
-	private Image image;
-	private int elevation; //m
-	private Material material;
-	private boolean surfaceLayer;
+	private boolean surface;
 	
-	private int groundWaterVolume; //m3
-	private int groundWaterTemp; //K
+	private int waterContent; //mm3
+	private int waterContentTemperature; //K
+	private int waterStorageCapacity; //mm3/mm3
+	private int permeability; //mm2
 	
-	public Block (int inElevation, Material inMaterial, int inGroundWaterVolume, int inGroundWaterTemp) {
-		elevation = inElevation;
-		material = inMaterial;
-		groundWaterVolume = inGroundWaterVolume;
-		groundWaterTemp = inGroundWaterTemp;
+	public Block (String inName, int inElevation, int inTemp, int inWaterContent, int inWaterContentTemp, 
+			int inWaterStorageCapacity, int inPermeability) {
+		super(inName, inElevation, inTemp);
+		surface = true;
+		waterContent = inWaterContent;
+		waterContentTemperature = inWaterContentTemp;
+		waterStorageCapacity = inWaterStorageCapacity;
+		permeability = inPermeability;
 	}
 	
 	public boolean getOnSurface () {
-		return surfaceLayer;
+		return surface;
 	}
 	
 	public void setOnSurface (boolean condition) {
-		surfaceLayer = condition;
+		surface = condition;
 	}
 	
-	public void calculate () {
-
+	public int getWaterContent() {
+		return waterContent;
 	}
 	
-	public void updateImage () {
+	public int getWaterContentTemp() {
+		return waterContentTemperature;
+	}
+	
+	public int getWaterStorageCapacity() {
+		return waterStorageCapacity;
+	}
+	
+	public int getPermeability() {
+		return permeability;
+	}
+	
+	@Override
+	public void heat(int energyAdded) {
+		if(surface == true) {
+			heatSurface(energyAdded);
+			return;
+		}
+	}
+	
+	private int heatSurface (int energyAdded) {
+		int albedo = getAlbedo();
+		int heatCapacity = getHeatCapacity();
 		
-	}
-	
-	private int heatSurface (int solarEnergy) {
-		int albedo = material.getAlbedo();
-		int heatCapacity = material.getHeatCapacity();
-		
-		int absorbedEnergy = solarEnergy / albedo;
+		int absorbedEnergy = energyAdded * albedo;
 		int tempChange = absorbedEnergy / heatCapacity;
-		material.changeTemp(tempChange);
+		changeTemp(tempChange);
 		
-		int reflectedEnergy = solarEnergy - absorbedEnergy;
+		int reflectedEnergy = energyAdded - absorbedEnergy;
 		
 		return reflectedEnergy;
 	}
 	
-	private void evaporate () {
-		int temperature = material.getTemperature();
+	public void evaporate () {
+		if(surface == false) {
+			return;
+		}
+	}
+	
+	public void groundWaterFlow (Block other) {
+		
 	}
 	
 /*	private int getDischargeRate (Chunk other) {

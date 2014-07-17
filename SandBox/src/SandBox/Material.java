@@ -5,24 +5,33 @@ import static SandBox.Global.*;
 public class Material {
 
 	private String name;
-	private String state;
-	private int mass; //kg
-	private int volumetricTemperatureExpansionCoefficient;
-	private int heatCapacity; //J/K
-	private int heatTransferCoefficient; //W/Km2
-	private int albedo;
-	private int permeability; //m2
-	
+	private int elevation; //mm
 	private int temperature; //K
-	private int volume; //m3
-	private int pressure; //Pa
-	private int density; //kg/m3
+	private int mass; //g
+	private int conductionCoefficient; //W/km*K
+	private int heatCapacity; //J/Kg*K
+	private int albedo; //%
 	
-	public Material (String inName) {
+	public Material (String inName, int inElevation, int inTemp) {
 		name = inName;
+		elevation = inElevation;
+		temperature = inTemp;
+		
 		switch (name) {
-		case "":
+		case "air":
+			mass = 159;
+			conductionCoefficient = 24;
+			heatCapacity = 1005;
+			albedo = 0;
 			break;
+			
+		case "water":
+			mass = 124776;
+			conductionCoefficient = 580;
+			heatCapacity = 4181;
+			albedo = 133;
+			break;
+
 		default:
 			break;
 		}
@@ -32,61 +41,40 @@ public class Material {
 		return name;
 	}
 	
-	public int getHeatCapacity() {
-		return heatCapacity;
-	}
-	
-	public int getHeatTransferCoefficient () {
-		return heatTransferCoefficient;
-	}
-	
-	public int getAlbedo () {
-		return albedo;
-	}
-
-	public int getPermeability () {
-		return permeability;
+	public int getElevation() {
+		return elevation;
 	}
 	
 	public int getTemperature() {
 		return temperature;
 	}
-
+	
 	public void changeTemp(int tempChange) {
-		updateValues(tempChange, 0, 0);		
+		temperature += tempChange;
 	}
 	
-	public int getVolume () {
-		return volume;
+	public int getMass() {
+		return mass;
 	}
 	
-	public int getPressure () {
-		return pressure;
+	public int getConductionCoef() {
+		return conductionCoefficient;
 	}
 	
-	public int getDensity () {
-		return density;
+	public int getHeatCapacity() {
+		return heatCapacity;
 	}
-
-	private void updateValues(int tempChange, int volumeChange, int pressureChange) {
-		int initialTemperature = temperature;
-		int initialVolume = volume;
-		int initialPressure = pressure;
-		int intialDensity = density;
-		
-		int finalTemperature = temperature + tempChange;
-		temperature = finalTemperature;
-		
-		if(state == "solid") {
-			return;
-		}
-		
-		int finalDensity = intialDensity / (1 + volumetricTemperatureExpansionCoefficient*tempChange);
-		int finalVolume = mass / finalDensity;
-		int finalPressure = initialPressure * initialVolume * finalTemperature / (initialTemperature * finalVolume);
-		
-		volume = finalVolume;
-		pressure = finalPressure;
-		density = finalDensity;
+	
+	public int getAlbedo () {
+		return albedo;
+	}
+	
+	public void heat (int energyAdded) {
+		int tempChange = energyAdded / heatCapacity;
+		changeTemp(tempChange);
+	}
+	
+	public void conductHeat (Material other) {
+		int otherTemp = other.getTemperature();
 	}
 }
