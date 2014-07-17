@@ -51,7 +51,7 @@ public class AirPocket extends Fluid {
 	}
 	
 	public int illuminate (int luminousExposure) {
-		int solarEnergy = luminousExposure * CROSS_SECTIONAL_AREA;
+		int solarEnergy = luminousExposure * BLOCK_AREA;
 		
 		float albedo = cloudCover / 100 * cloudAlbedo / 100;
 		

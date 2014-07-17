@@ -9,4 +9,21 @@ public class Layer extends Material {
 		depth = inDepth;
 	}
 
+	@Override
+	public void heat(int energyAdded) {
+		heatSurface(energyAdded);
+	}
+	
+	private int heatSurface (int energyAdded) {
+		int albedo = getAlbedo();
+		int heatCapacity = getHeatCapacity();
+		
+		int absorbedEnergy = energyAdded * albedo;
+		int tempChange = absorbedEnergy / heatCapacity;
+		changeTemp(tempChange);
+		
+		int reflectedEnergy = energyAdded - absorbedEnergy;
+		
+		return reflectedEnergy;
+	}
 }

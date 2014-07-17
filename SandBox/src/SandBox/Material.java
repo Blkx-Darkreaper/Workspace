@@ -6,6 +6,7 @@ public class Material {
 
 	private String name;
 	private int elevation; //mm
+	private int crossSectionalArea; //mm2
 	private int temperature; //K
 	private int mass; //g
 	private int conductionCoefficient; //W/km*K
@@ -19,6 +20,7 @@ public class Material {
 		
 		switch (name) {
 		case "air":
+			crossSectionalArea = BLOCK_AREA;
 			mass = 159;
 			conductionCoefficient = 24;
 			heatCapacity = 1005;
@@ -43,6 +45,10 @@ public class Material {
 	
 	public int getElevation() {
 		return elevation;
+	}
+	
+	public int getCrossSectionalArea () {
+		return crossSectionalArea;
 	}
 	
 	public int getTemperature() {
@@ -76,5 +82,23 @@ public class Material {
 	
 	public void conductHeat (Material other) {
 		int otherTemp = other.getTemperature();
+		int otherConductionCoef = other.getConductionCoef();
+		int otherArea = other.getCrossSectionalArea();
+		
+		int coefficient = Math.max(conductionCoefficient, otherConductionCoef);
+		int contactArea = Math.min(crossSectionalArea, otherArea);
+		int length = 2 * BLOCK_LENGTH;
+		
+		int heatTransfer = (-coefficient * contactArea * (temperature - otherTemp) / length * TIME) / 1000000; //J
+		
+		if(heatTransfer < 0) {
+			heat(heatTransfer);
+			other.heat(-heatTransfer);
+		}
+		
+		if(heatTransfer > 0) {
+			heat(-heatTransfer);
+			other.heat(heatTransfer);
+		}
 	}
 }

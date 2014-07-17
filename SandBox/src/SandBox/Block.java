@@ -90,6 +90,4 @@ public class Block extends Material {
 		
 		return totalDischarge;
 	}*/
-	
-
 }
