@@ -9,8 +9,8 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
-	static int SCREEN_HEIGHT;
-	static int SCREEN_WIDTH;
+	static int BACKGROUND_HEIGHT;
+	static int BACKGROUND_WIDTH;
 	private Player player;
 	private List<Aircraft> allBandits;
 	private Image background;
@@ -25,19 +25,19 @@ public class Board extends JPanel implements ActionListener {
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/Strikeforce/f18-level.png");
-		Aircraft bandit =  new Aircraft(banditIcon, 100, 150, 2);
+		Aircraft bandit =  new Aircraft(banditIcon, 100, 150);
 		allBandits.add(bandit);
 		
-		Aircraft bandit2 =  new Aircraft(banditIcon, 300, 50, 3);
+		Aircraft bandit2 =  new Aircraft(banditIcon, 300, 350);
 		allBandits.add(bandit2);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
 		ImageIcon backgroundIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/Strikeforce/starfield.png");
 		background = backgroundIcon.getImage();
-		position = 200;
-		SCREEN_HEIGHT = background.getHeight(null);
-		SCREEN_WIDTH = background.getWidth(null);
+		position = 0;
+		BACKGROUND_HEIGHT = background.getHeight(null);
+		BACKGROUND_WIDTH = background.getWidth(null);
 		scrollRate = 1;
 		
 		time = new Timer(5, this);
@@ -113,34 +113,34 @@ public class Board extends JPanel implements ActionListener {
 
 	private void paintBallistics(Graphics2D g2d) {
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
-			g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), aProjectile.getY(), null);
+			g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), SCREEN_HEIGHT - aProjectile.getY(), null);
 		}
 	}
 
 	private void paintPlayer(Graphics2D g2d) {
 		g2d.drawImage(player.getPlayerCraft().getImage(), player.getPlayerCraft().getX(), 
-				player.getPlayerCraft().getY(), null);
+				SCREEN_HEIGHT - player.getPlayerCraft().getY(), null);
 	}
 	
 	private void paintEnemies(Graphics2D g2d) {
 		for(Aircraft aBandit : allBandits) {
-			g2d.drawImage(aBandit.getImage(), aBandit.getX(), aBandit.getY(), null);
+			g2d.drawImage(aBandit.getImage(), aBandit.getX(), SCREEN_HEIGHT - aBandit.getY(), null);
 			for(Projectile aProjectile : aBandit.allProjectiles) {
-				g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), aProjectile.getY(), null);
+				g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), SCREEN_HEIGHT - aProjectile.getY(), null);
 			}
 		}
 	}
 
 	private void paintBackground(Graphics2D g2d) {
 		//System.out.println(background.getWidth(null));
-		int offset = SCREEN_HEIGHT * (position / SCREEN_HEIGHT);
+		int vertOffset = BACKGROUND_HEIGHT * (position / BACKGROUND_HEIGHT);
 		//System.out.println("X: " + player.getX());
 		//System.out.println("Offset: " + offset);
 		//System.out.println("Mod: " + player.getX() / 512);
 		
-		g2d.drawImage(background, 0, position - (offset - SCREEN_HEIGHT), null);
-		g2d.drawImage(background, 0, position - offset, null);
-		g2d.drawImage(background, 0, position - (offset + SCREEN_HEIGHT), null);
+		g2d.drawImage(background, 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
+		g2d.drawImage(background, 0, position - vertOffset, null);
+		g2d.drawImage(background, 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
 	}
 	
 	private class KeyActionListener extends KeyAdapter {

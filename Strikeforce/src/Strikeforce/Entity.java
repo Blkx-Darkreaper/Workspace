@@ -14,7 +14,7 @@ public class Entity {
 	public Entity (ImageIcon icon) {
 		image = icon.getImage();
 		x = 200 - image.getWidth(null) / 2;
-		y = 500 - image.getHeight(null) / 2;
+		y = 100 + image.getHeight(null) / 2;
 	}
 	
 	public Entity(ImageIcon icon, int startX, int startY) {

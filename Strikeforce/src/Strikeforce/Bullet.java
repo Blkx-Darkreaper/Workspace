@@ -22,7 +22,7 @@ public class Bullet extends Projectile {
 	}
 	
 	public boolean checkOutOfRange () {
-		if(y > SCREEN_HEIGHT) {
+		if(y > BACKGROUND_HEIGHT) {
 			return true;
 		}
 		

@@ -29,6 +29,6 @@ public class Projectile extends Entity {
 
 	public void move() {
 		x += dx;
-		y -= dy;
+		y += dy;
 	}
 }

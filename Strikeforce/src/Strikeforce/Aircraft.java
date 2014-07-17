@@ -2,8 +2,8 @@ package Strikeforce;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.ImageIcon;
+import static Strikeforce.Global.*;
 
 public class Aircraft extends Projectile {
 
@@ -44,18 +44,18 @@ public class Aircraft extends Projectile {
 	public void move() {
 		super.move();
 		
-		if(x < 10) {
-			x = 10;
+		if(x < LOWER_BOUNDS_X) {
+			x = LOWER_BOUNDS_X;
 		}
-		if(x > 350) {
-			x = 350;
+		if(x > UPPER_BOUNDS_X) {
+			x = UPPER_BOUNDS_X;
 		}
 
-		if(y < 10) {
-			y = 10;
+		if(y < LOWER_BOUNDS_Y) {
+			y = LOWER_BOUNDS_Y;
 		}
-		if(y > 520) {
-			y = 520;
+		if(y > UPPER_BOUNDS_Y) {
+			y = UPPER_BOUNDS_Y;
 		}
 	}
 }
