@@ -2,9 +2,12 @@ package Strikeforce;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.InputStream;
 import java.util.List;
 import java.util.ArrayList;
+
 import static Strikeforce.Global.*;
+
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
@@ -19,12 +22,14 @@ public class Board extends JPanel implements ActionListener {
 	private int scrollRate;
 
 	public Board() {
-		ImageIcon playerIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/Strikeforce/f18-level.png");
+		allImageResources = this.getClass().getClassLoader();
+		
+		ImageIcon playerIcon = new ImageIcon(allImageResources.getResource("F18-level.png"));
 		Aircraft playerCraft = new Aircraft(playerIcon);
 		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
-		ImageIcon banditIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/Strikeforce/f18-level.png");
+		ImageIcon banditIcon = new ImageIcon(allImageResources.getResource("F18-level.png"));
 		Aircraft bandit =  new Aircraft(banditIcon, 100, 150);
 		allBandits.add(bandit);
 		
@@ -33,7 +38,7 @@ public class Board extends JPanel implements ActionListener {
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
-		ImageIcon backgroundIcon = new ImageIcon("I:/Users/Darkreaper/Documents/Projects/Strikeforce/starfield.png");
+		ImageIcon backgroundIcon = new ImageIcon(allImageResources.getResource("starfield.png"));
 		background = backgroundIcon.getImage();
 		position = 0;
 		BACKGROUND_HEIGHT = background.getHeight(null);
