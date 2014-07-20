@@ -2,7 +2,9 @@ package Strikeforce;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+
 import static Strikeforce.Global.*;
+
 import javax.swing.ImageIcon;
 
 public class Player {
@@ -32,9 +34,21 @@ public class Player {
 		switch (key) {
 		case KeyEvent.VK_LEFT:
 			craft.dx = -1;
+			
+			if(craft.bank == -MAX_BANK_ANGLE) {
+				break;
+			}
+			
+			craft.bank--;
 			break;
 		case KeyEvent.VK_RIGHT:
 			craft.dx = 1;
+			
+			if(craft.bank == MAX_BANK_ANGLE) {
+				break;
+			}
+			
+			craft.bank++;
 			break;
 		case KeyEvent.VK_UP:
 			craft.dy = 1;
@@ -66,6 +80,14 @@ public class Player {
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
 			craft.dx = 0;
+			
+			if(craft.bank > 0) {
+				craft.bank--;
+			}
+			
+			if(craft.bank < 0) {
+				craft.bank++;
+			}
 			break;
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_DOWN:

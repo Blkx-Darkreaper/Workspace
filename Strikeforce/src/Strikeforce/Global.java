@@ -13,4 +13,6 @@ public class Global {
 	public static final int LOWER_BOUNDS_Y = 80;
 	
 	public static final int PLAYER_START_POSITION = 250;
+	public static final int HARD_BANK_ANGLE = 1;
+	public static final int MAX_BANK_ANGLE = 2;
 }

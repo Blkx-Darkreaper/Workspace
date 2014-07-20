@@ -1,39 +1,95 @@
 package Strikeforce;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.ImageIcon;
+
 import static Strikeforce.Global.*;
 
 public class Aircraft extends Projectile {
 
+	private Image imageLevelFlight;
+	private Image imageBankLeft;
+	private Image imageBankLeftHard;
+	private Image imageBankRight;
+	private Image imageBankRightHard;
+	
 	private final int MAX_AIRSPEED = 5;
 	private final int STALL_SPEED = 1;
 	
-	private int pitch = 0;
-	private int bank = 0;
+	protected int bank = 0;
 
 	public Aircraft(ImageIcon icon) {
 		super(icon);
+		
+		ImageIcon resourceIcon = new ImageIcon(allImageResources.getResource("f18-level.png"));
+		imageLevelFlight = resourceIcon.getImage();
+		
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankleft.png"));
+		imageBankLeft = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-banklefthard.png"));
+		imageBankLeftHard = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankright.png"));
+		imageBankRight = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankrighthard.png"));
+		imageBankRightHard = resourceIcon.getImage();
+		
 		airspeed = 1;
-		allProjectiles = new ArrayList<>();
-	}
-	
-	public Aircraft(ImageIcon icon, int startingAirspeed) {
-		super(icon);
-		airspeed = startingAirspeed;
 		allProjectiles = new ArrayList<>();
 	}
 	
 	public Aircraft(ImageIcon icon, int startingX, int startingY) {
 		super(icon, startingX, startingY);
+		
+		ImageIcon resourceIcon = new ImageIcon(allImageResources.getResource("f18-level.png"));
+		imageLevelFlight = resourceIcon.getImage();
+		
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankleft.png"));
+		imageBankLeft = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-banklefthard.png"));
+		imageBankLeft = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankright.png"));
+		imageBankLeft = resourceIcon.getImage();
+
+		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankrighthard.png"));
+		imageBankLeft = resourceIcon.getImage();
+		
+		airspeed = 1;
 		allProjectiles = new ArrayList<>();
 	}
 	
-	public Aircraft(ImageIcon icon, int startingX, int startingY, int startingAirspeed) {
-		super(icon, startingX, startingY);
-		airspeed = startingAirspeed;
-		allProjectiles = new ArrayList<>();
+	@Override
+	public Image getImage() {
+		System.out.println(bank); //debug
+		
+		if(bank == 0) {
+			currentImage = imageLevelFlight;
+		}
+		
+		if(bank > 0) {
+			currentImage = imageBankRight;
+		}
+		
+		if(bank > HARD_BANK_ANGLE) {
+			currentImage = imageBankRightHard;
+		}
+		
+		if(bank < 0) {
+			currentImage = imageBankLeft;
+		}
+		
+		if(bank < -HARD_BANK_ANGLE) {
+			currentImage = imageBankLeftHard;
+		}
+		
+		return currentImage;
 	}
 	
 	public List<Projectile> getAllProjectiles() {
@@ -43,7 +99,7 @@ public class Aircraft extends Projectile {
 	@Override
 	public void move() {
 		super.move();
-		
+				
 		if(x < LOWER_BOUNDS_X) {
 			x = LOWER_BOUNDS_X;
 		}

@@ -8,17 +8,17 @@ import static Strikeforce.Board.*;
 public class Entity {
 
 	protected int x, y;
-	protected Image image;
+	protected Image currentImage;
 	protected Entity master;
 	
 	public Entity (ImageIcon icon) {
-		image = icon.getImage();
-		x = 200 - image.getWidth(null) / 2;
-		y = 100 + image.getHeight(null) / 2;
+		currentImage = icon.getImage();
+		x = 200 - currentImage.getWidth(null) / 2;
+		y = 100 + currentImage.getHeight(null) / 2;
 	}
 	
 	public Entity(ImageIcon icon, int startX, int startY) {
-		image = icon.getImage();
+		currentImage = icon.getImage();
 		x = startX;
 		y = startY;
 	}
@@ -32,7 +32,7 @@ public class Entity {
 	}
 	
 	public Image getImage() {
-		return image;
+		return currentImage;
 	}
 	
 	public Entity getOwner() {
@@ -48,7 +48,7 @@ public class Entity {
 	}
 	
 	public Rectangle getBounds() {
-		return new Rectangle(x, y, image.getWidth(null), image.getHeight(null));
+		return new Rectangle(x, y, currentImage.getWidth(null), currentImage.getHeight(null));
 	}
 	
 	public boolean checkForCollision(Entity other) {
