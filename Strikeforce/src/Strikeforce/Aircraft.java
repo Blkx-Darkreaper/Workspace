@@ -20,6 +20,8 @@ public class Aircraft extends Projectile {
 	private final int STALL_SPEED = 1;
 	
 	protected int bank = 0;
+	
+	protected boolean invulnerable = false;
 
 	public Aircraft(ImageIcon icon) {
 		super(icon);
@@ -67,7 +69,7 @@ public class Aircraft extends Projectile {
 	
 	@Override
 	public Image getImage() {
-		System.out.println(bank); //debug
+		//System.out.println(bank); //debug
 		
 		if(bank == 0) {
 			currentImage = imageLevelFlight;

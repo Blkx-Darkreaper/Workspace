@@ -80,14 +80,7 @@ public class Player {
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
 			craft.dx = 0;
-			
-			if(craft.bank > 0) {
-				craft.bank--;
-			}
-			
-			if(craft.bank < 0) {
-				craft.bank++;
-			}
+			craft.bank = 0;
 			break;
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_DOWN:
