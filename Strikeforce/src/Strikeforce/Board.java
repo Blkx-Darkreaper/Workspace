@@ -3,6 +3,7 @@ package Strikeforce;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -86,21 +87,27 @@ public class Board extends JPanel implements ActionListener {
 	private void detectCollisions () {
 		Aircraft playerCraft = player.getPlayerCraft();
 		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
-		for(Aircraft aBandit : allBandits) {
-			for(Projectile aProjectile : allFriendlyProjectiles) {
+		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
+			Aircraft aBandit = banditIter.next();
+
+			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
+				
 				boolean collision = aBandit.checkForCollision(aProjectile);
 				
 				if(collision == false) {
 					continue;
 				}
 				
-				allBandits.remove(aBandit);
+				banditIter.remove();
 				aProjectile.destroy();
-				allFriendlyProjectiles.remove(aProjectile);
+				projectileIter.remove();
 			}
 			
 			List<Projectile> allEnemyProjectiles = aBandit.allProjectiles;
-			for(Projectile aProjectile : allEnemyProjectiles) {
+			for(Iterator<Projectile> projectileIter = allEnemyProjectiles.iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
+
 				boolean collision = playerCraft.checkForCollision(aProjectile);
 				
 				if(collision == false) {
@@ -111,7 +118,7 @@ public class Board extends JPanel implements ActionListener {
 						JOptionPane.INFORMATION_MESSAGE);
 				playerCraft = null;
 				aProjectile.destroy();
-				allEnemyProjectiles.remove(aProjectile);
+				projectileIter.remove();
 			}
 		}
 	}
