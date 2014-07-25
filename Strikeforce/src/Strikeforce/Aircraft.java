@@ -26,19 +26,19 @@ public class Aircraft extends Projectile {
 	public Aircraft(ImageIcon icon) {
 		super(icon);
 		
-		ImageIcon resourceIcon = new ImageIcon(allImageResources.getResource("f18-level.png"));
+		ImageIcon resourceIcon = resLoader.getImageIcon("f18-level.png");
 		imageLevelFlight = resourceIcon.getImage();
 		
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankleft.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
 		imageBankLeft = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-banklefthard.png"));
+		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
 		imageBankLeftHard = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankright.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankright.png");
 		imageBankRight = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankrighthard.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
 		imageBankRightHard = resourceIcon.getImage();
 		
 		airspeed = 1;
@@ -48,19 +48,19 @@ public class Aircraft extends Projectile {
 	public Aircraft(ImageIcon icon, int startingX, int startingY) {
 		super(icon, startingX, startingY);
 		
-		ImageIcon resourceIcon = new ImageIcon(allImageResources.getResource("f18-level.png"));
+		ImageIcon resourceIcon = resLoader.getImageIcon("f18-level.png");
 		imageLevelFlight = resourceIcon.getImage();
 		
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankleft.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
 		imageBankLeft = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-banklefthard.png"));
+		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
 		imageBankLeft = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankright.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankright.png");
 		imageBankLeft = resourceIcon.getImage();
 
-		resourceIcon = new ImageIcon(allImageResources.getResource("f18-bankrighthard.png"));
+		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
 		imageBankLeft = resourceIcon.getImage();
 		
 		airspeed = 1;

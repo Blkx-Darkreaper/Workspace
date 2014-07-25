@@ -22,14 +22,14 @@ public class Board extends JPanel implements ActionListener {
 	private int scrollRate;
 
 	public Board() {
-		allImageResources = this.getClass().getClassLoader();
+		resLoader = new ResLoader(this.getClass().getClassLoader());
 		
-		ImageIcon playerIcon = new ImageIcon(allImageResources.getResource("F18-level.png"));
+		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
 		Aircraft playerCraft = new Aircraft(playerIcon);
 		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
-		ImageIcon banditIcon = new ImageIcon(allImageResources.getResource("F18-level.png"));
+		ImageIcon banditIcon = resLoader.getImageIcon("f18-level.png");
 		Aircraft bandit =  new Aircraft(banditIcon, 100, 150);
 		allBandits.add(bandit);
 		
@@ -38,7 +38,7 @@ public class Board extends JPanel implements ActionListener {
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
-		ImageIcon backgroundIcon = new ImageIcon(allImageResources.getResource("starfield.png"));
+		ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
 		background = backgroundIcon.getImage();
 		position = 0;
 		BACKGROUND_HEIGHT = background.getHeight(null);

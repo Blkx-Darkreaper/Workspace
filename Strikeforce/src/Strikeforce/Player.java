@@ -61,7 +61,7 @@ public class Player {
 				break;
 			}
 			
-			ImageIcon bulletIcon = new ImageIcon(allImageResources.getResource("bullet2.png"));
+			ImageIcon bulletIcon = resLoader.getImageIcon("bullet2.png");
 			Image image = craft.getImage();
 			int playerX = craft.getX() + craft.getImage().getWidth(null) / 2 - image.getWidth(null) / 2;
 			int playerY = craft.getY() + image.getHeight(null) - bulletIcon.getIconHeight() + 5;
