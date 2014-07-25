@@ -136,7 +136,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	private void paintEnemies(Graphics2D g2d) {
 		for(Aircraft aBandit : allBandits) {
-			g2d.drawImage(aBandit.getImage(), aBandit.getX(), SCREEN_HEIGHT - aBandit.getY(), null);
+			g2d.drawImage(aBandit.getImage(), aBandit.getX(), SCREEN_HEIGHT - aBandit.getY() + aBandit.getImage().getHeight(null), aBandit.getImage().getWidth(null), -aBandit.getImage().getHeight(null), null);
 			for(Projectile aProjectile : aBandit.allProjectiles) {
 				g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), SCREEN_HEIGHT - aProjectile.getY(), null);
 			}
