@@ -94,6 +94,10 @@ public class Board extends JPanel implements ActionListener {
 		paintPlayerBallistics(g2d);
 		paintEnemies(g2d);
 		paintPlayer(g2d);
+		
+		// View bounds
+		g2d.setColor(Color.red); //debu
+		g2d.draw(view.getViewBox()); //debug
 	}
 	
 	private void detectCollisions () {
@@ -198,6 +202,10 @@ class View {
 	
 	public boolean checkWithinBounds(Entity toCheck) {
 		return toCheck.getBounds().intersects(viewBox);
+	}
+	
+	public Rectangle getViewBox() {
+		return viewBox;
 	}
 }
 
