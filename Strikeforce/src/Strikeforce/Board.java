@@ -6,13 +6,16 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+
 import static Strikeforce.Global.*;
+
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
 	static int BACKGROUND_HEIGHT;
 	static int BACKGROUND_WIDTH;
+	private View view;
 	private Level level;
 	private Player player;
 	private List<Aircraft> allBandits;
@@ -29,7 +32,7 @@ public class Board extends JPanel implements ActionListener {
 		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
-		ImageIcon banditIcon = resLoader.getImageIcon("f18-level.png");
+		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
 		Aircraft bandit =  new Aircraft(banditIcon, 100, 150);
 		allBandits.add(bandit);
 		
@@ -86,7 +89,7 @@ public class Board extends JPanel implements ActionListener {
 		
 		detectCollisions();
 		
-		paintBallistics(g2d);
+		paintPlayerBallistics(g2d);
 		paintEnemies(g2d);
 		paintPlayer(g2d);
 	}
@@ -129,10 +132,19 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 	}
+	
+	private void paintEntity(Graphics2D g2d, Entity toDraw) {
+		if(view.checkWithinBounds(toDraw) == false) {
+			return;
+		}
+		
+		g2d.drawImage(toDraw.getImage(), toDraw.getX(), 
+				SCREEN_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null), null);
+	}
 
-	private void paintBallistics(Graphics2D g2d) {
+	private void paintPlayerBallistics(Graphics2D g2d) {
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
-			g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), SCREEN_HEIGHT - aProjectile.getY(), null);
+			paintEntity(g2d, aProjectile);
 		}
 	}
 
@@ -143,9 +155,9 @@ public class Board extends JPanel implements ActionListener {
 	
 	private void paintEnemies(Graphics2D g2d) {
 		for(Aircraft aBandit : allBandits) {
-			g2d.drawImage(aBandit.getImage(), aBandit.getX(), SCREEN_HEIGHT - aBandit.getY() + aBandit.getImage().getHeight(null), aBandit.getImage().getWidth(null), -aBandit.getImage().getHeight(null), null);
+			paintEntity(g2d, aBandit);
 			for(Projectile aProjectile : aBandit.allProjectiles) {
-				g2d.drawImage(aProjectile.getImage(), aProjectile.getX(), SCREEN_HEIGHT - aProjectile.getY(), null);
+				paintEntity(g2d, aProjectile);
 			}
 		}
 	}
@@ -172,6 +184,38 @@ public class Board extends JPanel implements ActionListener {
 			player.keyPressed(e);
 		}
 	}
+}
+
+class View {
 	
+	private Rectangle viewBox;
 	
+	public View () {
+		viewBox = new Rectangle(VIEW_POSITION_X, VIEW_POSITION_Y, VIEW_WIDTH, VIEW_HEIGHT);
+	}
+	
+	public boolean checkWithinBounds(Entity toCheck) {
+		return toCheck.getBounds().intersects(viewBox);
+	}
+}
+
+class Level {
+
+	private List<Image> allImages = new ArrayList<>();
+	private int nextIndex = 0;
+	
+	public Level (ArrayList allImagesToAdd) {
+		allImages = allImagesToAdd;
+	}
+	
+	public Image getNextImage () {
+		Image nextImage = allImages.get(nextIndex);
+		nextIndex++;
+		
+		if(nextIndex > allImages.size()) {
+			nextIndex = 0;
+		}
+		
+		return nextImage;
+	}
 }
