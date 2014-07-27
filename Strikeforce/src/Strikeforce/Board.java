@@ -16,7 +16,7 @@ public class Board extends JPanel implements ActionListener {
 	static int BACKGROUND_HEIGHT;
 	static int BACKGROUND_WIDTH;
 	private View view;
-	private Level level;
+	private Level currentLevel;
 	private Player player;
 	private List<Aircraft> allBandits;
 	private Image background;
@@ -53,7 +53,7 @@ public class Board extends JPanel implements ActionListener {
 			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
 			backgroundImages.add(backgroundIcon.getImage());
 		}
-		level = new Level(backgroundImages);
+		currentLevel = new Level(backgroundImages);
 		
 		position = 0;
 		scrollRate = 1;
