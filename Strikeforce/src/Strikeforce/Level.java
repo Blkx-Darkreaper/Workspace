@@ -17,7 +17,7 @@ public class Level {
 		Image nextImage = allImages.get(nextIndex);
 		nextIndex++;
 		
-		if(nextIndex > allImages.size()) {
+		if(nextIndex >= allImages.size()) {
 			nextIndex = 0;
 		}
 		
