@@ -1,6 +1,7 @@
 package Strikeforce;
 
 import javax.swing.*;
+import static Strikeforce.Global.*;
 
 public class Frame {
 	
@@ -13,7 +14,7 @@ public class Frame {
 		frame.setTitle("Strikeforce");
 		frame.add(new Board());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(400, 600);
+		frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
 	}

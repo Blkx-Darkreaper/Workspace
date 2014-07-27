@@ -49,7 +49,7 @@ public class Aircraft extends Projectile {
 		super(icon, startingX, startingY);
 		
 		ImageIcon resourceIcon = resLoader.getImageIcon("f18-level.png");
-		imageLevelFlight = resourceIcon.getImage();
+		imageLevelFlight = icon.getImage();
 		
 		resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
 		imageBankLeft = resourceIcon.getImage();

@@ -34,27 +34,28 @@ public class Board extends JPanel implements ActionListener {
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
-		Aircraft bandit =  new Aircraft(banditIcon, 100, 150);
+		Aircraft bandit =  new Aircraft(banditIcon, 100, 450);
 		allBandits.add(bandit);
 		
-		Aircraft bandit2 =  new Aircraft(banditIcon, 300, 350);
+		Aircraft bandit2 =  new Aircraft(banditIcon, 200, 350);
 		allBandits.add(bandit2);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
 		
-		//ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
+		ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
+		background = backgroundIcon.getImage();
+		BACKGROUND_HEIGHT = background.getHeight(null);
+		BACKGROUND_WIDTH = background.getWidth(null);
+		
 		ArrayList<Image> backgroundImages = new ArrayList<>();
 		for(int i = 1; i < 8; i++) {
-			ImageIcon backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			background = backgroundIcon.getImage();
-			backgroundImages.add(background);
+			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
+			backgroundImages.add(backgroundIcon.getImage());
 		}
 		level = new Level(backgroundImages);
 		
 		position = 0;
-		BACKGROUND_HEIGHT = background.getHeight(null);
-		BACKGROUND_WIDTH = background.getWidth(null);
 		scrollRate = 1;
 		
 		time = new Timer(TIME_INTERVAL, this);
@@ -140,7 +141,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 		
 		g2d.drawImage(toDraw.getImage(), toDraw.getX(), 
-				SCREEN_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null), null);
+				FRAME_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null), null);
 	}
 
 	private void paintPlayerBallistics(Graphics2D g2d) {
@@ -151,7 +152,7 @@ public class Board extends JPanel implements ActionListener {
 
 	private void paintPlayer(Graphics2D g2d) {
 		g2d.drawImage(player.getPlayerCraft().getImage(), player.getPlayerCraft().getX(), 
-				SCREEN_HEIGHT - player.getPlayerCraft().getY(), null);
+				FRAME_HEIGHT - player.getPlayerCraft().getY(), null);
 	}
 	
 	private void paintEnemies(Graphics2D g2d) {
@@ -170,9 +171,9 @@ public class Board extends JPanel implements ActionListener {
 		//System.out.println("Offset: " + offset);
 		//System.out.println("Mod: " + player.getX() / 512);
 		
-		g2d.drawImage(level.getNextImage(), 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
-		g2d.drawImage(level.getNextImage(), 0, position - vertOffset, null);
-		g2d.drawImage(level.getNextImage(), 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
+		g2d.drawImage(background, 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
+		g2d.drawImage(background, 0, position - vertOffset, null);
+		g2d.drawImage(background, 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
 	}
 	
 	private class KeyActionListener extends KeyAdapter {
@@ -213,7 +214,7 @@ class Level {
 		Image nextImage = allImages.get(nextIndex);
 		nextIndex++;
 		
-		if(nextIndex > allImages.size()) {
+		if(nextIndex >= allImages.size()) {
 			nextIndex = 0;
 		}
 		
