@@ -2,9 +2,9 @@ package SandBox;
 
 public class Global {
 
-	static final int BLOCK_LENGTH = 500;
-	static final int BLOCK_AREA = 250000;
-	static final int BLOCK_VOLUME = 125000000;
+	static final int BLOCK_LENGTH = 500; //mm
+	static final int BLOCK_AREA = 250000; //mm2
+	static final int BLOCK_VOLUME = 125000000; //mm3
 	
 	static final int SECOND = 1; //s
 	static final int MINUTE = SECOND * 60; //s

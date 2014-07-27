@@ -2,8 +2,6 @@ package SandBox;
 
 import static SandBox.Global.*;
 
-import java.awt.Image;
-
 public class Block extends Material {
 
 	private boolean surface;
