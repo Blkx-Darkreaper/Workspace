@@ -6,15 +6,14 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-
 import static Strikeforce.Global.*;
-
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
 	static int BACKGROUND_HEIGHT;
 	static int BACKGROUND_WIDTH;
+	private Level level;
 	private Player player;
 	private List<Aircraft> allBandits;
 	private Image background;
@@ -39,14 +38,22 @@ public class Board extends JPanel implements ActionListener {
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
-		ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
-		background = backgroundIcon.getImage();
+		
+		//ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
+		ArrayList<Image> backgroundImages = new ArrayList<>();
+		for(int i = 1; i < 8; i++) {
+			ImageIcon backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
+			background = backgroundIcon.getImage();
+			backgroundImages.add(background);
+		}
+		level = new Level(backgroundImages);
+		
 		position = 0;
 		BACKGROUND_HEIGHT = background.getHeight(null);
 		BACKGROUND_WIDTH = background.getWidth(null);
 		scrollRate = 1;
 		
-		time = new Timer(5, this);
+		time = new Timer(TIME_INTERVAL, this);
 		time.start();
 	}
 
@@ -150,9 +157,9 @@ public class Board extends JPanel implements ActionListener {
 		//System.out.println("Offset: " + offset);
 		//System.out.println("Mod: " + player.getX() / 512);
 		
-		g2d.drawImage(background, 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
-		g2d.drawImage(background, 0, position - vertOffset, null);
-		g2d.drawImage(background, 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
+		g2d.drawImage(level.getNextImage(), 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
+		g2d.drawImage(level.getNextImage(), 0, position - vertOffset, null);
+		g2d.drawImage(level.getNextImage(), 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
 	}
 	
 	private class KeyActionListener extends KeyAdapter {
