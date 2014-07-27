@@ -26,6 +26,7 @@ public class Board extends JPanel implements ActionListener {
 
 	public Board() {
 		resLoader = new ResLoader(this.getClass().getClassLoader());
+		view = new View();
 		
 		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
 		Aircraft playerCraft = new Aircraft(playerIcon);
