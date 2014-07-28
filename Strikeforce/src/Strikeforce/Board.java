@@ -157,6 +157,10 @@ public class Board extends JPanel implements ActionListener {
 				projectileIter.remove();
 			}
 			
+			if(playerCraft.getInvulnerable() == true) {
+				continue;
+			}
+			
 			List<Projectile> allEnemyProjectiles = aBandit.allProjectiles;
 			
 			boolean collision = playerCraft.checkForCollision(aBandit);

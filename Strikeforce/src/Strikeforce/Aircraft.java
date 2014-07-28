@@ -110,12 +110,8 @@ public class Aircraft extends Mover {
 		return allProjectiles;
 	}
 	
-	public boolean getDoLoop() {
-		return doLoop;
-	}
-	
-	public void setDoLoop(boolean condition) {
-		doLoop = condition;
+	public boolean getInvulnerable() {
+		return invulnerable;
 	}
 	
 	@Override
