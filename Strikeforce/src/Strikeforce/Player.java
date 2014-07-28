@@ -66,7 +66,7 @@ public class Player {
 			int startX = craft.getX();
 			int startY = craft.getY() + bulletIcon.getIconHeight();
 			
-			Projectile aBullet = new Projectile(bulletIcon, startX, startY, craft);
+			Projectile aBullet = new Projectile(bulletIcon, startX, startY);
 			craft.allProjectiles.add(aBullet);
 			setPlayerFiring(true);
 			break;

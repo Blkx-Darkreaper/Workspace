@@ -15,8 +15,8 @@ public class Global {
 
 	public static final int UPPER_BOUNDS_X = VIEW_WIDTH - 10;
 	public static final int LOWER_BOUNDS_X = 10;
-	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT;
-	public static final int LOWER_BOUNDS_Y = 10;
+	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT - 20;
+	public static final int LOWER_BOUNDS_Y = 20;
 	
 	public static final int HARD_BANK_ANGLE = 1;
 	public static final int MAX_BANK_ANGLE = 2;

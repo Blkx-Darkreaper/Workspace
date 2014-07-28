@@ -51,7 +51,8 @@ public class Board extends JPanel implements ActionListener {
 		int startPositionY = 0;
 		for(int i = 1; i < 8; i++) {
 			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			Mover sector = new Mover(backgroundIcon, backgroundIcon.getIconWidth() / 2, startPositionY);
+			int offset = (backgroundIcon.getIconWidth() - (backgroundIcon.getIconWidth() - VIEW_WIDTH)) / 2;
+			Mover sector = new Mover(backgroundIcon, offset, startPositionY);
 			sector.setAirspeed(0);
 			levelSectors.add(sector);
 			startPositionY += backgroundIcon.getIconHeight();
@@ -153,7 +154,6 @@ public class Board extends JPanel implements ActionListener {
 				}
 				
 				banditIter.remove();
-				aProjectile.destroy();
 				projectileIter.remove();
 			}
 			
@@ -162,7 +162,6 @@ public class Board extends JPanel implements ActionListener {
 			boolean collision = playerCraft.checkForCollision(aBandit);
 			
 			if(collision == true) {
-				aBandit.destroy();
 				banditIter.remove();
 				//gameover();
 				return;
@@ -177,7 +176,6 @@ public class Board extends JPanel implements ActionListener {
 					continue;
 				}
 				
-				aProjectile.destroy();
 				projectileIter.remove();
 				//gameover();
 				return;
@@ -185,41 +183,49 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void redrawEntity(Graphics2D g2d, Entity toDraw) {
+	private void drawEntity(Graphics2D g2d, Entity toDraw) {
 		g2d.drawImage(toDraw.getImage(), toDraw.getX() - toDraw.getImage().getWidth(null) / 2 + VIEW_POSITION_X, 
-				VIEW_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null) / 2 + VIEW_POSITION_Y, null);
+				VIEW_HEIGHT - toDraw.getY() - toDraw.getImage().getHeight(null) / 2 + VIEW_POSITION_Y, null);
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
-		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
+		for(Iterator<Projectile> bulletIter = player.getPlayerCraft().getAllProjectiles().iterator(); 
+				bulletIter.hasNext();) {
+			Projectile aProjectile = bulletIter.next();
 			
 			if(checkWithinView(aProjectile) == false) {
-				aProjectile.outOfRange();
-				return;
+				bulletIter.remove();
+				continue;
 			}
 			
-			redrawEntity(g2d, aProjectile);
+			drawEntity(g2d, aProjectile);
 		}
 	}
 
 	private void updatePlayer(Graphics2D g2d) {
-		redrawEntity(g2d, player.getPlayerCraft());
+		drawEntity(g2d, player.getPlayerCraft());
 	}
 	
 	private void updateEnemies(Graphics2D g2d) {
-		for(Aircraft aBandit : allBandits) {
-			
-			redrawEntity(g2d, aBandit);
-			
-			for(Projectile aProjectile : aBandit.allProjectiles) {
+		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
+		Aircraft aBandit = banditIter.next();
+		
+			for(Iterator<Projectile> bulletIter = aBandit.getAllProjectiles().iterator(); bulletIter.hasNext();) {
+				Projectile aProjectile = bulletIter.next();
 				
 				if(checkWithinView(aProjectile) == false) {
-					aProjectile.outOfRange();
-					return;
+					bulletIter.remove();
+					continue;
 				}
 				
-				redrawEntity(g2d, aProjectile);
+				drawEntity(g2d, aProjectile);
 			}
+			
+			if(checkWithinView(aBandit) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBandit);
 		}
 	}
 
@@ -235,7 +241,11 @@ public class Board extends JPanel implements ActionListener {
 		g2d.drawImage(background, 0, positionY - (vertOffset + BACKGROUND_HEIGHT), null);*/
 		
 		for(Entity aSector : currentLevel.getAllSectors()) {
-			redrawEntity(g2d, aSector);
+			if(checkWithinView(aSector) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aSector);
 		}
 	}
 	
