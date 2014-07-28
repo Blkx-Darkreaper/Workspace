@@ -31,4 +31,9 @@ public class Projectile extends Entity {
 		x += dx;
 		y += dy;
 	}
+	
+	public void move(int panRate, int scrollRate) {
+		x += dx + panRate;
+		y += dy + scrollRate;
+	}
 }

@@ -33,7 +33,7 @@ public class Player {
 
 		switch (key) {
 		case KeyEvent.VK_LEFT:
-			craft.dx = -1;
+			craft.dx = -craft.getAirspeed();
 			
 			if(craft.bank == -MAX_BANK_ANGLE) {
 				break;
@@ -42,7 +42,7 @@ public class Player {
 			craft.bank--;
 			break;
 		case KeyEvent.VK_RIGHT:
-			craft.dx = 1;
+			craft.dx = craft.getAirspeed();
 			
 			if(craft.bank == MAX_BANK_ANGLE) {
 				break;
@@ -51,20 +51,20 @@ public class Player {
 			craft.bank++;
 			break;
 		case KeyEvent.VK_UP:
-			craft.dy = 1;
+			craft.dy = craft.getAirspeed();
 			break;
 		case KeyEvent.VK_DOWN:
-			craft.dy = -1;
+			craft.dy = -craft.getAirspeed();
 			break;
 		case KeyEvent.VK_SPACE:
 			if(getPlayerFiring() == true) {
 				break;
 			}
 			
-			ImageIcon bulletIcon = resLoader.getImageIcon("bullet2.png");
+			ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
 			Image image = craft.getImage();
-			int playerX = craft.getX() + craft.getImage().getWidth(null) / 2 - image.getWidth(null) / 2;
-			int playerY = craft.getY() + image.getHeight(null) - bulletIcon.getIconHeight() + 5;
+			int playerX = craft.getX() - image.getWidth(null) / 2;
+			int playerY = craft.getY() - bulletIcon.getIconHeight() + 5;
 			
 			Bullet aBullet = new Bullet(bulletIcon, playerX, playerY, craft);
 			craft.allProjectiles.add(aBullet);

@@ -13,10 +13,10 @@ public class Global {
 	
 	public static final int TIME_INTERVAL = 10;
 	
-	public static final int UPPER_BOUNDS_X = 350;
-	public static final int LOWER_BOUNDS_X = 10;	
-	public static final int UPPER_BOUNDS_Y = 590;
-	public static final int LOWER_BOUNDS_Y = 80;
+	public static final int UPPER_BOUNDS_X = VIEW_WIDTH - 10;
+	public static final int LOWER_BOUNDS_X = 10;
+	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT;
+	public static final int LOWER_BOUNDS_Y = 10;
 	
 	public static final int PLAYER_START_POSITION = 250;
 	public static final int HARD_BANK_ANGLE = 1;

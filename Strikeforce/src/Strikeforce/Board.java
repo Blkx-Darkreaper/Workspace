@@ -21,8 +21,7 @@ public class Board extends JPanel implements ActionListener {
 	private List<Aircraft> allBandits;
 	private Image background;
 	private Timer time;
-	private int position;
-	private int scrollRate;
+	private int positionY;
 
 	public Board() {
 		resLoader = new ResLoader(this.getClass().getClassLoader());
@@ -34,10 +33,10 @@ public class Board extends JPanel implements ActionListener {
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
-		Aircraft bandit =  new Aircraft(banditIcon, 100, 450);
+		Aircraft bandit =  new Aircraft(banditIcon, 120, 450);
 		allBandits.add(bandit);
 		
-		Aircraft bandit2 =  new Aircraft(banditIcon, 200, 350);
+		Aircraft bandit2 =  new Aircraft(banditIcon, 220, 350);
 		allBandits.add(bandit2);
 		
 		addKeyListener(new KeyActionListener());
@@ -48,39 +47,68 @@ public class Board extends JPanel implements ActionListener {
 		BACKGROUND_HEIGHT = background.getHeight(null);
 		BACKGROUND_WIDTH = background.getWidth(null);
 		
-		ArrayList<Image> backgroundImages = new ArrayList<>();
+		ArrayList<Entity> levelSectors = new ArrayList<>();
+		int startPositionY = 0;
 		for(int i = 1; i < 8; i++) {
 			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			backgroundImages.add(backgroundIcon.getImage());
+			Projectile sector = new Projectile(backgroundIcon, backgroundIcon.getIconWidth() / 2, startPositionY);
+			sector.setAirspeed(0);
+			levelSectors.add(sector);
+			startPositionY += backgroundIcon.getIconHeight();
 		}
-		currentLevel = new Level(backgroundImages);
+		currentLevel = new Level(levelSectors);
 		
-		position = 0;
-		scrollRate = 1;
+		positionY = 0;
 		
 		time = new Timer(TIME_INTERVAL, this);
 		time.start();
+	}
+
+	private int getScrollRate() {
+		return player.getPlayerCraft().getAirspeed();
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		scrollVertical();
 		player.getPlayerCraft().move();
 		
-		for(Aircraft aBandit : allBandits) {
-			aBandit.move();
-			for(Projectile aProjectile : aBandit.allProjectiles) {
-				aProjectile.move();
-			}
-		}
-		
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
 			aProjectile.move();
 		}
+		
 		repaint();
+	}
+	
+	private void panHorizontal() {
+		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
+			aProjectile.move(getScrollRate(), 0);
+		}
+		
+		for(Aircraft aBandit : allBandits) {
+			aBandit.move(getScrollRate(), 0);
+			for(Projectile aProjectile : aBandit.allProjectiles) {
+				aProjectile.move(getScrollRate(), 0);
+			}
+		}
+		
+		for(Projectile aSector : currentLevel.getAllSectors()) {
+			aSector.move(getScrollRate(), 0);
+		}
 	}
 
 	private void scrollVertical() {
-		position += scrollRate;
+		for(Aircraft aBandit : allBandits) {
+			aBandit.move(0, -getScrollRate());
+			for(Projectile aProjectile : aBandit.allProjectiles) {
+				aProjectile.move(0, -getScrollRate());
+			}
+		}
+		
+		for(Projectile aSector : currentLevel.getAllSectors()) {
+			aSector.move(0, -getScrollRate());
+		}
+		
+		positionY += getScrollRate();
 	}
 
 	public void paint(Graphics g) {
@@ -144,8 +172,8 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
-		g2d.drawImage(toDraw.getImage(), toDraw.getX(), 
-				FRAME_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null), null);
+		g2d.drawImage(toDraw.getImage(), toDraw.getX() - toDraw.getImage().getWidth(null) + VIEW_POSITION_X, 
+				VIEW_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null) / 2 + VIEW_POSITION_Y, null);
 	}
 
 	private void paintPlayerBallistics(Graphics2D g2d) {
@@ -155,8 +183,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void paintPlayer(Graphics2D g2d) {
-		g2d.drawImage(player.getPlayerCraft().getImage(), player.getPlayerCraft().getX(), 
-				FRAME_HEIGHT - player.getPlayerCraft().getY(), null);
+		paintEntity(g2d, player.getPlayerCraft());
 	}
 	
 	private void paintEnemies(Graphics2D g2d) {
@@ -169,15 +196,19 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void paintBackground(Graphics2D g2d) {
-		//System.out.println(background.getWidth(null));
-		int vertOffset = BACKGROUND_HEIGHT * (position / BACKGROUND_HEIGHT);
+/*		//System.out.println(background.getWidth(null));
+		int vertOffset = BACKGROUND_HEIGHT * (positionY / BACKGROUND_HEIGHT);
 		//System.out.println("X: " + player.getX());
 		//System.out.println("Offset: " + offset);
 		//System.out.println("Mod: " + player.getX() / 512);
 		
-		g2d.drawImage(background, 0, position - (vertOffset - BACKGROUND_HEIGHT), null);
-		g2d.drawImage(background, 0, position - vertOffset, null);
-		g2d.drawImage(background, 0, position - (vertOffset + BACKGROUND_HEIGHT), null);
+		g2d.drawImage(background, 0, positionY - (vertOffset - BACKGROUND_HEIGHT), null);
+		g2d.drawImage(background, 0, positionY - vertOffset, null);
+		g2d.drawImage(background, 0, positionY - (vertOffset + BACKGROUND_HEIGHT), null);*/
+		
+		for(Entity aSector : currentLevel.getAllSectors()) {
+			paintEntity(g2d, aSector);
+		}
 	}
 	
 	private class KeyActionListener extends KeyAdapter {
@@ -211,21 +242,25 @@ class View {
 
 class Level {
 
-	private List<Image> allImages = new ArrayList<>();
-	private int nextIndex = 0;
+	private List<Projectile> allSectors = new ArrayList<>();
 	
-	public Level (ArrayList allImagesToAdd) {
-		allImages = allImagesToAdd;
+	public Level (ArrayList allSectorsToAdd) {
+		allSectors = allSectorsToAdd;
 	}
 	
-	public Image getNextImage () {
-		Image nextImage = allImages.get(nextIndex);
-		nextIndex++;
-		
-		if(nextIndex >= allImages.size()) {
-			nextIndex = 0;
+	public Projectile getSectorAtIndex (int index) {
+		if(index < 0) {
+			return null;
 		}
 		
-		return nextImage;
+		if(index >= allSectors.size()) {
+			return null;
+		}
+		
+		return allSectors.get(index);
+	}
+	
+	public List<Projectile> getAllSectors () {
+		return allSectors;
 	}
 }
