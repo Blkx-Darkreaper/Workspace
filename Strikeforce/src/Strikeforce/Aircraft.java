@@ -15,21 +15,23 @@ public class Aircraft extends Mover {
 	private Image imageBankLeftHard;
 	private Image imageBankRight;
 	private Image imageBankRightHard;
+	private List<Image> loopImages = new ArrayList<>();
 	
 	private final int MAX_AIRSPEED = 5;
 	private final int STALL_SPEED = 1;
 	
 	protected int bank = 0;
+	protected boolean doLoop = false;
+	protected int loop = 0;
 	
 	protected boolean invulnerable = false;
 
 	public Aircraft(ImageIcon icon) {
 		super(icon);
 		
-		ImageIcon resourceIcon = resLoader.getImageIcon("f18-level.png");
-		imageLevelFlight = resourceIcon.getImage();
+		imageLevelFlight = icon.getImage();
 		
-		resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
+		ImageIcon resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
 		imageBankLeft = resourceIcon.getImage();
 
 		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
@@ -41,6 +43,11 @@ public class Aircraft extends Mover {
 		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
 		imageBankRightHard = resourceIcon.getImage();
 		
+		for(int i = 1; i < 23; i++) {
+			resourceIcon = resLoader.getImageIcon("f18-loop" + i + ".png");
+			loopImages.add(resourceIcon.getImage());
+		}
+		
 		airspeed = 1;
 		allProjectiles = new ArrayList<>();
 	}
@@ -48,10 +55,9 @@ public class Aircraft extends Mover {
 	public Aircraft(ImageIcon icon, int startingX, int startingY) {
 		super(icon, startingX, startingY);
 		
-		ImageIcon resourceIcon = resLoader.getImageIcon("f18-level.png");
 		imageLevelFlight = icon.getImage();
 		
-		resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
+		ImageIcon resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
 		imageBankLeft = resourceIcon.getImage();
 
 		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
@@ -91,6 +97,12 @@ public class Aircraft extends Mover {
 			currentImage = imageBankLeftHard;
 		}
 		
+		if(loop > 0) {
+			Image loopImage = loopImages.get(loop / 3 - 1);
+			
+			currentImage = loopImage;
+		}
+		
 		return currentImage;
 	}
 	
@@ -98,8 +110,21 @@ public class Aircraft extends Mover {
 		return allProjectiles;
 	}
 	
+	public boolean getDoLoop() {
+		return doLoop;
+	}
+	
+	public void setDoLoop(boolean condition) {
+		doLoop = condition;
+	}
+	
 	@Override
 	public void move() {
+		if(doLoop == true) {
+			doLoop();
+			return;
+		}
+		
 		super.move();
 				
 		if(x < LOWER_BOUNDS_X) {
@@ -114,6 +139,22 @@ public class Aircraft extends Mover {
 		}
 		if(y > UPPER_BOUNDS_Y) {
 			y = UPPER_BOUNDS_Y;
+		}
+	}
+	
+	public void doLoop() {
+		if(doLoop == false) {
+			doLoop = true;
+			invulnerable = true;
+			return;
+		}
+		
+		loop++;
+		
+		if(loop > 22*3) {
+			loop = 0;
+			doLoop = false;
+			invulnerable = false;
 		}
 	}
 }

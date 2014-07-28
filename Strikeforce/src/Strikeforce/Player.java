@@ -32,6 +32,9 @@ public class Player {
 		int key = e.getKeyCode();
 
 		switch (key) {
+		case KeyEvent.VK_F:
+			craft.doLoop();
+			break;
 		case KeyEvent.VK_LEFT:
 			craft.dx = -craft.getAirspeed();
 			
