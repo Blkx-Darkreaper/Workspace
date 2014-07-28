@@ -51,7 +51,7 @@ public class Board extends JPanel implements ActionListener {
 		int startPositionY = 0;
 		for(int i = 1; i < 8; i++) {
 			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			Projectile sector = new Projectile(backgroundIcon, backgroundIcon.getIconWidth() / 2, startPositionY);
+			Mover sector = new Mover(backgroundIcon, backgroundIcon.getIconWidth() / 2, startPositionY);
 			sector.setAirspeed(0);
 			levelSectors.add(sector);
 			startPositionY += backgroundIcon.getIconHeight();
@@ -63,6 +63,10 @@ public class Board extends JPanel implements ActionListener {
 		time = new Timer(TIME_INTERVAL, this);
 		time.start();
 	}
+	
+	public View getView() {
+		return view;
+	}
 
 	private int getScrollRate() {
 		return player.getPlayerCraft().getAirspeed();
@@ -71,6 +75,7 @@ public class Board extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		scrollVertical();
 		player.getPlayerCraft().move();
+		System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
 			aProjectile.move();
@@ -91,7 +96,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
-		for(Projectile aSector : currentLevel.getAllSectors()) {
+		for(Mover aSector : currentLevel.getAllSectors()) {
 			aSector.move(getScrollRate(), 0);
 		}
 	}
@@ -104,7 +109,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
-		for(Projectile aSector : currentLevel.getAllSectors()) {
+		for(Mover aSector : currentLevel.getAllSectors()) {
 			aSector.move(0, -getScrollRate());
 		}
 		
@@ -115,17 +120,21 @@ public class Board extends JPanel implements ActionListener {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
-		paintBackground(g2d);
+		updateBackground(g2d);
 		
 		detectCollisions();
 		
-		paintPlayerBallistics(g2d);
-		paintEnemies(g2d);
-		paintPlayer(g2d);
+		updatePlayerProjectiles(g2d);
+		updateEnemies(g2d);
+		updatePlayer(g2d);
 		
 		// View bounds
 		g2d.setColor(Color.red); //debu
 		g2d.draw(view.getViewBox()); //debug
+	}
+	
+	private boolean checkWithinView(Entity toCheck) {
+		return view.checkWithinBounds(toCheck);
 	}
 	
 	private void detectCollisions () {
@@ -149,53 +158,72 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			List<Projectile> allEnemyProjectiles = aBandit.allProjectiles;
+			
+			boolean collision = playerCraft.checkForCollision(aBandit);
+			
+			if(collision == true) {
+				aBandit.destroy();
+				banditIter.remove();
+				//gameover();
+				return;
+			}
+			
 			for(Iterator<Projectile> projectileIter = allEnemyProjectiles.iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
 
-				boolean collision = playerCraft.checkForCollision(aProjectile);
+				collision = playerCraft.checkForCollision(aProjectile);
 				
 				if(collision == false) {
 					continue;
 				}
 				
-				JOptionPane.showMessageDialog(null, "You have been shot down!", "Game Over", 
-						JOptionPane.INFORMATION_MESSAGE);
-				playerCraft = null;
 				aProjectile.destroy();
 				projectileIter.remove();
+				//gameover();
+				return;
 			}
 		}
 	}
 	
-	private void paintEntity(Graphics2D g2d, Entity toDraw) {
-		if(view.checkWithinBounds(toDraw) == false) {
-			return;
-		}
-		
-		g2d.drawImage(toDraw.getImage(), toDraw.getX() - toDraw.getImage().getWidth(null) + VIEW_POSITION_X, 
+	private void redrawEntity(Graphics2D g2d, Entity toDraw) {
+		g2d.drawImage(toDraw.getImage(), toDraw.getX() - toDraw.getImage().getWidth(null) / 2 + VIEW_POSITION_X, 
 				VIEW_HEIGHT - toDraw.getY() + toDraw.getImage().getHeight(null) / 2 + VIEW_POSITION_Y, null);
 	}
 
-	private void paintPlayerBallistics(Graphics2D g2d) {
+	private void updatePlayerProjectiles(Graphics2D g2d) {
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
-			paintEntity(g2d, aProjectile);
+			
+			if(checkWithinView(aProjectile) == false) {
+				aProjectile.outOfRange();
+				return;
+			}
+			
+			redrawEntity(g2d, aProjectile);
 		}
 	}
 
-	private void paintPlayer(Graphics2D g2d) {
-		paintEntity(g2d, player.getPlayerCraft());
+	private void updatePlayer(Graphics2D g2d) {
+		redrawEntity(g2d, player.getPlayerCraft());
 	}
 	
-	private void paintEnemies(Graphics2D g2d) {
+	private void updateEnemies(Graphics2D g2d) {
 		for(Aircraft aBandit : allBandits) {
-			paintEntity(g2d, aBandit);
+			
+			redrawEntity(g2d, aBandit);
+			
 			for(Projectile aProjectile : aBandit.allProjectiles) {
-				paintEntity(g2d, aProjectile);
+				
+				if(checkWithinView(aProjectile) == false) {
+					aProjectile.outOfRange();
+					return;
+				}
+				
+				redrawEntity(g2d, aProjectile);
 			}
 		}
 	}
 
-	private void paintBackground(Graphics2D g2d) {
+	private void updateBackground(Graphics2D g2d) {
 /*		//System.out.println(background.getWidth(null));
 		int vertOffset = BACKGROUND_HEIGHT * (positionY / BACKGROUND_HEIGHT);
 		//System.out.println("X: " + player.getX());
@@ -207,8 +235,14 @@ public class Board extends JPanel implements ActionListener {
 		g2d.drawImage(background, 0, positionY - (vertOffset + BACKGROUND_HEIGHT), null);*/
 		
 		for(Entity aSector : currentLevel.getAllSectors()) {
-			paintEntity(g2d, aSector);
+			redrawEntity(g2d, aSector);
 		}
+	}
+	
+	public void gameover() {
+		JOptionPane.showMessageDialog(null, "You have been shot down!", "Game Over", 
+				JOptionPane.INFORMATION_MESSAGE);
+		player.gameover();
 	}
 	
 	private class KeyActionListener extends KeyAdapter {

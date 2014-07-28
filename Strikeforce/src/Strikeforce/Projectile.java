@@ -1,39 +1,25 @@
 package Strikeforce;
 
-import java.util.List;
-
 import javax.swing.ImageIcon;
+import static Strikeforce.Board.*;
 
-public class Projectile extends Entity {
+public class Projectile extends Mover {
 	
-	protected int dx, dy;
-	protected int airspeed;
-	
-	protected List<Projectile> allProjectiles;
+	protected Mover master;
 
-	public Projectile(ImageIcon icon) {
-		super(icon);
-	}
-	
-	public Projectile(ImageIcon icon, int startingX, int startingY) {
+	public Projectile(ImageIcon icon, int startingX, int startingY, Mover inMaster) {
 		super(icon, startingX, startingY);
+		dy = 6;
+		master = inMaster;
 	}
 	
-	public int getAirspeed() {
-		return airspeed;
+	public void outOfRange() {
+		master.allProjectiles.remove(this);
+		destroy();
 	}
 	
-	public void setAirspeed(int inValue) {
-		airspeed = inValue;
-	}
-
-	public void move() {
-		x += dx;
-		y += dy;
-	}
-	
-	public void move(int panRate, int scrollRate) {
-		x += dx + panRate;
-		y += dy + scrollRate;
+	public void destroy () {
+		master = null;
+		super.destroy();
 	}
 }

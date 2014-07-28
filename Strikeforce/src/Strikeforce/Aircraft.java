@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 import static Strikeforce.Global.*;
 
-public class Aircraft extends Projectile {
+public class Aircraft extends Mover {
 
 	private Image imageLevelFlight;
 	private Image imageBankLeft;

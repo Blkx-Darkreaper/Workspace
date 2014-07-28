@@ -63,10 +63,10 @@ public class Player {
 			
 			ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
 			Image image = craft.getImage();
-			int playerX = craft.getX() - image.getWidth(null) / 2;
-			int playerY = craft.getY() - bulletIcon.getIconHeight() + 5;
+			int startX = craft.getX();
+			int startY = craft.getY() + bulletIcon.getIconHeight();
 			
-			Bullet aBullet = new Bullet(bulletIcon, playerX, playerY, craft);
+			Projectile aBullet = new Projectile(bulletIcon, startX, startY, craft);
 			craft.allProjectiles.add(aBullet);
 			setPlayerFiring(true);
 			break;
@@ -90,5 +90,9 @@ public class Player {
 			setPlayerFiring(false);
 			break;
 		}
+	}
+
+	public void gameover() {
+		craft = null;		
 	}
 }
