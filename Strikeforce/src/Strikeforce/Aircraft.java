@@ -23,6 +23,7 @@ public class Aircraft extends Mover {
 	protected int bank = 0;
 	protected boolean doLoop = false;
 	protected int loop = 0;
+	protected int loopSpeed = 4;
 	
 	protected boolean invulnerable = false;
 
@@ -98,7 +99,7 @@ public class Aircraft extends Mover {
 		}
 		
 		if(loop > 0) {
-			Image loopImage = loopImages.get(loop / 3 - 1);
+			Image loopImage = loopImages.get(loop / loopSpeed - 1);
 			
 			currentImage = loopImage;
 		}
@@ -147,7 +148,7 @@ public class Aircraft extends Mover {
 		
 		loop++;
 		
-		if(loop > 22*3) {
+		if(loop > 20*loopSpeed) {
 			loop = 0;
 			doLoop = false;
 			invulnerable = false;
