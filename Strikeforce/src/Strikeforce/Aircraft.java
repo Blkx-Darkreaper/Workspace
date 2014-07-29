@@ -163,94 +163,94 @@ public class Aircraft extends Vehicle {
 		
 		switch (loop) {
 		case 0:
-			x -= 3;
+			y -= 3;
 			currentLoopImage = boostLevelFlight;
 			break;
-		case 1:
-			x += 7;
-			break;
 		case 2:
-			x += 16;
-			currentLoopImage = loopImages.get(0);
-			break;
-		case 3:
-			x += 5;
+			y += 7;
 			break;
 		case 4:
-			x += 5;
-			break;
-		case 5:
-			x += 9;
-			currentLoopImage = loopImages.get(1);
+			y += 16;
+			currentLoopImage = loopImages.get(0);
 			break;
 		case 6:
-			x += 4;
-			currentLoopImage = loopImages.get(2);
-			break;
-		case 7:
-			x -= 9;
-			currentLoopImage = loopImages.get(3);
+			y += 5;
 			break;
 		case 8:
-			x -= 20;
-			currentLoopImage = loopImages.get(4);
-			break;
-		case 9:
-			x -= 35;
-			currentLoopImage = loopImages.get(5);
+			y += 5;
 			break;
 		case 10:
-			x -= 20;
-			currentLoopImage = loopImages.get(6);
-			break;
-		case 11:
-			x -= 9;
+			y += 9;
+			currentLoopImage = loopImages.get(1);
 			break;
 		case 12:
-			x -= 17;
-			currentLoopImage = loopImages.get(8);
-			break;
-		case 13:
-			x += 11;
-			currentLoopImage = loopImages.get(9);
+			y += 4;
+			currentLoopImage = loopImages.get(2);
 			break;
 		case 14:
-			x += 12;
-			currentLoopImage = loopImages.get(10);
-			break;
-		case 15:
-			x += 23;
-			currentLoopImage = loopImages.get(11);
+			y -= 9;
+			currentLoopImage = loopImages.get(3);
 			break;
 		case 16:
-			x += 3;
-			break;
-		case 17:
-			x += 10;
-			currentLoopImage = loopImages.get(12);
+			y -= 20;
+			currentLoopImage = loopImages.get(4);
 			break;
 		case 18:
-			x -= 1;
-			currentLoopImage = loopImages.get(13);
-			break;
-		case 19:
-			x += 4;
+			y -= 35;
+			currentLoopImage = loopImages.get(5);
 			break;
 		case 20:
-			x -= 1;
-			currentLoopImage = loopImages.get(14);
-			break;
-		case 21:
-			x += 4;
+			y -= 20;
+			currentLoopImage = loopImages.get(6);
 			break;
 		case 22:
-			x += 3;
+			y -= 9;
+			break;
+		case 24:
+			y -= 17;
+			currentLoopImage = loopImages.get(8);
+			break;
+		case 26:
+			y += 11;
+			currentLoopImage = loopImages.get(9);
+			break;
+		case 28:
+			y += 12;
+			currentLoopImage = loopImages.get(10);
+			break;
+		case 30:
+			y += 23;
+			currentLoopImage = loopImages.get(11);
+			break;
+		case 32:
+			y += 3;
+			break;
+		case 34:
+			y += 10;
+			currentLoopImage = loopImages.get(12);
+			break;
+		case 36:
+			y -= 1;
+			currentLoopImage = loopImages.get(13);
+			break;
+		case 38:
+			y += 4;
+			break;
+		case 40:
+			y -= 1;
+			currentLoopImage = loopImages.get(14);
+			break;
+		case 42:
+			y += 4;
+			break;
+		case 44:
+			y += 3;
 			currentLoopImage = imageLevelFlight;
 			break;
-		case 23:
+		case 46:
 			doLoop = false;
 			invulnerable = false;
-			speed--;
+			//speed--;
 			return;
 		}
 		loop++;
