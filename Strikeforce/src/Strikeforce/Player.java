@@ -36,22 +36,10 @@ public class Player {
 			craft.doLoop();
 			break;
 		case KeyEvent.VK_LEFT:
-			craft.dx = -craft.getAirspeed();
-			
-			if(craft.bank == -MAX_BANK_ANGLE) {
-				break;
-			}
-			
-			craft.bank--;
+			craft.bankLeft();
 			break;
 		case KeyEvent.VK_RIGHT:
-			craft.dx = craft.getAirspeed();
-			
-			if(craft.bank == MAX_BANK_ANGLE) {
-				break;
-			}
-			
-			craft.bank++;
+			craft.bankRight();
 			break;
 		case KeyEvent.VK_UP:
 			craft.dy = craft.getAirspeed();
@@ -64,14 +52,9 @@ public class Player {
 				break;
 			}
 			
-			ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
-			Image image = craft.getImage();
-			int startX = craft.getX();
-			int startY = craft.getY() + bulletIcon.getIconHeight();
+			craft.openFire();
 			
-			Projectile aBullet = new Projectile(bulletIcon, startX, startY);
-			craft.allProjectiles.add(aBullet);
-			setPlayerFiring(true);
+			playerFiring = true;
 			break;
 		}
 	}
@@ -82,8 +65,7 @@ public class Player {
 		switch (key) {
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
-			craft.dx = 0;
-			craft.bank = 0;
+			craft.levelOff();
 			break;
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_DOWN:

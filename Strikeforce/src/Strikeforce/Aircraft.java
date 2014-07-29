@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 import static Strikeforce.Global.*;
 
-public class Aircraft extends Mover {
+public class Aircraft extends Vehicle {
 
 	private Image imageLevelFlight;
 	private Image imageBankLeft;
@@ -24,8 +24,6 @@ public class Aircraft extends Mover {
 	protected boolean doLoop = false;
 	protected int loop = 0;
 	protected int loopSpeed = 4;
-	
-	protected boolean invulnerable = false;
 
 	public Aircraft(ImageIcon icon) {
 		super(icon);
@@ -49,7 +47,7 @@ public class Aircraft extends Mover {
 			loopImages.add(resourceIcon.getImage());
 		}
 		
-		airspeed = 1;
+		speed = 1;
 		allProjectiles = new ArrayList<>();
 	}
 	
@@ -70,7 +68,7 @@ public class Aircraft extends Mover {
 		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
 		imageBankLeft = resourceIcon.getImage();
 		
-		airspeed = 1;
+		speed = 1;
 		allProjectiles = new ArrayList<>();
 	}
 	
@@ -105,14 +103,6 @@ public class Aircraft extends Mover {
 		}
 		
 		return currentImage;
-	}
-	
-	public List<Projectile> getAllProjectiles() {
-		return allProjectiles;
-	}
-	
-	public boolean getInvulnerable() {
-		return invulnerable;
 	}
 	
 	@Override
@@ -153,5 +143,57 @@ public class Aircraft extends Mover {
 			doLoop = false;
 			invulnerable = false;
 		}
+	}
+
+	@Override
+	public void accelerate() {
+		speed++;
+		
+		if(speed > MAX_AIRSPEED) {
+			speed = MAX_AIRSPEED;
+		}
+	}
+	
+	@Override
+	public void decelerate() {
+		speed--;
+		
+		if(speed > STALL_SPEED) {
+			speed = STALL_SPEED;
+		}
+	}
+	
+	public void bankLeft() {
+		dx = -speed;
+		
+		if(bank == -MAX_BANK_ANGLE) {
+			return;
+		}
+		
+		bank--;
+	}
+	
+	public void bankRight() {
+		dx = speed;
+		
+		if(bank == MAX_BANK_ANGLE) {
+			return;
+		}
+		
+		bank++;
+	}
+	
+	public void levelOff() {
+		dx = 0;
+		bank = 0;
+	}
+	
+	public void openFire() {		
+		ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
+		int startX = getX();
+		int startY = getY() + bulletIcon.getIconHeight();
+		
+		Projectile aBullet = new Projectile(bulletIcon, startX, startY);
+		allProjectiles.add(aBullet);
 	}
 }

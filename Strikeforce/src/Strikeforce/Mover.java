@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 public class Mover extends Entity {
 	
 	protected int dx, dy;
-	protected int airspeed;
+	protected int speed;
 	
 	protected List<Projectile> allProjectiles;
 
@@ -20,11 +20,11 @@ public class Mover extends Entity {
 	}
 	
 	public int getAirspeed() {
-		return airspeed;
+		return speed;
 	}
 	
 	public void setAirspeed(int inValue) {
-		airspeed = inValue;
+		speed = inValue;
 	}
 
 	public void move() {
