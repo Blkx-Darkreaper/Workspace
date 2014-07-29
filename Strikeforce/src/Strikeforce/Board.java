@@ -72,11 +72,15 @@ public class Board extends JPanel implements ActionListener {
 	private int getScrollRate() {
 		return player.getPlayerCraft().getAirspeed();
 	}
+	
+	public Timer getTime() {
+		return time;
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		scrollVertical();
 		player.getPlayerCraft().move();
-		System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
+		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
 			aProjectile.move();

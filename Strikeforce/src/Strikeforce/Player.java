@@ -11,6 +11,7 @@ public class Player {
 	
 	private Aircraft craft;
 	private boolean playerFiring = false;
+	private boolean playerBoosting = false;
 	
 	public Player(Aircraft inCraft) {
 		craft = inCraft;
@@ -26,6 +27,14 @@ public class Player {
 	
 	public void setPlayerFiring (boolean inCondition) {
 		playerFiring = inCondition;
+	}
+	
+	public boolean getPlayerBoosting() {
+		return playerBoosting;
+	}
+	
+	public void setPlayerBoosting (boolean condition) {
+		playerBoosting = condition;
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -53,8 +62,15 @@ public class Player {
 			}
 			
 			craft.openFire();
-			
 			playerFiring = true;
+			break;
+		case KeyEvent.VK_D:
+			if(getPlayerBoosting() == true) {
+				break;
+			}
+			
+			craft.accelerate();
+			playerBoosting = true;
 			break;
 		}
 	}
@@ -73,6 +89,9 @@ public class Player {
 			break;
 		case KeyEvent.VK_SPACE:
 			setPlayerFiring(false);
+			break;
+		case KeyEvent.VK_D:
+			setPlayerBoosting(false);
 			break;
 		}
 	}
