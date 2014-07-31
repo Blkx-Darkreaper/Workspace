@@ -281,15 +281,6 @@ public class Aircraft extends Vehicle {
 	public void cruise() {
 		dy = speed;
 	}
-	
-	public void openFire() {		
-		ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
-		int startX = getX();
-		int startY = getY() + bulletIcon.getIconHeight() / 2;
-		
-		Projectile aBullet = new Projectile(bulletIcon, startX, startY);
-		allProjectiles.add(aBullet);
-	}
 
 	public void setY(int position) {
 		centerY = position;

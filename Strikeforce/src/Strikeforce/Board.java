@@ -46,7 +46,14 @@ public class Board extends JPanel implements ActionListener {
 		
 		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
 		Aircraft playerCraft = new Aircraft(playerIcon, BACKGROUND_WIDTH / 2, 100);
+		List<Weapon> basicWeaponSetup = new ArrayList<>();
+		List<Weapon> otherWeaponSetup = new ArrayList<>();
+		basicWeaponSetup.add(singleShot);
+		otherWeaponSetup.add(splitShot);
+		playerCraft.setWeaponSetA(basicWeaponSetup);
+		playerCraft.setWeaponSetB(otherWeaponSetup);
 		player = new Player(playerCraft);
+		
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");

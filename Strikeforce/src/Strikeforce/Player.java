@@ -9,7 +9,8 @@ import javax.swing.ImageIcon;
 public class Player {
 	
 	private Aircraft craft;
-	private boolean playerFiring = false;
+	private boolean playerFiringA = false;
+	private boolean playerFiringB = false;
 	private boolean playerBoosting = false;
 	
 	private final int moveUpKey = KeyEvent.VK_UP;
@@ -29,12 +30,20 @@ public class Player {
 		return (Aircraft) craft;
 	}
 	
-	public boolean getPlayerFiring () {
-		return playerFiring;
+	public boolean getPlayerFiringA () {
+		return playerFiringA;
 	}
 	
-	public void setPlayerFiring (boolean inCondition) {
-		playerFiring = inCondition;
+	public void setPlayerFiringA(boolean inCondition) {
+		playerFiringA = inCondition;
+	}
+	
+	public boolean getPlayerFiringB () {
+		return playerFiringB;
+	}
+	
+	public void setPlayerFiringB (boolean inCondition) {
+		playerFiringB = inCondition;
 	}
 	
 	public boolean getPlayerBoosting() {
@@ -65,12 +74,20 @@ public class Player {
 			craft.moveDown();
 			break;
 		case fireAKey:
-			if(getPlayerFiring() == true) {
+			if(getPlayerFiringA() == true) {
 				break;
 			}
 			
-			craft.openFire();
-			playerFiring = true;
+			craft.fireWeaponSetA();
+			playerFiringA = true;
+			break;
+		case fireBKey:
+			if(getPlayerFiringB() == true) {
+				break;
+			}
+			
+			craft.fireWeaponSetB();
+			playerFiringB = true;
 			break;
 		case boostKey:
 			if(getPlayerBoosting() == true) {
@@ -99,7 +116,10 @@ public class Player {
 			craft.cruise();
 			break;
 		case fireAKey:
-			setPlayerFiring(false);
+			setPlayerFiringA(false);
+			break;
+		case fireBKey:
+			setPlayerFiringB(false);
 			break;
 		case boostKey:
 			setPlayerBoosting(false);

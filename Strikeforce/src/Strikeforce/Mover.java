@@ -1,6 +1,7 @@
 package Strikeforce;
 
 import static Strikeforce.Board.*;
+
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -35,6 +36,11 @@ public class Mover extends Entity {
 	public void setSpeed(int inValue) {
 		speed = inValue;
 		dy = speed;
+	}
+	
+	
+	public List<Projectile> getAllProjectiles() {
+		return allProjectiles;
 	}
 
 	public void move() {
