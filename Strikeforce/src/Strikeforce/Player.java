@@ -13,6 +13,15 @@ public class Player {
 	private boolean playerFiring = false;
 	private boolean playerBoosting = false;
 	
+	private final int moveUpKey = KeyEvent.VK_UP;
+	private final int moveDownKey = KeyEvent.VK_DOWN;
+	private final int moveLeftKey = KeyEvent.VK_LEFT;
+	private final int moveRightKey = KeyEvent.VK_RIGHT;
+	private final int fireAKey = KeyEvent.VK_A;
+	private final int fireBKey = KeyEvent.VK_S;
+	private final int boostKey = KeyEvent.VK_D;
+	private final int doLoopKey = KeyEvent.VK_F;
+	
 	public Player(Aircraft inCraft) {
 		craft = inCraft;
 	}
@@ -44,19 +53,19 @@ public class Player {
 /*		case KeyEvent.VK_F:
 			craft.doLoop();
 			break;*/
-		case KeyEvent.VK_LEFT:
+		case moveLeftKey:
 			craft.bankLeft();
 			break;
-		case KeyEvent.VK_RIGHT:
+		case moveRightKey:
 			craft.bankRight();
 			break;
-		case KeyEvent.VK_UP:
+		case moveUpKey:
 			craft.moveUp();
 			break;
-		case KeyEvent.VK_DOWN:
+		case moveDownKey:
 			craft.moveDown();
 			break;
-		case KeyEvent.VK_SPACE:
+		case fireAKey:
 			if(getPlayerFiring() == true) {
 				break;
 			}
@@ -64,7 +73,7 @@ public class Player {
 			craft.openFire();
 			playerFiring = true;
 			break;
-		case KeyEvent.VK_D:
+		case boostKey:
 			if(getPlayerBoosting() == true) {
 				break;
 			}
@@ -79,21 +88,21 @@ public class Player {
 		int key = e.getKeyCode();
 
 		switch (key) {
-		case KeyEvent.VK_F:
+		case doLoopKey:
 			craft.doLoop();
 			break;
-		case KeyEvent.VK_LEFT:
-		case KeyEvent.VK_RIGHT:
+		case moveLeftKey:
+		case moveRightKey:
 			craft.levelOff();
 			break;
-		case KeyEvent.VK_UP:
-		case KeyEvent.VK_DOWN:
+		case moveUpKey:
+		case moveDownKey:
 			craft.cruise();
 			break;
-		case KeyEvent.VK_SPACE:
+		case fireAKey:
 			setPlayerFiring(false);
 			break;
-		case KeyEvent.VK_D:
+		case boostKey:
 			setPlayerBoosting(false);
 			break;
 		}
