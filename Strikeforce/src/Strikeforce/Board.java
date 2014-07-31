@@ -190,13 +190,14 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
+		Image image = toDraw.getImage();
 		int positionXRelativeToViewCenter = (toDraw.getX() - toDraw.getHalfWidth()) - view.getX();
 		int positionYRelativeToViewCenter = (toDraw.getY() + toDraw.getHalfHeight()) - view.getY();
 		
 		int absolutePositionX = VIEW_POSITION_X + VIEW_WIDTH / 2 + positionXRelativeToViewCenter;
 		int absolutePositionY = VIEW_POSITION_Y + VIEW_HEIGHT / 2 - positionYRelativeToViewCenter;
 		
-		g2d.drawImage(toDraw.getImage(), absolutePositionX, absolutePositionY, null);
+		g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {

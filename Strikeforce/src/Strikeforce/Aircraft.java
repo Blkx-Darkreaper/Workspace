@@ -112,7 +112,6 @@ public class Aircraft extends Vehicle {
 	public void move() {
 		if(doLoop == true) {
 			doLoop();
-			return;
 		}
 		
 		super.move();
@@ -132,14 +131,14 @@ public class Aircraft extends Vehicle {
 		
 		switch (loop) {
 		case 0:
-			centerY -= 3;
+			centerY -= 2;
 			currentLoopImage = boostLevelFlight;
 			break;
 		case 2:
 			centerY += 7;
 			break;
 		case 4:
-			centerY += 16;
+			centerY += 18;
 			currentLoopImage = loopImages.get(0);
 			break;
 		case 6:
@@ -149,77 +148,76 @@ public class Aircraft extends Vehicle {
 			centerY += 5;
 			break;
 		case 10:
-			centerY += 9;
+			centerY += 7;
 			currentLoopImage = loopImages.get(1);
 			break;
 		case 12:
-			centerY += 4;
+			centerY -= 6;
 			currentLoopImage = loopImages.get(2);
 			break;
 		case 14:
-			centerY -= 9;
+			centerY -= 5;
 			currentLoopImage = loopImages.get(3);
 			break;
 		case 16:
-			centerY -= 20;
+			centerY -= 1;
 			currentLoopImage = loopImages.get(4);
 			break;
 		case 18:
-			centerY -= 35;
+			centerY -= 19;
 			currentLoopImage = loopImages.get(5);
 			break;
 		case 20:
-			centerY -= 20;
+			centerY -= 6;
 			currentLoopImage = loopImages.get(6);
 			break;
 		case 22:
 			centerY -= 9;
 			break;
 		case 24:
-			centerY -= 17;
+			centerY -= 24;
 			currentLoopImage = loopImages.get(8);
 			break;
 		case 26:
-			centerY += 11;
+			centerY += 2;
 			currentLoopImage = loopImages.get(9);
 			break;
 		case 28:
-			centerY += 12;
+			centerY -= 2;
 			currentLoopImage = loopImages.get(10);
 			break;
 		case 30:
-			centerY += 23;
+			centerY += 3;
 			currentLoopImage = loopImages.get(11);
 			break;
 		case 32:
 			centerY += 3;
 			break;
 		case 34:
-			centerY += 10;
+			centerY += 9;
 			currentLoopImage = loopImages.get(12);
 			break;
 		case 36:
-			centerY -= 1;
+			centerY += 3;
 			currentLoopImage = loopImages.get(13);
 			break;
 		case 38:
 			centerY += 4;
 			break;
 		case 40:
-			centerY -= 1;
+			centerY += 4;
 			currentLoopImage = loopImages.get(14);
 			break;
 		case 42:
 			centerY += 4;
 			break;
 		case 44:
-			centerY += 3;
 			currentLoopImage = imageLevelFlight;
 			break;
 		case 46:
 			doLoop = false;
 			invulnerable = false;
-			//dy--;
+			//speed--;
 			return;
 		}
 		loop++;
