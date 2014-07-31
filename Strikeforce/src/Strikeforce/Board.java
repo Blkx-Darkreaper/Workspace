@@ -79,6 +79,7 @@ public class Board extends JPanel implements ActionListener {
 		view.move();
 		
 		player.getPlayerCraft().move();
+		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
 		for(Aircraft aBandit : allBandits) {
@@ -96,6 +97,22 @@ public class Board extends JPanel implements ActionListener {
 		repaint();
 	}
 	
+	private void keepPlayerInView() {
+		int upperBoundsY = view.getY() + view.getHalfHeight();
+		int lowerBoundsY = view.getY() - view.getHalfHeight();
+		
+		int playerY = player.getPlayerCraft().getY();
+		int halfPlayerHeight = player.getPlayerCraft().getHalfHeight();
+		
+		if((playerY - halfPlayerHeight) < lowerBoundsY) {
+			player.getPlayerCraft().setY(lowerBoundsY + halfPlayerHeight);
+		}
+		
+		if((playerY + halfPlayerHeight) > upperBoundsY) {
+			player.getPlayerCraft().setY(upperBoundsY - halfPlayerHeight);
+		}
+	}
+
 	private void setViewPanRate() {
 		int panRate = player.getPlayerCraft().getSpeed();
 		int panDirection = 0;

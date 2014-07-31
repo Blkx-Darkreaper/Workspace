@@ -246,7 +246,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void bankLeft() {
-		dx = -speed;
+		dx = -speed - 1;
 		
 		if(bank == -MAX_BANK_ANGLE) {
 			return;
@@ -256,7 +256,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void bankRight() {
-		dx = speed;
+		dx = speed + 1;
 		
 		if(bank == MAX_BANK_ANGLE) {
 			return;
@@ -289,5 +289,9 @@ public class Aircraft extends Vehicle {
 		
 		Projectile aBullet = new Projectile(bulletIcon, startX, startY);
 		allProjectiles.add(aBullet);
+	}
+
+	public void setY(int position) {
+		centerY = position;
 	}
 }
