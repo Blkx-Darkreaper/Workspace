@@ -3,40 +3,54 @@ package Strikeforce;
 import java.awt.Image;
 import java.awt.Rectangle;
 import javax.swing.ImageIcon;
-import static Strikeforce.Board.*;
 import static Strikeforce.Global.*;
 
 public class Entity {
 
-	protected int x, y;
+	protected int centerX, centerY;
 	protected Image currentImage;
+	protected int halfWidth;
+	protected int halfHeight;
 	
-	public Entity (ImageIcon icon) {
-		currentImage = icon.getImage();
-		x = VIEW_WIDTH / 2;
-		y = 100;
+	public Entity(int startX, int startY, int inWidth, int inHeight) {
+		centerX = startX;
+		centerY = startY;
+		halfWidth = inWidth / 2;
+		halfHeight = inHeight / 2;
 	}
 	
 	public Entity(ImageIcon icon, int startX, int startY) {
 		currentImage = icon.getImage();
-		x = startX;
-		y = startY;
+		halfWidth = currentImage.getWidth(null) / 2;
+		halfHeight = currentImage.getHeight(null) / 2;
+		centerX = startX;
+		centerY = startY;
 	}
 	
 	public int getX() {
-		return x;
+		return centerX;
 	}
 
 	public int getY() {
-		return y;
+		return centerY;
 	}
 	
 	public Image getImage() {
 		return currentImage;
 	}
 	
+	public int getHalfWidth() {
+		return halfWidth;
+	}
+	
+	public int getHalfHeight() {
+		return halfHeight;
+	}
+	
 	public Rectangle getBounds() {
-		return new Rectangle(x, y, currentImage.getWidth(null), currentImage.getHeight(null));
+		int cornerX = centerX - halfWidth;
+		int cornerY = centerY - halfHeight;
+		return new Rectangle(cornerX, cornerY, halfWidth * 2, halfHeight * 2);
 	}
 	
 	public boolean checkForCollision(Entity other) {

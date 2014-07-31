@@ -10,10 +10,6 @@ public class Vehicle extends Mover {
 	
 	private final int MAX_SPEED = 3;
 	private final int MIN_SPEED = 1;
-	
-	public Vehicle(ImageIcon icon) {
-		super(icon);
-	}
 
 	public Vehicle(ImageIcon icon, int startingX, int startingY) {
 		super(icon, startingX, startingY);

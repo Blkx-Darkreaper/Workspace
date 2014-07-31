@@ -32,8 +32,8 @@ public class Aircraft extends Vehicle {
 	protected boolean doLoop = false;
 	protected int loop = 0;
 
-	public Aircraft(ImageIcon icon) {
-		super(icon);
+	public Aircraft(ImageIcon icon, int startingX, int startingY) {
+		super(icon, startingX, startingY);
 		
 		imageLevelFlight = icon.getImage();
 		
@@ -53,16 +53,16 @@ public class Aircraft extends Vehicle {
 		boostLevelFlight = resourceIcon.getImage();
 		
 		resourceIcon = resLoader.getImageIcon("f18-boostbankleft.png");
-		imageBankLeft = resourceIcon.getImage();
+		boostBankLeft = resourceIcon.getImage();
 
 		resourceIcon = resLoader.getImageIcon("f18-boostbanklefthard.png");
-		imageBankLeftHard = resourceIcon.getImage();
+		boostBankLeftHard = resourceIcon.getImage();
 
 		resourceIcon = resLoader.getImageIcon("f18-boostbankright.png");
-		imageBankRight = resourceIcon.getImage();
+		boostBankRight = resourceIcon.getImage();
 
 		resourceIcon = resLoader.getImageIcon("f18-boostbankrighthard.png");
-		imageBankRightHard = resourceIcon.getImage();
+		boostBankRightHard = resourceIcon.getImage();
 		
 		for(int i = 1; i < 16; i++) {
 			resourceIcon = resLoader.getImageIcon("f18-loop" + i + ".png");
@@ -70,27 +70,7 @@ public class Aircraft extends Vehicle {
 		}
 		
 		speed = 1;
-		allProjectiles = new ArrayList<>();
-	}
-	
-	public Aircraft(ImageIcon icon, int startingX, int startingY) {
-		super(icon, startingX, startingY);
-		
-		imageLevelFlight = icon.getImage();
-		
-		ImageIcon resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
-		imageBankLeft = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
-		imageBankLeft = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-bankright.png");
-		imageBankLeft = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
-		imageBankLeft = resourceIcon.getImage();
-		
-		speed = 1;
+		dy = speed;
 		allProjectiles = new ArrayList<>();
 	}
 	
@@ -122,6 +102,9 @@ public class Aircraft extends Vehicle {
 			currentImage = currentLoopImage;
 		}
 		
+		halfWidth = currentImage.getWidth(null) / 2;
+		halfHeight = currentImage.getHeight(null) / 2;
+		
 		return currentImage;
 	}
 	
@@ -133,20 +116,6 @@ public class Aircraft extends Vehicle {
 		}
 		
 		super.move();
-				
-		if(x < LOWER_BOUNDS_X) {
-			x = LOWER_BOUNDS_X;
-		}
-		if(x > UPPER_BOUNDS_X) {
-			x = UPPER_BOUNDS_X;
-		}
-
-		if(y < LOWER_BOUNDS_Y) {
-			y = LOWER_BOUNDS_Y;
-		}
-		if(y > UPPER_BOUNDS_Y) {
-			y = UPPER_BOUNDS_Y;
-		}
 	}
 	
 	public void doLoop() {
@@ -163,94 +132,94 @@ public class Aircraft extends Vehicle {
 		
 		switch (loop) {
 		case 0:
-			y -= 3;
+			centerY -= 3;
 			currentLoopImage = boostLevelFlight;
 			break;
 		case 2:
-			y += 7;
+			centerY += 7;
 			break;
 		case 4:
-			y += 16;
+			centerY += 16;
 			currentLoopImage = loopImages.get(0);
 			break;
 		case 6:
-			y += 5;
+			centerY += 5;
 			break;
 		case 8:
-			y += 5;
+			centerY += 5;
 			break;
 		case 10:
-			y += 9;
+			centerY += 9;
 			currentLoopImage = loopImages.get(1);
 			break;
 		case 12:
-			y += 4;
+			centerY += 4;
 			currentLoopImage = loopImages.get(2);
 			break;
 		case 14:
-			y -= 9;
+			centerY -= 9;
 			currentLoopImage = loopImages.get(3);
 			break;
 		case 16:
-			y -= 20;
+			centerY -= 20;
 			currentLoopImage = loopImages.get(4);
 			break;
 		case 18:
-			y -= 35;
+			centerY -= 35;
 			currentLoopImage = loopImages.get(5);
 			break;
 		case 20:
-			y -= 20;
+			centerY -= 20;
 			currentLoopImage = loopImages.get(6);
 			break;
 		case 22:
-			y -= 9;
+			centerY -= 9;
 			break;
 		case 24:
-			y -= 17;
+			centerY -= 17;
 			currentLoopImage = loopImages.get(8);
 			break;
 		case 26:
-			y += 11;
+			centerY += 11;
 			currentLoopImage = loopImages.get(9);
 			break;
 		case 28:
-			y += 12;
+			centerY += 12;
 			currentLoopImage = loopImages.get(10);
 			break;
 		case 30:
-			y += 23;
+			centerY += 23;
 			currentLoopImage = loopImages.get(11);
 			break;
 		case 32:
-			y += 3;
+			centerY += 3;
 			break;
 		case 34:
-			y += 10;
+			centerY += 10;
 			currentLoopImage = loopImages.get(12);
 			break;
 		case 36:
-			y -= 1;
+			centerY -= 1;
 			currentLoopImage = loopImages.get(13);
 			break;
 		case 38:
-			y += 4;
+			centerY += 4;
 			break;
 		case 40:
-			y -= 1;
+			centerY -= 1;
 			currentLoopImage = loopImages.get(14);
 			break;
 		case 42:
-			y += 4;
+			centerY += 4;
 			break;
 		case 44:
-			y += 3;
+			centerY += 3;
 			currentLoopImage = imageLevelFlight;
 			break;
 		case 46:
 			doLoop = false;
 			invulnerable = false;
-			//speed--;
+			//dy--;
 			return;
 		}
 		loop++;
@@ -259,10 +228,12 @@ public class Aircraft extends Vehicle {
 	@Override
 	public void accelerate() {
 		speed++;
-		
+
 		if(speed > MAX_AIRSPEED) {
 			speed = MAX_AIRSPEED;
 		}
+		
+		dy = speed;
 	}
 	
 	@Override
@@ -272,6 +243,8 @@ public class Aircraft extends Vehicle {
 		if(speed > STALL_SPEED) {
 			speed = STALL_SPEED;
 		}
+		
+		dy = speed;
 	}
 	
 	public void bankLeft() {
@@ -299,10 +272,22 @@ public class Aircraft extends Vehicle {
 		bank = 0;
 	}
 	
+	public void moveUp() {
+		dy = speed + 1;
+	}
+	
+	public void moveDown() {
+		dy = speed - 1;
+	}
+	
+	public void cruise() {
+		dy = speed;
+	}
+	
 	public void openFire() {		
 		ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
 		int startX = getX();
-		int startY = getY() + bulletIcon.getIconHeight();
+		int startY = getY() + bulletIcon.getIconHeight() / 2;
 		
 		Projectile aBullet = new Projectile(bulletIcon, startX, startY);
 		allProjectiles.add(aBullet);

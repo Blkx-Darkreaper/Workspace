@@ -12,8 +12,10 @@ public class Global {
 	public static final int VIEW_HEIGHT = 500;
 	public static final int VIEW_POSITION_X = 100;
 	public static final int VIEW_POSITION_Y = 50;
+	
+	public static final int LEVEL_WIDTH = 400;
 
-	public static final int UPPER_BOUNDS_X = VIEW_WIDTH - 10;
+	public static final int UPPER_BOUNDS_X = LEVEL_WIDTH - 10;
 	public static final int LOWER_BOUNDS_X = 10;
 	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT - 20;
 	public static final int LOWER_BOUNDS_Y = 20;

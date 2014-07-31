@@ -2,13 +2,10 @@ package Strikeforce;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-
 import static Strikeforce.Global.*;
-
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
@@ -21,45 +18,48 @@ public class Board extends JPanel implements ActionListener {
 	private List<Aircraft> allBandits;
 	private Image background;
 	private Timer time;
-	private int positionY;
 
 	public Board() {
 		resLoader = new ResLoader(this.getClass().getClassLoader());
-		view = new View();
+		
+		ArrayList<Entity> levelSectors = new ArrayList<>();
+		
+		ImageIcon backgroundIcon = resLoader.getImageIcon("Paris1.png");
+		Image background = backgroundIcon.getImage();
+		
+		BACKGROUND_HEIGHT = background.getHeight(null);
+		BACKGROUND_WIDTH = background.getWidth(null);
+		int startPositionY = BACKGROUND_HEIGHT / 2;
+		
+		for(int i = 1; i < 8; i++) {
+			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
+			Entity sector = new Entity(backgroundIcon, BACKGROUND_WIDTH / 2, startPositionY);
+			levelSectors.add(sector);
+			startPositionY += BACKGROUND_HEIGHT;
+		}
+		
+		currentLevel = new Level(levelSectors);
+		
+		ImageIcon viewIcon = resLoader.getImageIcon("view.png");
+		view = new View(viewIcon, BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2);
+		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
 		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
-		Aircraft playerCraft = new Aircraft(playerIcon);
+		Aircraft playerCraft = new Aircraft(playerIcon, BACKGROUND_WIDTH / 2, 100);
 		player = new Player(playerCraft);
 		allBandits = new ArrayList<>();
 		
 		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
-		Aircraft bandit =  new Aircraft(banditIcon, 120, 450);
+		Aircraft bandit =  new Aircraft(banditIcon, 120, 500);
+		bandit.setSpeed(-1);
 		allBandits.add(bandit);
 		
-		Aircraft bandit2 =  new Aircraft(banditIcon, 220, 350);
-		allBandits.add(bandit2);
+		bandit =  new Aircraft(banditIcon, 220, 350);
+		bandit.setSpeed(-1);
+		allBandits.add(bandit);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
-		
-		ImageIcon backgroundIcon = resLoader.getImageIcon("starfield.png");
-		background = backgroundIcon.getImage();
-		BACKGROUND_HEIGHT = background.getHeight(null);
-		BACKGROUND_WIDTH = background.getWidth(null);
-		
-		ArrayList<Entity> levelSectors = new ArrayList<>();
-		int startPositionY = 0;
-		for(int i = 1; i < 8; i++) {
-			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			int offset = (backgroundIcon.getIconWidth() - (backgroundIcon.getIconWidth() - VIEW_WIDTH)) / 2;
-			Mover sector = new Mover(backgroundIcon, offset, startPositionY);
-			sector.setAirspeed(0);
-			levelSectors.add(sector);
-			startPositionY += backgroundIcon.getIconHeight();
-		}
-		currentLevel = new Level(levelSectors);
-		
-		positionY = 0;
 		
 		time = new Timer(TIME_INTERVAL, this);
 		time.start();
@@ -69,18 +69,25 @@ public class Board extends JPanel implements ActionListener {
 		return view;
 	}
 
-	private int getScrollRate() {
-		return player.getPlayerCraft().getAirspeed();
-	}
-	
 	public Timer getTime() {
 		return time;
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		scrollVertical();
+		setViewScrollRate();
+		setViewPanRate();
+		view.move();
+		
 		player.getPlayerCraft().move();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
+		
+		for(Aircraft aBandit : allBandits) {
+			aBandit.move();
+			
+			for(Projectile aProjectile : aBandit.getAllProjectiles()) {
+				aProjectile.move();
+			}
+		}
 		
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
 			aProjectile.move();
@@ -89,36 +96,28 @@ public class Board extends JPanel implements ActionListener {
 		repaint();
 	}
 	
-	private void panHorizontal() {
-		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
-			aProjectile.move(getScrollRate(), 0);
-		}
-		
-		for(Aircraft aBandit : allBandits) {
-			aBandit.move(getScrollRate(), 0);
-			for(Projectile aProjectile : aBandit.allProjectiles) {
-				aProjectile.move(getScrollRate(), 0);
-			}
-		}
-		
-		for(Mover aSector : currentLevel.getAllSectors()) {
-			aSector.move(getScrollRate(), 0);
-		}
-	}
+	private void setViewPanRate() {
+		int panRate = player.getPlayerCraft().getSpeed();
+		int panDirection = 0;
 
-	private void scrollVertical() {
-		for(Aircraft aBandit : allBandits) {
-			aBandit.move(0, -getScrollRate());
-			for(Projectile aProjectile : aBandit.allProjectiles) {
-				aProjectile.move(0, -getScrollRate());
-			}
+		int playerX = player.getPlayerCraft().getX();
+		int viewX = view.getX();
+		int thirdViewWidth = VIEW_WIDTH / 3;
+		
+		int displacement = playerX - viewX;
+		int distance = Math.abs(displacement);
+		
+		if(distance > thirdViewWidth) {
+			panDirection = distance / displacement;
 		}
 		
-		for(Mover aSector : currentLevel.getAllSectors()) {
-			aSector.move(0, -getScrollRate());
-		}
-		
-		positionY += getScrollRate();
+		panRate *= panDirection;
+		view.setDeltaX(panRate);
+	}
+	
+	private void setViewScrollRate() {
+		int scrollRate = player.getPlayerCraft().getSpeed();
+		view.setSpeed(scrollRate);
 	}
 
 	public void paint(Graphics g) {
@@ -134,8 +133,7 @@ public class Board extends JPanel implements ActionListener {
 		updatePlayer(g2d);
 		
 		// View bounds
-		g2d.setColor(Color.red); //debu
-		g2d.draw(view.getViewBox()); //debug
+		drawEntity(g2d, view); //debug
 	}
 	
 	private boolean checkWithinView(Entity toCheck) {
@@ -192,8 +190,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
-		g2d.drawImage(toDraw.getImage(), toDraw.getX() - toDraw.getImage().getWidth(null) / 2 + VIEW_POSITION_X, 
-				VIEW_HEIGHT - toDraw.getY() - toDraw.getImage().getHeight(null) / 2 + VIEW_POSITION_Y, null);
+		int positionXRelativeToViewCenter = (toDraw.getX() - toDraw.getHalfWidth()) - view.getX();
+		int positionYRelativeToViewCenter = (toDraw.getY() + toDraw.getHalfHeight()) - view.getY();
+		
+		int absolutePositionX = VIEW_POSITION_X + VIEW_WIDTH / 2 + positionXRelativeToViewCenter;
+		int absolutePositionY = VIEW_POSITION_Y + VIEW_HEIGHT / 2 - positionYRelativeToViewCenter;
+		
+		g2d.drawImage(toDraw.getImage(), absolutePositionX, absolutePositionY, null);
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
@@ -275,32 +278,31 @@ public class Board extends JPanel implements ActionListener {
 	}
 }
 
-class View {
+class View extends Mover {
 	
-	private Rectangle viewBox;
+	public View (int startX, int startY, int inWidth, int inHeight) {
+		super(startX, startY, inWidth, inHeight);
+	}
 	
-	public View () {
-		viewBox = new Rectangle(VIEW_POSITION_X, VIEW_POSITION_Y, VIEW_WIDTH, VIEW_HEIGHT);
+	public View (ImageIcon icon, int startX, int startY) {
+		super(icon, startX, startY);
 	}
 	
 	public boolean checkWithinBounds(Entity toCheck) {
+		Rectangle viewBox = getBounds();
 		return toCheck.getBounds().intersects(viewBox);
-	}
-	
-	public Rectangle getViewBox() {
-		return viewBox;
 	}
 }
 
 class Level {
 
-	private List<Projectile> allSectors = new ArrayList<>();
+	private List<Entity> allSectors = new ArrayList<>();
 	
 	public Level (ArrayList allSectorsToAdd) {
 		allSectors = allSectorsToAdd;
 	}
 	
-	public Projectile getSectorAtIndex (int index) {
+	public Entity getSectorAtIndex (int index) {
 		if(index < 0) {
 			return null;
 		}
@@ -312,7 +314,7 @@ class Level {
 		return allSectors.get(index);
 	}
 	
-	public List<Projectile> getAllSectors () {
+	public List<Entity> getAllSectors () {
 		return allSectors;
 	}
 }

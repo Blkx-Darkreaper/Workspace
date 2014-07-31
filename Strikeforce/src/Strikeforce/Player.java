@@ -41,9 +41,9 @@ public class Player {
 		int key = e.getKeyCode();
 
 		switch (key) {
-		case KeyEvent.VK_F:
+/*		case KeyEvent.VK_F:
 			craft.doLoop();
-			break;
+			break;*/
 		case KeyEvent.VK_LEFT:
 			craft.bankLeft();
 			break;
@@ -51,10 +51,10 @@ public class Player {
 			craft.bankRight();
 			break;
 		case KeyEvent.VK_UP:
-			craft.dy = craft.getAirspeed();
+			craft.moveUp();
 			break;
 		case KeyEvent.VK_DOWN:
-			craft.dy = -craft.getAirspeed();
+			craft.moveDown();
 			break;
 		case KeyEvent.VK_SPACE:
 			if(getPlayerFiring() == true) {
@@ -79,13 +79,16 @@ public class Player {
 		int key = e.getKeyCode();
 
 		switch (key) {
+		case KeyEvent.VK_F:
+			craft.doLoop();
+			break;
 		case KeyEvent.VK_LEFT:
 		case KeyEvent.VK_RIGHT:
 			craft.levelOff();
 			break;
 		case KeyEvent.VK_UP:
 		case KeyEvent.VK_DOWN:
-			craft.dy = 0;
+			craft.cruise();
 			break;
 		case KeyEvent.VK_SPACE:
 			setPlayerFiring(false);
