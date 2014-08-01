@@ -24,7 +24,7 @@ public abstract class Weapon {
 		int startX = originX;
 		int startY = originY + bulletIcon.getIconHeight() / 2;
 		
-		allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6));
+		allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6, 1));
 		return allShots;
 	}
 }

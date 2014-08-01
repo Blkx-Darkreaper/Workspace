@@ -38,7 +38,7 @@ public class Global {
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6));
+			allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6, 1));
 			
 			return allShots;
 		}
@@ -52,8 +52,8 @@ public class Global {
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			allShots.add(new Projectile(bulletIcon, startX, startY, -2, 6));
-			allShots.add(new Projectile(bulletIcon, startX, startY, 2, 6));
+			allShots.add(new Projectile(bulletIcon, startX, startY, -2, 6, 1));
+			allShots.add(new Projectile(bulletIcon, startX, startY, 2, 6, 1));
 			
 			return allShots;
 		}

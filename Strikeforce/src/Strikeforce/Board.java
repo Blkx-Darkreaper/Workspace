@@ -179,7 +179,10 @@ public class Board extends JPanel implements ActionListener {
 					continue;
 				}
 				
-				banditIter.remove();
+				int damage = aProjectile.getDamage();
+				if(aBandit.dealDamage(damage) == true) {
+					banditIter.remove();
+				}
 				projectileIter.remove();
 			}
 			

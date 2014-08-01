@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 
 public class Vehicle extends Mover {
 
+	protected int hitPoints;
+	
 	protected List<Weapon> weaponSetA;
 	protected List<Weapon> weaponSetB;
 	
@@ -18,6 +20,11 @@ public class Vehicle extends Mover {
 
 	public Vehicle(ImageIcon icon, int startingX, int startingY) {
 		super(icon, startingX, startingY);
+		hitPoints = 1;
+	}
+	
+	public int getHitPoints() {
+		return hitPoints;
 	}
 
 	public void setWeaponSetA (List<Weapon> allWeaponsToAdd) {
@@ -72,5 +79,15 @@ public class Vehicle extends Mover {
 			List<Projectile> firedShots = aWeapon.openFire(originX, originY);
 			allProjectiles.addAll(firedShots);
 		}
+	}
+	
+	public boolean dealDamage(int damageDealt) {
+		hitPoints -= damageDealt;
+		
+		if(hitPoints > 0) {
+			return false;
+		}
+		
+		return true;
 	}
 }
