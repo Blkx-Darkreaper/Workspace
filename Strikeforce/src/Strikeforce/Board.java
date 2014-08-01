@@ -61,7 +61,11 @@ public class Board extends JPanel implements ActionListener {
 		bandit.setSpeed(-1);
 		allBandits.add(bandit);
 		
-		bandit =  new Aircraft(banditIcon, 220, 350);
+		bandit =  new Aircraft(banditIcon, 220, 1650);
+		bandit.setSpeed(-1);
+		allBandits.add(bandit);
+		
+		bandit =  new Aircraft(banditIcon, 180, 900);
 		bandit.setSpeed(-1);
 		allBandits.add(bandit);
 		
@@ -180,7 +184,7 @@ public class Board extends JPanel implements ActionListener {
 				}
 				
 				int damage = aProjectile.getDamage();
-				if(aBandit.dealDamage(damage) == true) {
+				if(aBandit.criticalDamage(damage) == true) {
 					banditIter.remove();
 				}
 				projectileIter.remove();

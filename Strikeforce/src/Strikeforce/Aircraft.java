@@ -271,11 +271,11 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void moveUp() {
-		dy = speed + 1;
+		dy = speed + 2;
 	}
 	
 	public void moveDown() {
-		dy = speed - 1;
+		dy = speed - 2;
 	}
 	
 	public void cruise() {

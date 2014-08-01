@@ -81,7 +81,7 @@ public class Vehicle extends Mover {
 		}
 	}
 	
-	public boolean dealDamage(int damageDealt) {
+	public boolean criticalDamage(int damageDealt) {
 		hitPoints -= damageDealt;
 		
 		if(hitPoints > 0) {
