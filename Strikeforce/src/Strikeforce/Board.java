@@ -85,6 +85,11 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		String currentPhase = player.getPhase();
+		if(currentPhase != "Raid") {
+			return;
+		}
+		
 		setViewScrollRate();
 		setViewPanRate();
 		view.move();

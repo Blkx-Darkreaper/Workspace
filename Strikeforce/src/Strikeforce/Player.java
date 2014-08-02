@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 public class Player {
 	
 	private Aircraft craft;
+	private String phase = "Raid";
 	private boolean playerFiringA = false;
 	private boolean playerFiringB = false;
 	private boolean playerBoosting = false;
@@ -28,6 +29,14 @@ public class Player {
 	
 	public Aircraft getPlayerCraft() {
 		return (Aircraft) craft;
+	}
+	
+	public String getPhase () {
+		return phase;
+	}
+	
+	public void setPhase(String inPhase) {
+		phase = inPhase;
 	}
 	
 	public boolean getPlayerFiringA () {
@@ -125,6 +134,18 @@ public class Player {
 			setPlayerBoosting(false);
 			break;
 		}
+	}
+	
+	private void planningPhase (int keyPressed) {
+		
+	}
+	
+	private void buildPhase (int keyPressed) {
+		
+	}
+	
+	private void raidPhase (int keyPressed) {
+		
 	}
 
 	public void gameover() {

@@ -246,7 +246,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void bankLeft() {
-		dx = -speed - 1;
+		dx = -speed;
 		
 		if(bank == -MAX_BANK_ANGLE) {
 			return;
@@ -256,7 +256,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void bankRight() {
-		dx = speed + 1;
+		dx = speed;
 		
 		if(bank == MAX_BANK_ANGLE) {
 			return;
@@ -271,11 +271,11 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void moveUp() {
-		dy = speed + 2;
+		dy = speed;
 	}
 	
 	public void moveDown() {
-		dy = speed - 2;
+		dy = speed;
 	}
 	
 	public void cruise() {
