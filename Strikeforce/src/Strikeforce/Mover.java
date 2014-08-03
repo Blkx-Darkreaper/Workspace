@@ -2,6 +2,7 @@ package Strikeforce;
 
 import static Strikeforce.Board.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -16,10 +17,12 @@ public class Mover extends Entity {
 	
 	public Mover(int startX, int startY, int inWidth, int inHeight) {
 		super(startX, startY, inWidth, inHeight);
+		allProjectiles = new ArrayList<>();
 	}
 	
 	public Mover(ImageIcon icon, int startX, int startY) {
 		super(icon, startX, startY);
+		allProjectiles = new ArrayList<>();
 	}
 	
 	public int getDeltaX() {

@@ -75,6 +75,14 @@ public class Vehicle extends Mover {
 		updateVectors();
 	}
 	
+	public void rotateTurretLeft() {
+		firingDirection--;
+	}
+	
+	public void rotateTurretRight() {
+		firingDirection++;
+	}
+	
 	public void fireWeaponSetA() {
 		if(weaponSetA.isEmpty() == true) {
 			return;

@@ -20,6 +20,7 @@ public class Board extends JPanel implements ActionListener {
 	static Level currentLevel;
 	private Player player;
 	private List<Aircraft> allBandits;
+	private List<Vehicle> allGroundTargets;
 	private Image background;
 	private Timer time;
 
@@ -43,6 +44,10 @@ public class Board extends JPanel implements ActionListener {
 		player = new Player(playerCraft);
 		
 		allBandits = new ArrayList<>();
+		
+		allGroundTargets = new ArrayList<>();
+		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
+		allGroundTargets.add(new Vehicle(tankIcon, currentLevel.getWidth() / 2, 200));
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -72,6 +77,10 @@ public class Board extends JPanel implements ActionListener {
 		player.getPlayerCraft().move();
 		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
+		
+		for(Vehicle aGroundTarget : allGroundTargets) {
+			aGroundTarget.move();
+		}
 		
 		for(Aircraft aBandit : allBandits) {
 			aBandit.move();
@@ -233,8 +242,29 @@ public class Board extends JPanel implements ActionListener {
 	private void updateEnemies(Graphics2D g2d) {
 		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getY()));
 		
+		for(Iterator<Vehicle> groundIter = allGroundTargets.iterator(); groundIter.hasNext();) {
+			Vehicle aGroundTarget = groundIter.next();
+			
+			for(Iterator<Projectile> bulletIter = aGroundTarget.getAllProjectiles().iterator(); bulletIter.hasNext();) {
+				Projectile aProjectile = bulletIter.next();
+				
+				if(checkWithinView(aProjectile) == false) {
+					bulletIter.remove();
+					continue;
+				}
+				
+				drawEntity(g2d, aProjectile);
+			}
+			
+			if(checkWithinView(aGroundTarget) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aGroundTarget);
+		}
+		
 		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
-		Aircraft aBandit = banditIter.next();
+			Aircraft aBandit = banditIter.next();
 		
 			for(Iterator<Projectile> bulletIter = aBandit.getAllProjectiles().iterator(); bulletIter.hasNext();) {
 				Projectile aProjectile = bulletIter.next();

@@ -1,10 +1,7 @@
 package Strikeforce;
 
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import static Strikeforce.Global.*;
-
-import javax.swing.ImageIcon;
 
 public class Player {
 	

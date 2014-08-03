@@ -71,7 +71,6 @@ public class Aircraft extends Vehicle {
 		
 		speed = 1;
 		dy = speed;
-		allProjectiles = new ArrayList<>();
 	}
 	
 	@Override
