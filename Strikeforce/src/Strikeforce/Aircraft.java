@@ -231,7 +231,7 @@ public class Aircraft extends Vehicle {
 			speed = MAX_AIRSPEED;
 		}
 		
-		dy = speed;
+		updateVectors();
 	}
 	
 	@Override
@@ -242,7 +242,7 @@ public class Aircraft extends Vehicle {
 			speed = STALL_SPEED;
 		}
 		
-		dy = speed;
+		updateVectors();
 	}
 	
 	public void bankLeft() {
@@ -266,20 +266,20 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void levelOff() {
-		dx = 0;
 		bank = 0;
+		updateVectors();
 	}
 	
 	public void moveUp() {
-		dy = speed;
+		dy = speed + 1;
 	}
 	
 	public void moveDown() {
-		dy = speed;
+		dy = -speed;
 	}
 	
 	public void cruise() {
-		dy = speed;
+		updateVectors();
 	}
 
 	public void setY(int position) {

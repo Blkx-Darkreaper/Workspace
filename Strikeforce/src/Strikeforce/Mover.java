@@ -9,7 +9,8 @@ import javax.swing.ImageIcon;
 public class Mover extends Entity {
 	
 	protected int dx, dy;
-	protected int speed;
+	protected int direction = 0;
+	protected int speed = 0;
 	
 	protected List<Projectile> allProjectiles;
 	
@@ -29,15 +30,40 @@ public class Mover extends Entity {
 		dx = inValue;
 	}
 	
+	public int getDeltaY() {
+		return dy;
+	}
+	
+	public void updateVectors() {
+		dx = (int) (speed * Math.sin(Math.toRadians(direction)));
+		dy = (int) (speed * Math.cos(Math.toRadians(direction)));
+	}
+	
+	public int getDirection() {
+		return direction;
+	}
+	
+	public void setDirection(int inDirection) {
+		if(inDirection < 0) {
+			return;
+		}
+		
+		if(inDirection > 360) {
+			return;
+		}
+		
+		direction = inDirection;
+		updateVectors();
+	}
+	
 	public int getSpeed() {
 		return speed;
 	}
 	
 	public void setSpeed(int inValue) {
 		speed = inValue;
-		dy = speed;
+		updateVectors();
 	}
-	
 	
 	public List<Projectile> getAllProjectiles() {
 		return allProjectiles;
@@ -51,7 +77,7 @@ public class Mover extends Entity {
 		if(centerX < lowerBoundsX) {
 			centerX = lowerBoundsX;
 		}
-		int upperBoundsX = BACKGROUND_WIDTH - halfWidth;
+		int upperBoundsX = currentLevel.getWidth() - halfWidth;
 		if(centerX > upperBoundsX) {
 			centerX = upperBoundsX;
 		}

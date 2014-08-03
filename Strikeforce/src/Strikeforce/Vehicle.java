@@ -45,6 +45,8 @@ public class Vehicle extends Mover {
 		if(speed > MAX_SPEED) {
 			speed = MAX_SPEED;
 		}
+		
+		updateVectors();
 	}
 
 	public void decelerate() {
@@ -53,6 +55,23 @@ public class Vehicle extends Mover {
 		if(speed > MIN_SPEED) {
 			speed = MIN_SPEED;
 		}
+		
+		updateVectors();
+	}
+	
+	public void stop() {
+		speed = 0;
+		updateVectors();
+	}
+	
+	public void turnLeft() {
+		direction--;
+		updateVectors();
+	}
+	
+	public void turnRight() {
+		direction++;
+		updateVectors();
 	}
 	
 	public void fireWeaponSetA() {
@@ -81,9 +100,11 @@ public class Vehicle extends Mover {
 		}
 	}
 	
-	public boolean criticalDamage(int damageDealt) {
+	public void dealDamage(int damageDealt) {
 		hitPoints -= damageDealt;
-		
+	}
+	
+	public boolean criticalDamage() {
 		if(hitPoints > 0) {
 			return false;
 		}

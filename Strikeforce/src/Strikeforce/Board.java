@@ -2,18 +2,22 @@ package Strikeforce;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+
 import static Strikeforce.Global.*;
+
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
-	static int BACKGROUND_HEIGHT;
-	static int BACKGROUND_WIDTH;
 	private View view;
-	private Level currentLevel;
+	static Level currentLevel;
 	private Player player;
 	private List<Aircraft> allBandits;
 	private Image background;
@@ -22,30 +26,14 @@ public class Board extends JPanel implements ActionListener {
 	public Board() {
 		resLoader = new ResLoader(this.getClass().getClassLoader());
 		
-		ArrayList<Entity> levelSectors = new ArrayList<>();
-		
-		ImageIcon backgroundIcon = resLoader.getImageIcon("Paris1.png");
-		Image background = backgroundIcon.getImage();
-		
-		BACKGROUND_HEIGHT = background.getHeight(null);
-		BACKGROUND_WIDTH = background.getWidth(null);
-		int startPositionY = BACKGROUND_HEIGHT / 2;
-		
-		for(int i = 1; i < 8; i++) {
-			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
-			Entity sector = new Entity(backgroundIcon, BACKGROUND_WIDTH / 2, startPositionY);
-			levelSectors.add(sector);
-			startPositionY += BACKGROUND_HEIGHT;
-		}
-		
-		currentLevel = new Level(levelSectors);
+		currentLevel = new Level("1");
 		
 		ImageIcon viewIcon = resLoader.getImageIcon("view.png");
-		view = new View(viewIcon, BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2);
+		view = new View(viewIcon, currentLevel.getWidth() / 2, VIEW_HEIGHT / 2);
 		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
 		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
-		Aircraft playerCraft = new Aircraft(playerIcon, BACKGROUND_WIDTH / 2, 100);
+		Aircraft playerCraft = new Aircraft(playerIcon, currentLevel.getWidth() / 2, 100);
 		List<Weapon> basicWeaponSetup = new ArrayList<>();
 		List<Weapon> otherWeaponSetup = new ArrayList<>();
 		basicWeaponSetup.add(singleShot);
@@ -55,19 +43,6 @@ public class Board extends JPanel implements ActionListener {
 		player = new Player(playerCraft);
 		
 		allBandits = new ArrayList<>();
-		
-		ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
-		Aircraft bandit =  new Aircraft(banditIcon, 120, 500);
-		bandit.setSpeed(-1);
-		allBandits.add(bandit);
-		
-		bandit =  new Aircraft(banditIcon, 220, 1650);
-		bandit.setSpeed(-1);
-		allBandits.add(bandit);
-		
-		bandit =  new Aircraft(banditIcon, 180, 900);
-		bandit.setSpeed(-1);
-		allBandits.add(bandit);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -189,7 +164,8 @@ public class Board extends JPanel implements ActionListener {
 				}
 				
 				int damage = aProjectile.getDamage();
-				if(aBandit.criticalDamage(damage) == true) {
+				aBandit.dealDamage(damage);
+				if(aBandit.criticalDamage() == true) {
 					banditIter.remove();
 				}
 				projectileIter.remove();
@@ -255,6 +231,8 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateEnemies(Graphics2D g2d) {
+		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getY()));
+		
 		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
 		Aircraft aBandit = banditIter.next();
 		
@@ -332,13 +310,72 @@ class View extends Mover {
 }
 
 class Level {
-
-	private List<Entity> allSectors = new ArrayList<>();
+	private static final int CELL_HEIGHT = 20;
+	private static final int CELL_WIDTH = 20;
 	
-	public Level (ArrayList allSectorsToAdd) {
-		allSectors = allSectorsToAdd;
+	private List<Entity> allSectors = new ArrayList<>();
+	private List<String> spawnLines = new ArrayList<>();
+	private boolean[] spawnedLines;
+	private int BACKGROUND_HEIGHT;
+	private int BACKGROUND_WIDTH;
+	
+	public Level (String levelName) {
+		try(BufferedReader br = new BufferedReader(new FileReader("levels/" + levelName + ".lvl"))) {
+			for(String line; (line = br.readLine()) != null; ) {
+				spawnLines.add(line);
+			}
+		} catch (IOException e) {
+			System.out.println("Level load error: " + e);
+		}
+		
+		Collections.reverse(spawnLines);
+		spawnedLines = new boolean[spawnLines.size()];
+		
+		
+
+		ImageIcon backgroundIcon = resLoader.getImageIcon("Paris1.png");
+		Image background = backgroundIcon.getImage();
+		
+		BACKGROUND_HEIGHT = background.getHeight(null);
+		BACKGROUND_WIDTH = background.getWidth(null);
+		int startPositionY = BACKGROUND_HEIGHT / 2;
+		
+		for(int i = 1; i < 8; i++) {
+			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
+			Entity sector = new Entity(backgroundIcon, BACKGROUND_WIDTH / 2, startPositionY);
+			allSectors.add(sector);
+			startPositionY += BACKGROUND_HEIGHT;
+		}
 	}
 	
+	public List<Aircraft> spawnLine(int playerY) {
+		List<Aircraft> bandits = new ArrayList<>();
+		
+		int index = playerY / CELL_HEIGHT;
+		if(index < spawnLines.size() && !spawnedLines[index]) {
+			spawnedLines[index] = true; // Set so we don't spawn these guys again
+			
+			ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
+			
+			// Look through the chars of the level file's current line
+			int x = 20;
+			for(char c : spawnLines.get(index).toCharArray()) {
+				switch(c) {
+					case '1': { // Basic bandit
+						Aircraft bandit = new Aircraft(banditIcon, x, VIEW_HEIGHT + playerY);
+						//System.out.println("Spawning basic bandit at: " + bandit.getX() + ", " + bandit.getY());
+						bandit.setSpeed(-1);
+						bandits.add(bandit);
+						break;
+					}
+				}
+				x += CELL_WIDTH;
+			}
+		}
+		
+		return bandits;
+	}
+
 	public Entity getSectorAtIndex (int index) {
 		if(index < 0) {
 			return null;
@@ -353,5 +390,13 @@ class Level {
 	
 	public List<Entity> getAllSectors () {
 		return allSectors;
+	}
+	
+	public int getWidth() {
+		return BACKGROUND_WIDTH;
+	}
+
+	public int getHeight() {
+		return BACKGROUND_HEIGHT;
 	}
 }
