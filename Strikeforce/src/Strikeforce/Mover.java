@@ -51,7 +51,7 @@ public class Mover extends Entity {
 		if(centerX < lowerBoundsX) {
 			centerX = lowerBoundsX;
 		}
-		int upperBoundsX = BACKGROUND_WIDTH - halfWidth;
+		int upperBoundsX = currentLevel.getWidth() - halfWidth;
 		if(centerX > upperBoundsX) {
 			centerX = upperBoundsX;
 		}
