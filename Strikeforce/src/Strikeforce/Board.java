@@ -310,6 +310,7 @@ class View extends Mover {
 }
 
 class Level {
+	
 	private static final int CELL_HEIGHT = 20;
 	private static final int CELL_WIDTH = 20;
 	

@@ -12,19 +12,27 @@ public abstract class Weapon {
 	private String name;
 	private String description;
 	
-	public Weapon (String inName, String inDescription) {
+	protected int muzzleVelocity;
+	protected int damage;
+	
+	public Weapon (String inName, String inDescription, int inMuzzleVelocity, int inDamage) {
 		name = inName;
 		description = inDescription;
+		muzzleVelocity = inMuzzleVelocity;
+		damage = inDamage;
 	}
 
-	public List<Projectile> openFire(int originX, int originY) {
+	public List<Projectile> openFire(int originX, int originY, int direction) {
 		List<Projectile> allShots = new ArrayList<>();
 		
 		ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
 		int startX = originX;
 		int startY = originY + bulletIcon.getIconHeight() / 2;
 		
-		allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6, 1));
+		int dx = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction)));
+		int dy = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction)));
+		
+		allShots.add(new Projectile(bulletIcon, startX, startY, dx, dy, damage));
 		return allShots;
 	}
 }

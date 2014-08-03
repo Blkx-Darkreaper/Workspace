@@ -30,30 +30,41 @@ public class Global {
 	public static final int HARD_BANK_ANGLE = 1;
 	public static final int MAX_BANK_ANGLE = 2;
 	
-	public static Weapon singleShot = new Weapon("Single shot", "Basic gun") {
-		public List<Projectile> openFire(int originX, int originY) {
+	public static Weapon singleShot = new Weapon("Single shot", "Basic gun", 6, 1) {
+		@Override
+		public List<Projectile> openFire(int originX, int originY, int direction) {
 			List<Projectile> allShots = new ArrayList<>();
 
 			ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			allShots.add(new Projectile(bulletIcon, startX, startY, 0, 6, 1));
+			int dx = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction)));
+			int dy = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction)));
+			
+			allShots.add(new Projectile(bulletIcon, startX, startY, dx, dy, damage));
 			
 			return allShots;
 		}
 	};
 	
-	public static Weapon splitShot = new Weapon("Split shot", "Fires two shots away at an angle") {
-		public List<Projectile> openFire(int originX, int originY) {
+	public static Weapon splitShot = new Weapon("Split shot", "Fires two shots away at an angle", 6, 1) {
+		@Override
+		public List<Projectile> openFire(int originX, int originY, int direction) {
 			List<Projectile> allShots = new ArrayList<>();
 			
 			ImageIcon bulletIcon = resLoader.getImageIcon("bullet2.png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			allShots.add(new Projectile(bulletIcon, startX, startY, -2, 6, 1));
-			allShots.add(new Projectile(bulletIcon, startX, startY, 2, 6, 1));
+			int dx1 = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction - 15)));
+			int dy1 = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction - 15)));
+			
+			int dx2 = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction + 15)));
+			int dy2 = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction + 15)));
+			
+			allShots.add(new Projectile(bulletIcon, startX, startY, dx1, dy1, damage));
+			allShots.add(new Projectile(bulletIcon, startX, startY, dx2, dy2, damage));
 			
 			return allShots;
 		}

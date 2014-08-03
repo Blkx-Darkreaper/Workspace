@@ -10,6 +10,7 @@ public class Vehicle extends Mover {
 
 	protected int hitPoints;
 	
+	protected int firingDirection = 0;
 	protected List<Weapon> weaponSetA;
 	protected List<Weapon> weaponSetB;
 	
@@ -82,7 +83,7 @@ public class Vehicle extends Mover {
 		int originX = getX();
 		int originY = getY();
 		for(Weapon aWeapon : weaponSetA) {
-			List<Projectile> firedShots = aWeapon.openFire(originX, originY);
+			List<Projectile> firedShots = aWeapon.openFire(originX, originY, firingDirection);
 			allProjectiles.addAll(firedShots);
 		}
 	}
@@ -95,7 +96,7 @@ public class Vehicle extends Mover {
 		int originX = getX();
 		int originY = getY();
 		for(Weapon aWeapon : weaponSetB) {
-			List<Projectile> firedShots = aWeapon.openFire(originX, originY);
+			List<Projectile> firedShots = aWeapon.openFire(originX, originY, firingDirection);
 			allProjectiles.addAll(firedShots);
 		}
 	}
