@@ -107,6 +107,10 @@ public class Aircraft extends Vehicle {
 		return currentImage;
 	}
 	
+	public boolean getDoLoop() {
+		return doLoop;
+	}
+	
 	@Override
 	public void move() {
 		if(doLoop == true) {
@@ -274,7 +278,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void moveDown() {
-		dy = -speed;
+		dy = speed - 1;
 	}
 	
 	public void cruise() {

@@ -98,6 +98,11 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void keepPlayerInView() {
+		boolean looping = player.getPlayerCraft().getDoLoop();
+		if(looping == true) {
+			return;
+		}
+		
 		int upperBoundsY = view.getY() + view.getHalfHeight();
 		int lowerBoundsY = view.getY() - view.getHalfHeight();
 		
