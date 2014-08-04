@@ -2,7 +2,10 @@ package Strikeforce;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
+
 import javax.swing.ImageIcon;
+
 import static Strikeforce.Global.*;
 
 public class Entity {
@@ -53,7 +56,49 @@ public class Entity {
 		return new Rectangle(cornerX, cornerY, halfWidth * 2, halfHeight * 2);
 	}
 	
+	public Circle getCircularHitBox () {
+		int radius = Math.min(halfWidth * 2, halfHeight * 2);
+		return new Circle(centerX, centerY, radius);
+	}
+	
 	public boolean checkForCollision(Entity other) {
-		return other.getBounds().intersects(getBounds());
+		//return other.getBounds().intersects(getBounds());
+		return other.getCircularHitBox().intersects(getCircularHitBox());
+	}
+	
+	class Circle {
+		int centerX;
+		int centerY;
+		int radius;
+		
+		public Circle (int inCenterX, int inCenterY, int inRadius) {
+			centerX = inCenterX;
+			centerY = inCenterY;
+			radius = inRadius;
+		}
+		
+		private int getCenterX() {
+			return centerX;
+		}
+		
+		private int getCenterY() {
+			return centerY;
+		}
+		
+		private int getRadius() {
+			return radius;
+		}
+		
+		public boolean intersects(Circle other) {
+			int rise = centerY - other.getCenterY();
+			int run = centerX - other.getCenterX();
+			int distanceBetweenFoci = (int) Math.sqrt(rise * rise + run * run);
+			
+			if(distanceBetweenFoci >= (radius + other.getRadius())) {
+				return false;
+			}
+			
+			return true;
+		}
 	}
 }
