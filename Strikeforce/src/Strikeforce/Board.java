@@ -411,9 +411,9 @@ class Level {
 					case '1': { // Basic bandit
 						Aircraft bandit = new Aircraft(banditIcon, x, VIEW_HEIGHT + playerY);
 						//System.out.println("Spawning basic bandit at: " + bandit.getX() + ", " + bandit.getY());
-						bandit.setSpeed(-1);
-						//bandit.setSpeed(1);
-						//bandit.setDirection(180);
+						//bandit.setSpeed(-1);
+						bandit.setSpeed(1);
+						bandit.setDirection(180);
 						bandits.add(bandit);
 						break;
 					}
