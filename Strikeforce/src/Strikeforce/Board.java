@@ -2,6 +2,7 @@ package Strikeforce;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,8 +47,8 @@ public class Board extends JPanel implements ActionListener {
 		allBandits = new ArrayList<>();
 		
 		allGroundTargets = new ArrayList<>();
-		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
-		allGroundTargets.add(new Vehicle(tankIcon, currentLevel.getWidth() / 2, 200));
+		//ImageIcon tankIcon = resLoader.getImageIcon("enemy-jet.png");
+		//allGroundTargets.add(new Vehicle(tankIcon, currentLevel.getWidth() / 2, 200));
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -103,10 +104,10 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
-		int upperBoundsY = view.getY() + view.getHalfHeight();
-		int lowerBoundsY = view.getY() - view.getHalfHeight();
+		int upperBoundsY = view.getCenterY() + view.getHalfHeight();
+		int lowerBoundsY = view.getCenterY() - view.getHalfHeight();
 		
-		int playerY = player.getPlayerCraft().getY();
+		int playerY = player.getPlayerCraft().getCenterY();
 		int halfPlayerHeight = player.getPlayerCraft().getHalfHeight();
 		
 		if((playerY - halfPlayerHeight) < lowerBoundsY) {
@@ -122,8 +123,8 @@ public class Board extends JPanel implements ActionListener {
 		int panRate = player.getPlayerCraft().getSpeed();
 		int panDirection = 0;
 
-		int playerX = player.getPlayerCraft().getX();
-		int viewX = view.getX();
+		int playerX = player.getPlayerCraft().getCenterX();
+		int viewX = view.getCenterX();
 		int thirdViewWidth = VIEW_WIDTH / 3;
 		
 		int displacement = playerX - viewX;
@@ -142,8 +143,8 @@ public class Board extends JPanel implements ActionListener {
 		view.setSpeed(scrollRate);
 	}
 
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
 		updateBackground(g2d);
@@ -216,14 +217,24 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
+		AffineTransform defaultOrientation = g2d.getTransform();
+		
+		int direction = toDraw.getDirection();
+		
 		Image image = toDraw.getImage();
-		int positionXRelativeToViewCenter = (toDraw.getX() - toDraw.getHalfWidth()) - view.getX();
-		int positionYRelativeToViewCenter = (toDraw.getY() + toDraw.getHalfHeight()) - view.getY();
+		int positionXRelativeToViewCenter = (toDraw.getCenterX() - toDraw.getHalfWidth()) - view.getCenterX();
+		int positionYRelativeToViewCenter = (toDraw.getCenterY() + toDraw.getHalfHeight()) - view.getCenterY();
 		
 		int absolutePositionX = VIEW_POSITION_X + VIEW_WIDTH / 2 + positionXRelativeToViewCenter;
 		int absolutePositionY = VIEW_POSITION_Y + VIEW_HEIGHT / 2 - positionYRelativeToViewCenter;
 		
+		int rotationPointX = absolutePositionX + toDraw.getHalfWidth();
+		int rotationPointY = absolutePositionY + toDraw.getHalfHeight();
+		g2d.rotate(Math.toRadians(direction), rotationPointX, rotationPointY);
+
 		g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
+		
+		g2d.setTransform(defaultOrientation);
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
@@ -245,7 +256,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateEnemies(Graphics2D g2d) {
-		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getY()));
+		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getCenterY()));
 		
 		for(Iterator<Vehicle> groundIter = allGroundTargets.iterator(); groundIter.hasNext();) {
 			Vehicle aGroundTarget = groundIter.next();
@@ -401,6 +412,8 @@ class Level {
 						Aircraft bandit = new Aircraft(banditIcon, x, VIEW_HEIGHT + playerY);
 						//System.out.println("Spawning basic bandit at: " + bandit.getX() + ", " + bandit.getY());
 						bandit.setSpeed(-1);
+						//bandit.setSpeed(1);
+						//bandit.setDirection(180);
 						bandits.add(bandit);
 						break;
 					}

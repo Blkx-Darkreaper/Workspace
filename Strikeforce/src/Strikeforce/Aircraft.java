@@ -70,7 +70,7 @@ public class Aircraft extends Vehicle {
 		}
 		
 		speed = 1;
-		dy = speed;
+		updateVectors();
 	}
 	
 	@Override

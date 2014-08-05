@@ -88,8 +88,8 @@ public class Vehicle extends Mover {
 			return;
 		}
 		
-		int originX = getX();
-		int originY = getY();
+		int originX = getCenterX();
+		int originY = getCenterY();
 		for(Weapon aWeapon : weaponSetA) {
 			List<Projectile> firedShots = aWeapon.openFire(originX, originY, firingDirection);
 			allProjectiles.addAll(firedShots);
@@ -101,8 +101,8 @@ public class Vehicle extends Mover {
 			return;
 		}
 		
-		int originX = getX();
-		int originY = getY();
+		int originX = getCenterX();
+		int originY = getCenterY();
 		for(Weapon aWeapon : weaponSetB) {
 			List<Projectile> firedShots = aWeapon.openFire(originX, originY, firingDirection);
 			allProjectiles.addAll(firedShots);
