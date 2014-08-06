@@ -290,7 +290,7 @@ public class Aircraft extends Vehicle {
 	}
 
 	public Effect getExplosionAnimation() {
-		ImageIcon explosionIcon = resLoader.getImageIcon("explosion1.png");
+		ImageIcon explosionIcon = resLoader.getImageIcon("explosion.png");
 		List<Image> animation = createExplosionAnimation();
 		Effect explosion = new Effect(explosionIcon, centerX, centerY, animation, 2);
 		return explosion;

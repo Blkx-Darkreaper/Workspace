@@ -5,6 +5,7 @@ import static Strikeforce.Global.resLoader;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 
@@ -30,6 +31,8 @@ public class Global {
 	
 	public static final int HARD_BANK_ANGLE = 1;
 	public static final int MAX_BANK_ANGLE = 2;
+	
+	public static final int EXPLOSION_ANIMATION_FRAMES = 12;
 	
 	public static Weapon singleShot = new Weapon("Single shot", "Basic gun", 6, 1) {
 		@Override
@@ -74,8 +77,28 @@ public class Global {
 	public static List<Image> createExplosionAnimation() {
 		List<Image> explosionAnimation = new ArrayList<>();
 		
-		for(int i = 1; i < 13; i++) {
-			ImageIcon explosionIcon = resLoader.getImageIcon("explosion" + i + ".png");
+		String choice;
+		Random rand = new Random();
+		int randomNumber = rand.nextInt(4);
+		
+		switch (randomNumber) {
+		default:
+			choice = "A";
+			break;
+		case 1:
+			choice = "B";
+			break;
+		case 2:
+			choice = "C";
+			break;
+		case 3:
+			choice = "D";
+			break;
+		}
+		
+		for(int i = 1; i < (EXPLOSION_ANIMATION_FRAMES + 1); i++) {
+			String filename = "explosion" + choice + i + ".png";
+			ImageIcon explosionIcon = resLoader.getImageIcon(filename);
 			explosionAnimation.add(explosionIcon.getImage());
 		}
 		
