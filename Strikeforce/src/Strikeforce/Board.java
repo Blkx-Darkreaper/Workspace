@@ -20,6 +20,7 @@ public class Board extends JPanel implements ActionListener {
 	private View view;
 	static Level currentLevel;
 	private Player player;
+	private List<Effect> allEffects;
 	private List<Aircraft> allBandits;
 	private List<Vehicle> allGroundTargets;
 	private Image background;
@@ -43,6 +44,8 @@ public class Board extends JPanel implements ActionListener {
 		playerCraft.setWeaponSetA(basicWeaponSetup);
 		playerCraft.setWeaponSetB(otherWeaponSetup);
 		player = new Player(playerCraft);
+		
+		allEffects = new ArrayList<>();
 		
 		allBandits = new ArrayList<>();
 		
@@ -89,6 +92,10 @@ public class Board extends JPanel implements ActionListener {
 			for(Projectile aProjectile : aBandit.getAllProjectiles()) {
 				aProjectile.move();
 			}
+		}
+		
+		for(Effect anEffect : allEffects) {
+			anEffect.animate();
 		}
 		
 		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
@@ -153,12 +160,13 @@ public class Board extends JPanel implements ActionListener {
 		
 		updatePlayerProjectiles(g2d);
 		updateEnemies(g2d);
+		updateEffects(g2d);
 		updatePlayer(g2d);
 		
 		// View bounds
 		drawEntity(g2d, view); //debug
 	}
-	
+
 	private boolean checkWithinView(Entity toCheck) {
 		return view.checkWithinBounds(toCheck);
 	}
@@ -181,6 +189,7 @@ public class Board extends JPanel implements ActionListener {
 				int damage = aProjectile.getDamage();
 				aBandit.dealDamage(damage);
 				if(aBandit.criticalDamage() == true) {
+					allEffects.add(aBandit.getExplosionAnimation());
 					banditIter.remove();
 				}
 				projectileIter.remove();
@@ -298,6 +307,18 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			drawEntity(g2d, aBandit);
+		}
+	}
+	
+	private void updateEffects(Graphics2D g2d) {
+		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+			Effect anEffect = effectIter.next();
+			
+			if(anEffect.getAnimationOver() == true) {
+				continue;
+			}
+			
+			drawEntity(g2d, anEffect);
 		}
 	}
 

@@ -288,4 +288,11 @@ public class Aircraft extends Vehicle {
 	public void setY(int position) {
 		centerY = position;
 	}
+
+	public Effect getExplosionAnimation() {
+		ImageIcon explosionIcon = resLoader.getImageIcon("explosion1.png");
+		List<Image> animation = createExplosionAnimation();
+		Effect explosion = new Effect(explosionIcon, centerX, centerY, animation, 2);
+		return explosion;
+	}
 }

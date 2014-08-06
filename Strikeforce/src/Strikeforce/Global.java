@@ -2,6 +2,7 @@ package Strikeforce;
 
 import static Strikeforce.Global.resLoader;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,4 +70,15 @@ public class Global {
 			return allShots;
 		}
 	};
+	
+	public static List<Image> createExplosionAnimation() {
+		List<Image> explosionAnimation = new ArrayList<>();
+		
+		for(int i = 1; i < 13; i++) {
+			ImageIcon explosionIcon = resLoader.getImageIcon("explosion" + i + ".png");
+			explosionAnimation.add(explosionIcon.getImage());
+		}
+		
+		return explosionAnimation;
+	}
 }
