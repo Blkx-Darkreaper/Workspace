@@ -11,6 +11,7 @@ public class Vehicle extends Mover {
 	protected int hitPoints;
 	
 	protected int firingDirection = 0;
+	protected Entity turret;
 	protected List<Weapon> weaponSetA;
 	protected List<Weapon> weaponSetB;
 	
@@ -26,6 +27,27 @@ public class Vehicle extends Mover {
 	
 	public int getHitPoints() {
 		return hitPoints;
+	}
+	
+	public int getFiringDirection() {
+		return firingDirection;
+	}
+	
+	public void setFiringDirection(int inDirection) {
+		firingDirection = inDirection;
+	}
+	
+	public Entity getTurret() {
+		if(turret == null) {
+			return null;
+		}
+		
+		turret.setDirection(firingDirection);
+		return turret;
+	}
+	
+	public void setTurret(Entity turretToAdd) {
+		turret = turretToAdd;
 	}
 
 	public void setWeaponSetA (List<Weapon> allWeaponsToAdd) {

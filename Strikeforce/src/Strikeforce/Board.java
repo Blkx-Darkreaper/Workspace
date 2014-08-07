@@ -50,8 +50,16 @@ public class Board extends JPanel implements ActionListener {
 		allBandits = new ArrayList<>();
 		
 		allGroundTargets = new ArrayList<>();
-		//ImageIcon tankIcon = resLoader.getImageIcon("enemy-jet.png");
-		//allGroundTargets.add(new Vehicle(tankIcon, currentLevel.getWidth() / 2, 200));
+		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
+		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
+		
+		ImageIcon turretIcon = resLoader.getImageIcon("tank-turret.png");
+		Entity turret = new Entity(turretIcon, currentLevel.getWidth() / 2, 300);
+		tank.setTurret(turret);
+		tank.setDirection(90);
+		tank.setFiringDirection(180);
+		
+		allGroundTargets.add(tank);
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -158,8 +166,9 @@ public class Board extends JPanel implements ActionListener {
 		
 		detectCollisions();
 		
+		updateGroundEnemies(g2d);
 		updatePlayerProjectiles(g2d);
-		updateEnemies(g2d);
+		updateAirEnemies(g2d);
 		updateEffects(g2d);
 		updatePlayer(g2d);
 		
@@ -263,10 +272,8 @@ public class Board extends JPanel implements ActionListener {
 	private void updatePlayer(Graphics2D g2d) {
 		drawEntity(g2d, player.getPlayerCraft());
 	}
-	
-	private void updateEnemies(Graphics2D g2d) {
-		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getCenterY()));
-		
+
+	private void updateGroundEnemies(Graphics2D g2d) {
 		for(Iterator<Vehicle> groundIter = allGroundTargets.iterator(); groundIter.hasNext();) {
 			Vehicle aGroundTarget = groundIter.next();
 			
@@ -286,7 +293,18 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			drawEntity(g2d, aGroundTarget);
+			
+			Entity turret = aGroundTarget.getTurret();
+			if(turret == null) {
+				continue;
+			}
+			
+			drawEntity(g2d, turret);
 		}
+	}
+	
+	private void updateAirEnemies(Graphics2D g2d) {
+		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getCenterY()));
 		
 		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
 			Aircraft aBandit = banditIter.next();
