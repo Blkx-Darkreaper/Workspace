@@ -23,6 +23,7 @@ public class Board extends JPanel implements ActionListener {
 	private List<Effect> allEffects;
 	private List<Aircraft> allBandits;
 	private List<Vehicle> allGroundTargets;
+	private List<Building> allBuildings;
 	private Image background;
 	private Timer time;
 
@@ -49,6 +50,11 @@ public class Board extends JPanel implements ActionListener {
 		
 		allBandits = new ArrayList<>();
 		
+		allBuildings = new ArrayList<>();
+		ImageIcon hangarIcon = resLoader.getImageIcon("hangar.png");
+		Building hangar = new Building(hangarIcon, 152, 2032);
+		allBuildings.add(hangar);
+		
 		allGroundTargets = new ArrayList<>();
 		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
 		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
@@ -56,7 +62,7 @@ public class Board extends JPanel implements ActionListener {
 		ImageIcon turretIcon = resLoader.getImageIcon("tank-turret.png");
 		Entity turret = new Entity(turretIcon, currentLevel.getWidth() / 2, 300);
 		tank.setTurret(turret);
-		tank.setDirection(90);
+		tank.setDirection(180);
 		tank.setFiringDirection(180);
 		
 		allGroundTargets.add(tank);
@@ -167,6 +173,7 @@ public class Board extends JPanel implements ActionListener {
 		detectCollisions();
 		
 		updateGroundEnemies(g2d);
+		updateBuildings(g2d);
 		updatePlayerProjectiles(g2d);
 		updateAirEnemies(g2d);
 		updateEffects(g2d);
@@ -213,7 +220,12 @@ public class Board extends JPanel implements ActionListener {
 			boolean collision = playerCraft.checkForCollision(aBandit);
 			
 			if(collision == true) {
-				banditIter.remove();
+				int damage = 5;
+				aBandit.dealDamage(damage);
+				if(aBandit.criticalDamage() == true) {
+					allEffects.add(aBandit.getExplosionAnimation());
+					banditIter.remove();
+				}
 				//gameover();
 				return;
 			}
@@ -300,6 +312,18 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			drawEntity(g2d, turret);
+		}
+	}
+	
+	private void updateBuildings(Graphics2D g2d) {
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
+			Building aBuilding = buildingIter.next();
+			
+			if(checkWithinView(aBuilding) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBuilding);
 		}
 	}
 	
@@ -396,8 +420,8 @@ class View extends Mover {
 
 class Level {
 	
-	private static final int CELL_HEIGHT = 20;
-	private static final int CELL_WIDTH = 20;
+	private static final int CELL_HEIGHT = 16;
+	private static final int CELL_WIDTH = 16;
 	
 	private List<Entity> allSectors = new ArrayList<>();
 	private List<String> spawnLines = new ArrayList<>();
@@ -418,19 +442,18 @@ class Level {
 		spawnedLines = new boolean[spawnLines.size()];
 		
 		
-
-		ImageIcon backgroundIcon = resLoader.getImageIcon("Paris1.png");
+		ImageIcon backgroundIcon = resLoader.getImageIcon("Germany1.png");
 		Image background = backgroundIcon.getImage();
 		
 		BACKGROUND_HEIGHT = background.getHeight(null);
 		BACKGROUND_WIDTH = background.getWidth(null);
 		int startPositionY = BACKGROUND_HEIGHT / 2;
 		
-		for(int i = 1; i < 8; i++) {
-			backgroundIcon = resLoader.getImageIcon("Paris" + i + ".png");
+		for(int i = 1; i < 9; i++) {
+			backgroundIcon = resLoader.getImageIcon("Germany" + i + ".png");
 			Entity sector = new Entity(backgroundIcon, BACKGROUND_WIDTH / 2, startPositionY);
 			allSectors.add(sector);
-			startPositionY += BACKGROUND_HEIGHT;
+			startPositionY += backgroundIcon.getIconHeight();
 		}
 	}
 	

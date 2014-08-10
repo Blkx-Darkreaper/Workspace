@@ -64,7 +64,7 @@ public class Mover extends Entity {
 		centerX += dx;
 		centerY += dy;
 		
-		int lowerBoundsX = 0 + halfWidth;
+/*		int lowerBoundsX = 0 + halfWidth;
 		if(centerX < lowerBoundsX) {
 			centerX = lowerBoundsX;
 		}
@@ -76,6 +76,6 @@ public class Mover extends Entity {
 		int lowerBoundsY = 0 + halfHeight;
 		if(centerY < lowerBoundsY) {
 			centerY = lowerBoundsY;
-		}
+		}*/
 	}
 }
