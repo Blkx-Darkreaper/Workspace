@@ -1,11 +1,11 @@
 package Strikeforce;
 
 import java.awt.event.KeyEvent;
+
 import static Strikeforce.Global.*;
 
-public class Player {
+public class Player extends Aircraft {
 	
-	private Aircraft craft;
 	private String phase = "Raid";
 	private boolean playerFiringA = false;
 	private boolean playerFiringB = false;
@@ -20,12 +20,8 @@ public class Player {
 	private final int boostKey = KeyEvent.VK_D;
 	private final int doLoopKey = KeyEvent.VK_F;
 	
-	public Player(Aircraft inCraft) {
-		craft = inCraft;
-	}
-	
-	public Aircraft getPlayerCraft() {
-		return (Aircraft) craft;
+	public Player(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
+		super(inName, inX, inY, inDirection, inAltitude, inSpeed, inHitPoints);
 	}
 	
 	public String getPhase () {
@@ -68,23 +64,23 @@ public class Player {
 			craft.doLoop();
 			break;*/
 		case moveLeftKey:
-			craft.bankLeft();
+			bankLeft();
 			break;
 		case moveRightKey:
-			craft.bankRight();
+			bankRight();
 			break;
 		case moveUpKey:
-			craft.moveUp();
+			moveUp();
 			break;
 		case moveDownKey:
-			craft.moveDown();
+			moveDown();
 			break;
 		case fireAKey:
 			if(getPlayerFiringA() == true) {
 				break;
 			}
 			
-			craft.fireWeaponSetA();
+			fireWeaponSetA();
 			playerFiringA = true;
 			break;
 		case fireBKey:
@@ -92,7 +88,7 @@ public class Player {
 				break;
 			}
 			
-			craft.fireWeaponSetB();
+			fireWeaponSetB();
 			playerFiringB = true;
 			break;
 		case boostKey:
@@ -100,7 +96,7 @@ public class Player {
 				break;
 			}
 			
-			craft.boost();
+			boost();
 			playerBoosting = true;
 			break;
 		}
@@ -111,15 +107,15 @@ public class Player {
 
 		switch (key) {
 		case doLoopKey:
-			craft.doLoop();
+			doLoop();
 			break;
 		case moveLeftKey:
 		case moveRightKey:
-			craft.levelOff();
+			levelOff();
 			break;
 		case moveUpKey:
 		case moveDownKey:
-			craft.cruise();
+			cruise();
 			break;
 		case fireAKey:
 			setPlayerFiringA(false);
@@ -146,6 +142,6 @@ public class Player {
 	}
 
 	public void gameover() {
-		craft = null;		
+		
 	}
 }

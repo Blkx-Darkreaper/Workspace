@@ -128,22 +128,37 @@ public class Aircraft extends Vehicle {
 		
 		if(roll == 0) {
 			currentImage = imageLevelFlight;
+			if(boosting == true) {
+				currentImage = boostLevelFlight;
+			}
 		}
 		
 		if(roll > 0) {
 			currentImage = imageBankRight;
+			if(boosting == true) {
+				currentImage = boostBankRight;
+			}
 		}
 		
 		if(roll > HARD_BANK_ANGLE) {
 			currentImage = imageBankRightHard;
+			if(boosting == true) {
+				currentImage = boostBankRightHard;
+			}
 		}
 		
 		if(roll < 0) {
 			currentImage = imageBankLeft;
+			if(boosting == true) {
+				currentImage = boostBankLeft;
+			}
 		}
 		
 		if(roll < -HARD_BANK_ANGLE) {
 			currentImage = imageBankLeftHard;
+			if(boosting == true) {
+				currentImage = boostBankLeftHard;
+			}
 		}
 		
 		if(doLoop == true) {

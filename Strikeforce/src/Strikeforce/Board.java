@@ -45,20 +45,20 @@ public class Board extends JPanel implements ActionListener {
 		view = new View(viewIcon, viewX, viewY, direction, altitude);
 		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
-		ImageIcon playerIcon = resLoader.getImageIcon("f18.png");
+		String playerName = "f18";
 		int startX = currentLevel.getWidth() / 2;
 		int startY = 100;
 		direction = 0;
 		altitude = 50;
-		Aircraft playerCraft = new Aircraft(playerIcon, startX, startY, direction, altitude);
-		playerCraft.setSpeed(1);
+		int speed = 1;
+		int hitPoints = 1;
+		player = new Player(playerName, startX, startY, direction, altitude, speed, hitPoints);
 		List<Weapon> basicWeaponSetup = new ArrayList<>();
 		List<Weapon> otherWeaponSetup = new ArrayList<>();
 		basicWeaponSetup.add(singleShot);
 		otherWeaponSetup.add(splitShot);
-		playerCraft.setWeaponSetA(basicWeaponSetup);
-		playerCraft.setWeaponSetB(otherWeaponSetup);
-		player = new Player(playerCraft);
+		player.setWeaponSetA(basicWeaponSetup);
+		player.setWeaponSetB(otherWeaponSetup);
 		
 		allEffects = new ArrayList<>();
 		allGroundVehicles = new ArrayList<>();
@@ -71,7 +71,7 @@ public class Board extends JPanel implements ActionListener {
 		startY = 2000;
 		direction = 180;
 		altitude = 0;
-		int hitPoints = 1;
+		hitPoints = 1;
 		Airstrip runway = new Airstrip(name, startX, startY, direction, altitude, hitPoints);
 		allSurfaceBuildings.add(runway);
 		
@@ -81,7 +81,7 @@ public class Board extends JPanel implements ActionListener {
 		startY = 0;
 		direction = 0;
 		altitude = 0;
-		int speed = 0;
+		speed = 0;
 		hitPoints = 1;
 		Bandit bandit1 = new Bandit(testJetName, startX, startY, direction, altitude, 
 				speed, hitPoints);
@@ -95,6 +95,8 @@ public class Board extends JPanel implements ActionListener {
 		
 		String formationType = "line";
 		Formation formation = new Formation(formationType, formationMembers);
+		bandit1.setFormation(formation);
+		//bandit2.setFormation(formation);
 		
 		hangarAircraft.push(bandit1);
 		//hangarAircraft.push(bandit2);
@@ -167,7 +169,7 @@ public class Board extends JPanel implements ActionListener {
 		setViewPanRate();
 		view.move();
 		
-		player.getPlayerCraft().move();
+		player.move();
 		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
@@ -201,7 +203,7 @@ public class Board extends JPanel implements ActionListener {
 			anEffect.animate();
 		}
 		
-		for(Projectile aProjectile : player.getPlayerCraft().getAllProjectiles()) {
+		for(Projectile aProjectile : player.getAllProjectiles()) {
 			aProjectile.move();
 		}
 		
@@ -209,7 +211,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void keepPlayerInView() {
-		boolean looping = player.getPlayerCraft().getDoLoop();
+		boolean looping = player.getDoLoop();
 		if(looping == true) {
 			return;
 		}
@@ -217,25 +219,25 @@ public class Board extends JPanel implements ActionListener {
 		int upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
 		int lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
 		
-		int playerY = player.getPlayerCraft().getCenterY();
-		int altitude = player.getPlayerCraft().getAltitude();
+		int playerY = player.getCenterY();
+		int altitude = player.getAltitude();
 		double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
-		int halfPlayerHeight = (int) Math.round(player.getPlayerCraft().getImage().getHeight(null) * scale / 2);
+		int halfPlayerHeight = (int) Math.round(player.getImage().getHeight(null) * scale / 2);
 		
 		if((playerY - halfPlayerHeight) < lowerBoundsY) {
-			player.getPlayerCraft().setY(lowerBoundsY + halfPlayerHeight);
+			player.setY(lowerBoundsY + halfPlayerHeight);
 		}
 		
 		if((playerY + halfPlayerHeight) > upperBoundsY) {
-			player.getPlayerCraft().setY(upperBoundsY - halfPlayerHeight);
+			player.setY(upperBoundsY - halfPlayerHeight);
 		}
 	}
 
 	private void setViewPanRate() {
-		int panRate = player.getPlayerCraft().getSpeed();
+		int panRate = player.getSpeed();
 		int panDirection = 0;
 
-		int playerX = player.getPlayerCraft().getCenterX();
+		int playerX = player.getCenterX();
 		int viewX = view.getCenterX();
 		int thirdViewWidth = VIEW_WIDTH / 3;
 		
@@ -251,7 +253,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void setViewScrollRate() {
-		int scrollRate = player.getPlayerCraft().getSpeed();
+		int scrollRate = player.getSpeed();
 		view.setSpeed(scrollRate);
 	}
 
@@ -280,7 +282,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void detectCollisions () {
-		Aircraft playerCraft = player.getPlayerCraft();
+		Aircraft playerCraft = player;
 		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
 		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
 			Aircraft aBandit = banditIter.next();
@@ -370,7 +372,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
-		for(Iterator<Projectile> bulletIter = player.getPlayerCraft().getAllProjectiles().iterator(); 
+		for(Iterator<Projectile> bulletIter = player.getAllProjectiles().iterator(); 
 				bulletIter.hasNext();) {
 			Projectile aProjectile = bulletIter.next();
 			
@@ -384,7 +386,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updatePlayer(Graphics2D g2d) {
-		drawEntity(g2d, player.getPlayerCraft());
+		drawEntity(g2d, player);
 	}
 
 	private void updateGroundVehicles(Graphics2D g2d) {
@@ -442,7 +444,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateAirEnemies(Graphics2D g2d) {
-		allBandits.addAll(currentLevel.spawnLine(player.getPlayerCraft().getCenterY()));
+		allBandits.addAll(currentLevel.spawnLine(player.getCenterY()));
 		
 		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
 			Aircraft aBandit = banditIter.next();

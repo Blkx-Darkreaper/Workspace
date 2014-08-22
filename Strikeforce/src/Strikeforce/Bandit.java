@@ -712,14 +712,14 @@ public class Bandit extends Aircraft {
 			int taxiSpeed = 1;
 			moveToPoint(pointX, pointY, taxiSpeed);
 			
-			int range = 0;
+			int range = 5;
 			boolean atPoint = targetInRange(pointX, pointY, range);
 			if(atPoint == false) {
 				return;
 			}
 
 			stop();
-			shelter.despawn(performer);
+			//shelter.despawn(performer);
 		}
 	};
 	
@@ -729,7 +729,7 @@ public class Bandit extends Aircraft {
 		}
 		
 		public void perform(Bandit performer) {
-			Aircraft player = getPlayer().getPlayerCraft();
+			Aircraft player = getPlayer();
 			int playerX = (int) player.getCenterX();
 			int playerY = (int) player.getCenterY();
 			

@@ -4,8 +4,6 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.ImageIcon;
-
 public class Airstrip extends Building {
 	
 	private int runwayLength;
