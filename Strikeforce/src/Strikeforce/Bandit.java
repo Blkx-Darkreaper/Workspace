@@ -197,7 +197,7 @@ public class Bandit extends Aircraft {
 		int pointY = (int) nextPoint.getY();
 		moveToPoint(pointX, pointY, airSpeed);
 		
-		int range = 0;
+		int range = 10;
 		boolean atPoint = targetInRange(pointX, pointY, range);
 		if(atPoint == false) {
 			return;
@@ -205,7 +205,7 @@ public class Bandit extends Aircraft {
 		
 		nextPointIndex++;
 		
-		nextPointIndex %= allPoints.size() - 1;
+		nextPointIndex %= allPoints.size();
 	}
 	
 	private void flyFormation(int spread) {

@@ -91,15 +91,15 @@ public class Board extends JPanel implements ActionListener {
 		bandit1.setWeaponSetA(basicWeaponSetup);
 		List<Bandit> formationMembers = new ArrayList<>();
 		formationMembers.add(bandit1);
-		//formationMembers.add(bandit2);
+		formationMembers.add(bandit2);
 		
 		String formationType = "line";
 		Formation formation = new Formation(formationType, formationMembers);
 		bandit1.setFormation(formation);
-		//bandit2.setFormation(formation);
+		bandit2.setFormation(formation);
 		
 		hangarAircraft.push(bandit1);
-		//hangarAircraft.push(bandit2);
+		hangarAircraft.push(bandit2);
 		String hangarName = "hangar";
 		startX = 60;
 		startY = 2150;
