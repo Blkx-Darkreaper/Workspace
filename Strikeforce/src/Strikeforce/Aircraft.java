@@ -25,15 +25,21 @@ public class Aircraft extends Vehicle {
 	private Image currentLoopImage;
 	private List<Image> loopImages = new ArrayList<>();
 	
-	private final int MAX_AIRSPEED = 5;
-	private final int STALL_SPEED = 1;
+	protected final int CRUISING_SPEED = 2;
+	protected final int STALL_SPEED = 1;
+	protected int climbRate = 1;
+	protected final int MAX_ALTITUDE = 100;
+	protected final int CRUISING_ALTITUDE = 50;
+	protected final int BOOST_DURATION = 20;
 	
-	protected int bank = 0;
+	protected int roll = 0;
 	protected boolean doLoop = false;
 	protected int loop = 0;
+	protected boolean boosting = false;
+	protected int boost = 0;
 
-	public Aircraft(ImageIcon icon, int startingX, int startingY) {
-		super(icon, startingX, startingY);
+	public Aircraft(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
+		super(icon, startX, startY, inDirection, inAltitude);
 		
 		imageLevelFlight = icon.getImage();
 		
@@ -49,7 +55,7 @@ public class Aircraft extends Vehicle {
 		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
 		imageBankRightHard = resourceIcon.getImage();
 		
-		resourceIcon = resLoader.getImageIcon("f18-boostlevel.png");
+		resourceIcon = resLoader.getImageIcon("f18-boost.png");
 		boostLevelFlight = resourceIcon.getImage();
 		
 		resourceIcon = resLoader.getImageIcon("f18-boostbankleft.png");
@@ -73,36 +79,76 @@ public class Aircraft extends Vehicle {
 		updateVectors();
 	}
 	
+	public Aircraft(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
+		super(inName, inX, inY, inDirection, inAltitude, inSpeed, inHitPoints);
+		String extension = "png";
+		
+		ImageIcon icon = resLoader.getImageIcon(inName + "." + extension);
+		imageLevelFlight = icon.getImage();
+		
+		icon = resLoader.getImageIcon(inName + "-bankleft" + "." + extension);
+		imageBankLeft = icon.getImage();
+		
+		icon = resLoader.getImageIcon(inName + "-banklefthard" + "." + extension);
+		imageBankLeftHard = icon.getImage();
+
+		icon = resLoader.getImageIcon(inName + "-bankright" + "." + extension);
+		imageBankRight = icon.getImage();
+
+		icon = resLoader.getImageIcon(inName + "-bankrighthard" + "." + extension);
+		imageBankRightHard = icon.getImage();
+		
+		icon = resLoader.getImageIcon(inName + "-boost" + "." + extension);
+		boostLevelFlight = icon.getImage();
+		
+		icon = resLoader.getImageIcon(inName + "-boostbankleft" + "." + extension);
+		boostBankLeft = icon.getImage();
+
+		icon = resLoader.getImageIcon(inName + "-boostbanklefthard" + "." + extension);
+		boostBankLeftHard = icon.getImage();
+
+		icon = resLoader.getImageIcon(inName + "-boostbankright" + "." + extension);
+		boostBankRight = icon.getImage();
+
+		icon = resLoader.getImageIcon(inName + "-boostbankrighthard" + "." + extension);
+		boostBankRightHard = icon.getImage();
+		
+		for(int i = 1; i < 16; i++) {
+			icon = resLoader.getImageIcon(inName + "-loop" + i + "." + extension);
+			loopImages.add(icon.getImage());
+		}
+		
+		turnSpeed = 5;
+		MAX_SPEED = 5;
+	}
+	
 	@Override
 	public Image getImage() {
 		//System.out.println(bank); //debug
 		
-		if(bank == 0) {
+		if(roll == 0) {
 			currentImage = imageLevelFlight;
 		}
 		
-		if(bank > 0) {
+		if(roll > 0) {
 			currentImage = imageBankRight;
 		}
 		
-		if(bank > HARD_BANK_ANGLE) {
+		if(roll > HARD_BANK_ANGLE) {
 			currentImage = imageBankRightHard;
 		}
 		
-		if(bank < 0) {
+		if(roll < 0) {
 			currentImage = imageBankLeft;
 		}
 		
-		if(bank < -HARD_BANK_ANGLE) {
+		if(roll < -HARD_BANK_ANGLE) {
 			currentImage = imageBankLeftHard;
 		}
 		
 		if(doLoop == true) {
 			currentImage = currentLoopImage;
 		}
-		
-		halfWidth = currentImage.getWidth(null) / 2;
-		halfHeight = currentImage.getHeight(null) / 2;
 		
 		return currentImage;
 	}
@@ -115,6 +161,10 @@ public class Aircraft extends Vehicle {
 	public void move() {
 		if(doLoop == true) {
 			doLoop();
+		}
+		
+		if(boosting == true) {
+			boost();
 		}
 		
 		super.move();
@@ -220,69 +270,126 @@ public class Aircraft extends Vehicle {
 		case 46:
 			doLoop = false;
 			invulnerable = false;
-			//speed--;
+			speed--;
 			return;
 		}
 		loop++;
 	}
-
-	@Override
-	public void accelerate() {
-		speed++;
-
-		if(speed > MAX_AIRSPEED) {
-			speed = MAX_AIRSPEED;
-		}
-		
-		updateVectors();
-	}
 	
-	@Override
-	public void decelerate() {
-		speed--;
-		
-		if(speed > STALL_SPEED) {
-			speed = STALL_SPEED;
+	public void boost() {
+		if(boosting == false) {
+			boost = 0;
+			boostMultiplier = 1;
+			
+			int offsetX = (int) (Math.sin(Math.toRadians(direction)) * 3 / 2);
+			int offsetY = (int) (Math.cos(Math.toRadians(direction)) * 3 / 2);
+			centerX -= offsetX;
+			centerY -= offsetY;
+			
+			boosting = true;
+			return;
 		}
 		
-		updateVectors();
+		boost++;
+		boostMultiplier = (int) Math.round(boost / REVS_PER_ACCELERATION) + 1;
+		
+		accelerate(MAX_SPEED);
+		
+		if(boost < BOOST_DURATION) {
+			return;
+		}
+		
+		int offsetX = (int) Math.sin(Math.toRadians(direction)) * 3 / 2;
+		int offsetY = (int) Math.cos(Math.toRadians(direction)) * 3 / 2;
+		centerX += offsetX;
+		centerY += offsetY;
+		
+		boosting = false;
 	}
 	
 	public void bankLeft() {
 		dx = -speed;
 		
-		if(bank == -MAX_BANK_ANGLE) {
+		if(roll == -MAX_BANK_ANGLE) {
 			return;
 		}
 		
-		bank--;
+		roll--;
 	}
 	
 	public void bankRight() {
 		dx = speed;
 		
-		if(bank == MAX_BANK_ANGLE) {
+		if(roll == MAX_BANK_ANGLE) {
 			return;
 		}
 		
-		bank++;
+		roll++;
 	}
 	
 	public void levelOff() {
-		bank = 0;
+		roll = 0;
 		updateVectors();
 	}
 	
 	public void moveUp() {
-		dy = speed + 1;
+		dy = speed * 2;
 	}
 	
 	public void moveDown() {
-		dy = speed - 1;
+		dy = 0;
 	}
 	
 	public void cruise() {
 		updateVectors();
+	}
+	
+	@Override
+	public void turnLeft(int desiredTurn) {
+		for(int i = 0; i < Math.max(turnSpeed * speed, 1); i++) {
+			if(i == desiredTurn) {
+				break;
+			}
+			
+			direction--;
+		}
+		
+		direction %= 360;
+		
+		updateVectors();
+	}
+	
+	@Override
+	public void turnRight(int desiredTurn) {
+		for(int i = 0; i < Math.max(turnSpeed * speed, 1); i++) {
+			if(i == desiredTurn) {
+				break;
+			}
+			
+			direction++;
+		}
+		
+		direction %= 360;
+		
+		updateVectors();
+	}
+	
+	public void climb() {
+		for(int i = 0; i < climbRate; i++) {
+			altitude++;
+		}
+		
+		if(altitude > MAX_ALTITUDE) {
+			altitude = MAX_ALTITUDE;
+		}
+	}
+	
+	public void dive() {
+		altitude--;
+		
+		if(altitude < 0) {
+			altitude = 0;
+		}
 	}
 
 	public void setY(int position) {
@@ -290,9 +397,10 @@ public class Aircraft extends Vehicle {
 	}
 
 	public Effect getExplosionAnimation() {
-		ImageIcon explosionIcon = resLoader.getImageIcon("explosion.png");
-		List<Image> animation = createExplosionAnimation();
-		Effect explosion = new Effect(explosionIcon, centerX, centerY, animation, 2);
+		String animationName = chooseExplosionAnimation();
+		int frameSpeed = 2;
+		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
 		return explosion;
 	}
 }

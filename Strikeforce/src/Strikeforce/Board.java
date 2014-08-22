@@ -7,9 +7,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Queue;
 
 import static Strikeforce.Global.*;
 
@@ -17,13 +20,15 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
-	private View view;
+	private int windowScale = 1;
+	private static View view;
 	static Level currentLevel;
-	private Player player;
+	private static Player player;
 	private List<Effect> allEffects;
 	private List<Aircraft> allBandits;
-	private List<Vehicle> allGroundTargets;
-	private List<Building> allBuildings;
+	private List<Vehicle> allGroundVehicles;
+	private List<Building> allCoverBuildings;
+	private List<Building> allSurfaceBuildings;
 	private Image background;
 	private Timer time;
 
@@ -33,11 +38,20 @@ public class Board extends JPanel implements ActionListener {
 		currentLevel = new Level("1");
 		
 		ImageIcon viewIcon = resLoader.getImageIcon("view.png");
-		view = new View(viewIcon, currentLevel.getWidth() / 2, VIEW_HEIGHT / 2);
+		int viewX = currentLevel.getWidth() / 2;
+		int viewY = VIEW_HEIGHT / 2;
+		int direction = 0;
+		int altitude = 0;
+		view = new View(viewIcon, viewX, viewY, direction, altitude);
 		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
-		ImageIcon playerIcon = resLoader.getImageIcon("f18-level.png");
-		Aircraft playerCraft = new Aircraft(playerIcon, currentLevel.getWidth() / 2, 100);
+		ImageIcon playerIcon = resLoader.getImageIcon("f18.png");
+		int startX = currentLevel.getWidth() / 2;
+		int startY = 100;
+		direction = 0;
+		altitude = 50;
+		Aircraft playerCraft = new Aircraft(playerIcon, startX, startY, direction, altitude);
+		playerCraft.setSpeed(1);
 		List<Weapon> basicWeaponSetup = new ArrayList<>();
 		List<Weapon> otherWeaponSetup = new ArrayList<>();
 		basicWeaponSetup.add(singleShot);
@@ -47,25 +61,65 @@ public class Board extends JPanel implements ActionListener {
 		player = new Player(playerCraft);
 		
 		allEffects = new ArrayList<>();
-		
+		allGroundVehicles = new ArrayList<>();
 		allBandits = new ArrayList<>();
+		allSurfaceBuildings = new ArrayList<>();
+		allCoverBuildings = new ArrayList<>();
 		
-		allBuildings = new ArrayList<>();
-		ImageIcon hangarIcon = resLoader.getImageIcon("hangar.png");
-		Building hangar = new Building(hangarIcon, 152, 2032);
-		allBuildings.add(hangar);
+		String name = "airstrip";
+		startX = 150;
+		startY = 2000;
+		direction = 180;
+		altitude = 0;
+		int hitPoints = 1;
+		Airstrip runway = new Airstrip(name, startX, startY, direction, altitude, hitPoints);
+		allSurfaceBuildings.add(runway);
 		
-		allGroundTargets = new ArrayList<>();
-		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
+		String testJetName = "f18";
+		Deque<Bandit> hangarAircraft = new LinkedList<>();
+		startX = 0;
+		startY = 0;
+		direction = 0;
+		altitude = 0;
+		int speed = 0;
+		hitPoints = 1;
+		Bandit bandit1 = new Bandit(testJetName, startX, startY, direction, altitude, 
+				speed, hitPoints);
+		Bandit bandit2 = new Bandit(testJetName, startX, startY, direction, altitude, 
+				speed, hitPoints);
+		
+		bandit1.setWeaponSetA(basicWeaponSetup);
+		List<Bandit> formationMembers = new ArrayList<>();
+		formationMembers.add(bandit1);
+		//formationMembers.add(bandit2);
+		
+		String formationType = "line";
+		Formation formation = new Formation(formationType, formationMembers);
+		
+		hangarAircraft.push(bandit1);
+		//hangarAircraft.push(bandit2);
+		String hangarName = "hangar";
+		startX = 60;
+		startY = 2150;
+		direction = 90;
+		altitude = 0;
+		hitPoints = 10;
+		Hangar hangar = new Hangar(hangarName, startX, startY, direction, altitude, hitPoints, hangarAircraft, this);
+		Queue<Point> patrolPath = new LinkedList<>();
+		patrolPath.offer(new Point(150, 800));
+		patrolPath.offer(new Point(50, 600));
+		hangar.setPatrolPath(patrolPath);
+		hangar.setNearestRunway(runway);
+		allCoverBuildings.add(hangar);
+		
+/*		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
 		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
-		
 		ImageIcon turretIcon = resLoader.getImageIcon("tank-turret.png");
 		Entity turret = new Entity(turretIcon, currentLevel.getWidth() / 2, 300);
 		tank.setTurret(turret);
 		tank.setDirection(180);
 		tank.setFiringDirection(180);
-		
-		allGroundTargets.add(tank);
+		allGroundVehicles.add(tank);*/
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -77,9 +131,30 @@ public class Board extends JPanel implements ActionListener {
 	public View getView() {
 		return view;
 	}
+	
+	public static Player getPlayer() {
+		return player;
+	}
+	
+	public List<Vehicle> getAllGroundVehicles() {
+		return allGroundVehicles;
+	}
 
 	public Timer getTime() {
 		return time;
+	}
+	
+	public void despawn(Vehicle despawnee) {
+		for(Iterator<Vehicle> groundIter = allGroundVehicles.iterator(); groundIter.hasNext();) {
+			Vehicle aGroundTarget = groundIter.next();
+			
+			if(aGroundTarget != despawnee) {
+				continue;
+			}
+			
+			groundIter.remove();
+		}
+			
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -96,8 +171,22 @@ public class Board extends JPanel implements ActionListener {
 		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
-		for(Vehicle aGroundTarget : allGroundTargets) {
-			aGroundTarget.move();
+		List<Building> allBuildings = new ArrayList<>();
+		allBuildings.addAll(allCoverBuildings);
+		allBuildings.addAll(allSurfaceBuildings);
+		
+		for(Building aBuilding : allBuildings) {
+			aBuilding.spawn();
+			aBuilding.takeoffsAndLandings();
+		}
+		
+		for(Vehicle aGroundVehicle : allGroundVehicles) {
+			aGroundVehicle.sortie();
+			aGroundVehicle.move();
+			
+			for(Projectile aProjectile : aGroundVehicle.getAllProjectiles()) {
+				aProjectile.move();
+			}
 		}
 		
 		for(Aircraft aBandit : allBandits) {
@@ -125,11 +214,13 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
-		int upperBoundsY = view.getCenterY() + view.getHalfHeight();
-		int lowerBoundsY = view.getCenterY() - view.getHalfHeight();
+		int upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
+		int lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
 		
 		int playerY = player.getPlayerCraft().getCenterY();
-		int halfPlayerHeight = player.getPlayerCraft().getHalfHeight();
+		int altitude = player.getPlayerCraft().getAltitude();
+		double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
+		int halfPlayerHeight = (int) Math.round(player.getPlayerCraft().getImage().getHeight(null) * scale / 2);
 		
 		if((playerY - halfPlayerHeight) < lowerBoundsY) {
 			player.getPlayerCraft().setY(lowerBoundsY + halfPlayerHeight);
@@ -172,8 +263,9 @@ public class Board extends JPanel implements ActionListener {
 		
 		detectCollisions();
 		
-		updateGroundEnemies(g2d);
-		updateBuildings(g2d);
+		updateSurfaceBuildings(g2d);
+		updateGroundVehicles(g2d);
+		updateCoverBuildings(g2d);
 		updatePlayerProjectiles(g2d);
 		updateAirEnemies(g2d);
 		updateEffects(g2d);
@@ -183,7 +275,7 @@ public class Board extends JPanel implements ActionListener {
 		drawEntity(g2d, view); //debug
 	}
 
-	private boolean checkWithinView(Entity toCheck) {
+	public static boolean checkWithinView(Entity toCheck) {
 		return view.checkWithinBounds(toCheck);
 	}
 	
@@ -249,20 +341,30 @@ public class Board extends JPanel implements ActionListener {
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
 		AffineTransform defaultOrientation = g2d.getTransform();
 		
+		Image image = toDraw.getImage();
+		
+		int altitude = toDraw.getAltitude();
+		double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
+		
+		int width = image.getWidth(null);
+		int height = image.getHeight(null);
+		int scaledWidth = (int) Math.round(width * scale);
+		int scaledHeight = (int) Math.round(height * scale);
+		
 		int direction = toDraw.getDirection();
 		
-		Image image = toDraw.getImage();
-		int positionXRelativeToViewCenter = (toDraw.getCenterX() - toDraw.getHalfWidth()) - view.getCenterX();
-		int positionYRelativeToViewCenter = (toDraw.getCenterY() + toDraw.getHalfHeight()) - view.getCenterY();
+		int positionXRelativeToViewCenter = (toDraw.getCenterX() - scaledWidth / 2) - view.getCenterX();
+		int positionYRelativeToViewCenter = (toDraw.getCenterY() + scaledHeight / 2) - view.getCenterY();
 		
 		int absolutePositionX = VIEW_POSITION_X + VIEW_WIDTH / 2 + positionXRelativeToViewCenter;
 		int absolutePositionY = VIEW_POSITION_Y + VIEW_HEIGHT / 2 - positionYRelativeToViewCenter;
 		
-		int rotationPointX = absolutePositionX + toDraw.getHalfWidth();
-		int rotationPointY = absolutePositionY + toDraw.getHalfHeight();
+		int rotationPointX = absolutePositionX + scaledWidth / 2;
+		int rotationPointY = absolutePositionY + scaledHeight / 2;
 		g2d.rotate(Math.toRadians(direction), rotationPointX, rotationPointY);
 
-		g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
+		//g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
+		g2d.drawImage(image, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
 		
 		g2d.setTransform(defaultOrientation);
 	}
@@ -285,8 +387,8 @@ public class Board extends JPanel implements ActionListener {
 		drawEntity(g2d, player.getPlayerCraft());
 	}
 
-	private void updateGroundEnemies(Graphics2D g2d) {
-		for(Iterator<Vehicle> groundIter = allGroundTargets.iterator(); groundIter.hasNext();) {
+	private void updateGroundVehicles(Graphics2D g2d) {
+		for(Iterator<Vehicle> groundIter = allGroundVehicles.iterator(); groundIter.hasNext();) {
 			Vehicle aGroundTarget = groundIter.next();
 			
 			for(Iterator<Projectile> bulletIter = aGroundTarget.getAllProjectiles().iterator(); bulletIter.hasNext();) {
@@ -315,8 +417,20 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void updateBuildings(Graphics2D g2d) {
-		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
+	private void updateSurfaceBuildings(Graphics2D g2d) {
+		for(Iterator<Building> buildingIter = allSurfaceBuildings.iterator(); buildingIter.hasNext();) {
+			Building aBuilding = buildingIter.next();
+			
+			if(checkWithinView(aBuilding) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBuilding);
+		}
+	}
+	
+	private void updateCoverBuildings(Graphics2D g2d) {
+		for(Iterator<Building> buildingIter = allCoverBuildings.iterator(); buildingIter.hasNext();) {
 			Building aBuilding = buildingIter.next();
 			
 			if(checkWithinView(aBuilding) == false) {
@@ -408,8 +522,8 @@ class View extends Mover {
 		super(startX, startY, inWidth, inHeight);
 	}
 	
-	public View (ImageIcon icon, int startX, int startY) {
-		super(icon, startX, startY);
+	public View (ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
+		super(icon, startX, startY, inDirection, inAltitude);
 	}
 	
 	public boolean checkWithinBounds(Entity toCheck) {
@@ -447,11 +561,14 @@ class Level {
 		
 		BACKGROUND_HEIGHT = background.getHeight(null);
 		BACKGROUND_WIDTH = background.getWidth(null);
+		int startPositionX = BACKGROUND_WIDTH / 2;
 		int startPositionY = BACKGROUND_HEIGHT / 2;
+		int direction = 0;
+		int altitude = 0;
 		
 		for(int i = 1; i < 9; i++) {
 			backgroundIcon = resLoader.getImageIcon("Germany" + i + ".png");
-			Entity sector = new Entity(backgroundIcon, BACKGROUND_WIDTH / 2, startPositionY);
+			Entity sector = new Entity(backgroundIcon, startPositionX, startPositionY, direction, altitude);
 			allSectors.add(sector);
 			startPositionY += backgroundIcon.getIconHeight();
 		}
@@ -471,11 +588,13 @@ class Level {
 			for(char c : spawnLines.get(index).toCharArray()) {
 				switch(c) {
 					case '1': { // Basic bandit
-						Aircraft bandit = new Aircraft(banditIcon, x, VIEW_HEIGHT + playerY);
+						int y = VIEW_HEIGHT + playerY;
+						int direction = 180;
+						int altitude = 50;
+						Aircraft bandit = new Aircraft(banditIcon, x, y, direction, altitude);
 						//System.out.println("Spawning basic bandit at: " + bandit.getX() + ", " + bandit.getY());
 						//bandit.setSpeed(-1);
 						bandit.setSpeed(1);
-						bandit.setDirection(180);
 						bandits.add(bandit);
 						break;
 					}

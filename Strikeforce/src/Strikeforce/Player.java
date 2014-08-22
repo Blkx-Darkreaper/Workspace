@@ -100,7 +100,7 @@ public class Player {
 				break;
 			}
 			
-			craft.accelerate();
+			craft.boost();
 			playerBoosting = true;
 			break;
 		}

@@ -12,16 +12,18 @@ public class Mover extends Entity {
 	protected int dx, dy;
 	protected int speed = 0;
 	
-	protected List<Projectile> allProjectiles;
-	
 	public Mover(int startX, int startY, int inWidth, int inHeight) {
 		super(startX, startY, inWidth, inHeight);
-		allProjectiles = new ArrayList<>();
 	}
 	
-	public Mover(ImageIcon icon, int startX, int startY) {
-		super(icon, startX, startY);
-		allProjectiles = new ArrayList<>();
+	public Mover(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
+		super(icon, startX, startY, inDirection, inAltitude);
+	}
+	
+	public Mover(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed) {
+		super(inName, inX, inY, inDirection, inAltitude);
+		speed = inSpeed;
+		updateVectors();
 	}
 	
 	public int getDeltaX() {
@@ -43,8 +45,8 @@ public class Mover extends Entity {
 	}
 	
 	public void updateVectors() {
-		dx = (int) (speed * Math.sin(Math.toRadians(direction)));
-		dy = (int) (speed * Math.cos(Math.toRadians(direction)));
+		dx = (int) Math.round(speed * Math.sin(Math.toRadians(direction)));
+		dy = (int) Math.round(speed * Math.cos(Math.toRadians(direction)));
 	}
 	
 	public int getSpeed() {
@@ -54,10 +56,6 @@ public class Mover extends Entity {
 	public void setSpeed(int inValue) {
 		speed = inValue;
 		updateVectors();
-	}
-	
-	public List<Projectile> getAllProjectiles() {
-		return allProjectiles;
 	}
 
 	public void move() {

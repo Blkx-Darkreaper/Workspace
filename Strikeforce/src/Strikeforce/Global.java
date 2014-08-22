@@ -29,53 +29,69 @@ public class Global {
 	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT - 20;
 	public static final int LOWER_BOUNDS_Y = 20;
 	
+	public static final int MAX_ALTITUDE_SKY = 100;
+	
+	public static final int REVS_PER_ACCELERATION = 10;
+	
 	public static final int HARD_BANK_ANGLE = 1;
 	public static final int MAX_BANK_ANGLE = 2;
 	
 	public static final int EXPLOSION_ANIMATION_FRAMES = 12;
 	
-	public static Weapon singleShot = new Weapon("Single shot", "Basic gun", 6, 1) {
+	public static Random random = new Random();
+	
+	public static Weapon singleShot = new Weapon("Single shot", "Basic gun", 8, 1, 20) {
 		@Override
-		public List<Projectile> openFire(int originX, int originY, int direction) {
+		public List<Projectile> openFire(int originX, int originY, int inDirection, int inAltitude) {
+			if(reload > 0) {
+				return null;
+			}
+			
 			List<Projectile> allShots = new ArrayList<>();
 
-			ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
+			String bulletName = "bullet";
+			ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			int dx = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction)));
-			int dy = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction)));
-			
-			allShots.add(new Projectile(bulletIcon, startX, startY, dx, dy, damage));
+			/*allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
+					damage, inDirection, inAltitude));*/
+			allShots.add(new Projectile(bulletName, startX, startY, inDirection, inAltitude, 
+					muzzleVelocity, damage));
 			
 			return allShots;
 		}
 	};
 	
-	public static Weapon splitShot = new Weapon("Split shot", "Fires two shots away at an angle", 6, 1) {
+	public static Weapon splitShot = new Weapon("Split shot", "Fires two shots away at an angle", 8, 1, 20) {
 		@Override
-		public List<Projectile> openFire(int originX, int originY, int direction) {
+		public List<Projectile> openFire(int originX, int originY, int inDirection, int inAltitude) {
+			if(reload > 0) {
+				return null;
+			}
+			
 			List<Projectile> allShots = new ArrayList<>();
 			
-			ImageIcon bulletIcon = resLoader.getImageIcon("bullet2.png");
+			String bulletName = "bullet2";
+			ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
 			
-			int dx1 = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction - 15)));
-			int dy1 = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction - 15)));
-			
-			int dx2 = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction + 15)));
-			int dy2 = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction + 15)));
-			
-			allShots.add(new Projectile(bulletIcon, startX, startY, dx1, dy1, damage));
-			allShots.add(new Projectile(bulletIcon, startX, startY, dx2, dy2, damage));
+			/*allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity,
+					damage, inDirection - 15, inAltitude));
+			allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
+					damage, inDirection + 15, inAltitude));*/
+			allShots.add(new Projectile(bulletName, startX, startY, inDirection - 15, inAltitude, 
+					muzzleVelocity, damage));
+			allShots.add(new Projectile(bulletName, startX, startY, inDirection + 15, inAltitude, 
+					muzzleVelocity, damage));
 			
 			return allShots;
 		}
 	};
 	
-	public static List<Image> createExplosionAnimation() {
-		List<Image> explosionAnimation = new ArrayList<>();
+	public static String chooseExplosionAnimation() {
+		String explosionName = "explosion";
 		
 		String choice;
 		Random rand = new Random();
@@ -96,12 +112,8 @@ public class Global {
 			break;
 		}
 		
-		for(int i = 1; i < (EXPLOSION_ANIMATION_FRAMES + 1); i++) {
-			String filename = "explosion" + choice + i + ".png";
-			ImageIcon explosionIcon = resLoader.getImageIcon(filename);
-			explosionAnimation.add(explosionIcon.getImage());
-		}
+		explosionName += choice;
 		
-		return explosionAnimation;
+		return explosionName;
 	}
 }
