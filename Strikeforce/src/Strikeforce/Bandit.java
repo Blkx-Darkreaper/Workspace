@@ -160,8 +160,8 @@ public class Bandit extends Aircraft {
 		}
 	}
 
-	private int getHeadingChange(int headingToPoint) {		
-		int changeOfHeading = headingToPoint - direction;
+	private int getHeadingChange(int desiredHeading) {		
+		int changeOfHeading = desiredHeading - direction;
 		
 		List<Integer> headingChoices = new ArrayList<>();
 		headingChoices.add(Math.abs(changeOfHeading));
@@ -250,19 +250,26 @@ public class Bandit extends Aircraft {
 			offsetY = 0;
 		}
 		
-		moveToPoint(leadX + offsetX, leadY + offsetY, CRUISING_SPEED);
+		int distanceToFormationPoint = distanceToPoint(leadX + offsetX, leadY + offsetY);
+		
+		if(distanceToFormationPoint > spread) {
+			moveToPoint(leadX + offsetX, leadY + offsetY, MAX_SPEED);
+		} else {
+			int formationSpeed = flightLead.getSpeed();
+			moveToPoint(leadX + offsetX, leadY + offsetY, formationSpeed);
+		}
 		
 		int range = 5;
-		boolean atFormationPosition = targetInRange(leadX + offsetX, leadY + offsetY, range);
-		if(atFormationPosition == false) {
+		boolean atFormationPoint = targetInRange(leadX + offsetX, leadY + offsetY, range);
+		if(atFormationPoint == false) {
 			return;
 		}
-		int changeOfDirection = leadDirection - direction;
+		int changeOfDirection = getHeadingChange(leadDirection);
 		
-		if(changeOfDirection > 5) {
+		if(changeOfDirection > 0) {
 			turnRight(changeOfDirection);
 		}
-		if(changeOfDirection < -5) {
+		if(changeOfDirection < 0) {
 			turnLeft(changeOfDirection);
 		}
 		
@@ -457,6 +464,12 @@ public class Bandit extends Aircraft {
 		}
 
 		public void perform(Bandit performer) {
+			boolean banditInView = checkWithinView(performer);
+			if(banditInView == true) {
+				currentAction = attack;
+				return;
+			}
+			
 			int formationPosition = formation.getFormationPosition(performer);
 			if(formationPosition != 0) {
 				int spread = 20;
@@ -466,12 +479,6 @@ public class Bandit extends Aircraft {
 			
 			if(patrolPath.size() == 0) {
 				currentAction = returnToBase;
-				return;
-			}
-			
-			boolean banditInView = checkWithinView(performer);
-			if(banditInView == true) {
-				currentAction = attack;
 				return;
 			}
 			

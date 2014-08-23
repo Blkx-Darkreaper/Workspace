@@ -44,11 +44,12 @@ public abstract class Weapon {
 		ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 		int startX = originX;
 		int startY = originY + bulletIcon.getIconHeight() / 2;
+		boolean hitsGround = false;
 		
 		/*allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
 				damage, inDirection, inAltitude));*/
 		allShots.add(new Projectile(bulletName, startX, startY, inDirection, inAltitude, 
-				muzzleVelocity, damage));
+				muzzleVelocity, damage, hitsGround));
 		
 		reload += cooldown;
 		

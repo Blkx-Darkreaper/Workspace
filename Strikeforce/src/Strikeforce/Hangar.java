@@ -99,7 +99,7 @@ public class Hangar extends Building {
 		spawnee.setCircuit();
 		spawnee.setPatrolPath(patrolPath);
 		
-		List<Vehicle> allGroundVehicles = world.getAllGroundVehicles();
+		List<Vehicle> allGroundVehicles = world.getAllVehicles();
 		allGroundVehicles.add(spawnee);
 		busySpawning = true;
 	}

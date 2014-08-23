@@ -25,10 +25,8 @@ public class Board extends JPanel implements ActionListener {
 	static Level currentLevel;
 	private static Player player;
 	private List<Effect> allEffects;
-	private List<Aircraft> allBandits;
-	private List<Vehicle> allGroundVehicles;
-	private List<Building> allCoverBuildings;
-	private List<Building> allSurfaceBuildings;
+	private List<Vehicle> allVehicles;
+	private List<Building> allBuildings;
 	private Image background;
 	private Timer time;
 
@@ -61,10 +59,8 @@ public class Board extends JPanel implements ActionListener {
 		player.setWeaponSetB(otherWeaponSetup);
 		
 		allEffects = new ArrayList<>();
-		allGroundVehicles = new ArrayList<>();
-		allBandits = new ArrayList<>();
-		allSurfaceBuildings = new ArrayList<>();
-		allCoverBuildings = new ArrayList<>();
+		allVehicles = new ArrayList<>();
+		allBuildings = new ArrayList<>();
 		
 		String name = "airstrip";
 		startX = 150;
@@ -73,7 +69,7 @@ public class Board extends JPanel implements ActionListener {
 		altitude = 0;
 		hitPoints = 1;
 		Airstrip runway = new Airstrip(name, startX, startY, direction, altitude, hitPoints);
-		allSurfaceBuildings.add(runway);
+		allBuildings.add(runway);
 		
 		String testJetName = "f18";
 		Deque<Bandit> hangarAircraft = new LinkedList<>();
@@ -112,7 +108,8 @@ public class Board extends JPanel implements ActionListener {
 		patrolPath.offer(new Point(50, 600));
 		hangar.setPatrolPath(patrolPath);
 		hangar.setNearestRunway(runway);
-		allCoverBuildings.add(hangar);
+		hangar.setCovers(true);
+		allBuildings.add(hangar);
 		
 /*		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
 		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
@@ -138,8 +135,8 @@ public class Board extends JPanel implements ActionListener {
 		return player;
 	}
 	
-	public List<Vehicle> getAllGroundVehicles() {
-		return allGroundVehicles;
+	public List<Vehicle> getAllVehicles() {
+		return allVehicles;
 	}
 
 	public Timer getTime() {
@@ -147,14 +144,14 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void despawn(Vehicle despawnee) {
-		for(Iterator<Vehicle> groundIter = allGroundVehicles.iterator(); groundIter.hasNext();) {
-			Vehicle aGroundTarget = groundIter.next();
+		for(Iterator<Vehicle> vehicleIter = allVehicles.iterator(); vehicleIter.hasNext();) {
+			Vehicle aVehicle = vehicleIter.next();
 			
-			if(aGroundTarget != despawnee) {
+			if(aVehicle != despawnee) {
 				continue;
 			}
 			
-			groundIter.remove();
+			vehicleIter.remove();
 		}
 			
 	}
@@ -173,28 +170,16 @@ public class Board extends JPanel implements ActionListener {
 		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
-		List<Building> allBuildings = new ArrayList<>();
-		allBuildings.addAll(allCoverBuildings);
-		allBuildings.addAll(allSurfaceBuildings);
-		
 		for(Building aBuilding : allBuildings) {
 			aBuilding.spawn();
 			aBuilding.takeoffsAndLandings();
 		}
 		
-		for(Vehicle aGroundVehicle : allGroundVehicles) {
-			aGroundVehicle.sortie();
-			aGroundVehicle.move();
+		for(Vehicle aVehicle : allVehicles) {
+			aVehicle.sortie();
+			aVehicle.move();
 			
-			for(Projectile aProjectile : aGroundVehicle.getAllProjectiles()) {
-				aProjectile.move();
-			}
-		}
-		
-		for(Aircraft aBandit : allBandits) {
-			aBandit.move();
-			
-			for(Projectile aProjectile : aBandit.getAllProjectiles()) {
+			for(Projectile aProjectile : aVehicle.getAllProjectiles()) {
 				aProjectile.move();
 			}
 		}
@@ -211,7 +196,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void keepPlayerInView() {
-		boolean looping = player.getDoLoop();
+		boolean looping = player.getLooping();
 		if(looping == true) {
 			return;
 		}
@@ -284,11 +269,18 @@ public class Board extends JPanel implements ActionListener {
 	private void detectCollisions () {
 		Aircraft playerCraft = player;
 		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
-		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
-			Aircraft aBandit = banditIter.next();
+		for(Iterator<Vehicle> banditIter = allVehicles.iterator(); banditIter.hasNext();) {
+			Vehicle aBandit = banditIter.next();
 
 			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
+				
+				boolean airborne = aBandit.getAirborne();
+				boolean hitsGround = aProjectile.getHitsGround();
+				
+				if(airborne == hitsGround) {
+					continue;
+				}
 				
 				boolean collision = aBandit.checkForCollision(aProjectile);
 				
@@ -311,6 +303,30 @@ public class Board extends JPanel implements ActionListener {
 			
 			List<Projectile> allEnemyProjectiles = aBandit.allProjectiles;
 			
+			for(Iterator<Projectile> projectileIter = allEnemyProjectiles.iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
+
+				boolean collision = playerCraft.checkForCollision(aProjectile);
+				
+				if(collision == false) {
+					continue;
+				}
+				
+				int damage = aProjectile.getDamage();
+				player.dealDamage(damage);
+				if(player.criticalDamage() == true) {
+					allEffects.add(player.getExplosionAnimation());
+					//gameover();
+					return;
+				}
+				projectileIter.remove();
+			}
+			
+			boolean airborne = aBandit.getAirborne();
+			if(airborne == false) {
+				continue;
+			}
+			
 			boolean collision = playerCraft.checkForCollision(aBandit);
 			
 			if(collision == true) {
@@ -320,20 +336,6 @@ public class Board extends JPanel implements ActionListener {
 					allEffects.add(aBandit.getExplosionAnimation());
 					banditIter.remove();
 				}
-				//gameover();
-				return;
-			}
-			
-			for(Iterator<Projectile> projectileIter = allEnemyProjectiles.iterator(); projectileIter.hasNext();) {
-				Projectile aProjectile = projectileIter.next();
-
-				collision = playerCraft.checkForCollision(aProjectile);
-				
-				if(collision == false) {
-					continue;
-				}
-				
-				projectileIter.remove();
 				//gameover();
 				return;
 			}
@@ -390,10 +392,15 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updateGroundVehicles(Graphics2D g2d) {
-		for(Iterator<Vehicle> groundIter = allGroundVehicles.iterator(); groundIter.hasNext();) {
-			Vehicle aGroundTarget = groundIter.next();
+		for(Iterator<Vehicle> groundIter = allVehicles.iterator(); groundIter.hasNext();) {
+			Vehicle aVehicle = groundIter.next();
+			boolean airborne = aVehicle.getAirborne();
 			
-			for(Iterator<Projectile> bulletIter = aGroundTarget.getAllProjectiles().iterator(); bulletIter.hasNext();) {
+			if(airborne == true) {
+				continue;
+			}
+			
+			for(Iterator<Projectile> bulletIter = aVehicle.getAllProjectiles().iterator(); bulletIter.hasNext();) {
 				Projectile aProjectile = bulletIter.next();
 				
 				if(checkWithinView(aProjectile) == false) {
@@ -404,13 +411,13 @@ public class Board extends JPanel implements ActionListener {
 				drawEntity(g2d, aProjectile);
 			}
 			
-			if(checkWithinView(aGroundTarget) == false) {
+			if(checkWithinView(aVehicle) == false) {
 				continue;
 			}
 			
-			drawEntity(g2d, aGroundTarget);
+			drawEntity(g2d, aVehicle);
 			
-			Entity turret = aGroundTarget.getTurret();
+			Entity turret = aVehicle.getTurret();
 			if(turret == null) {
 				continue;
 			}
@@ -420,8 +427,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateSurfaceBuildings(Graphics2D g2d) {
-		for(Iterator<Building> buildingIter = allSurfaceBuildings.iterator(); buildingIter.hasNext();) {
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
 			Building aBuilding = buildingIter.next();
+			boolean cover = aBuilding.getCovers();
+			
+			if(cover == true) {
+				continue;
+			}
 			
 			if(checkWithinView(aBuilding) == false) {
 				continue;
@@ -432,8 +444,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateCoverBuildings(Graphics2D g2d) {
-		for(Iterator<Building> buildingIter = allCoverBuildings.iterator(); buildingIter.hasNext();) {
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
 			Building aBuilding = buildingIter.next();
+			boolean cover = aBuilding.getCovers();
+			
+			if(cover == false) {
+				continue;
+			}
 			
 			if(checkWithinView(aBuilding) == false) {
 				continue;
@@ -444,10 +461,15 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateAirEnemies(Graphics2D g2d) {
-		allBandits.addAll(currentLevel.spawnLine(player.getCenterY()));
+		allVehicles.addAll(currentLevel.spawnLine(player.getCenterY()));
 		
-		for(Iterator<Aircraft> banditIter = allBandits.iterator(); banditIter.hasNext();) {
-			Aircraft aBandit = banditIter.next();
+		for(Iterator<Vehicle> airborneIter = allVehicles.iterator(); airborneIter.hasNext();) {
+			Vehicle aBandit = airborneIter.next();
+			boolean airborne = aBandit.getAirborne();
+			
+			if(airborne == false) {
+				continue;
+			}
 		
 			for(Iterator<Projectile> bulletIter = aBandit.getAllProjectiles().iterator(); bulletIter.hasNext();) {
 				Projectile aProjectile = bulletIter.next();

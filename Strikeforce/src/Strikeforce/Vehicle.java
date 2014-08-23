@@ -85,6 +85,18 @@ public class Vehicle extends Mover {
 		return invulnerable;
 	}
 	
+	public boolean getAirborne() {
+		return false;
+	}
+	
+	public Effect getExplosionAnimation() {
+		String animationName = chooseExplosionAnimation();
+		int frameSpeed = 2;
+		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
+		return explosion;
+	}
+	
 	public void setLocation(int pointX, int pointY) {
 		centerX = pointX;
 		centerY = pointY;

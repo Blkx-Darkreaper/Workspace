@@ -32,8 +32,9 @@ public class Aircraft extends Vehicle {
 	protected final int CRUISING_ALTITUDE = 50;
 	protected final int BOOST_DURATION = 20;
 	
+	protected boolean airborne;
 	protected int roll = 0;
-	protected boolean doLoop = false;
+	protected boolean looping = false;
 	protected int loop = 0;
 	protected boolean boosting = false;
 	protected int boost = 0;
@@ -161,20 +162,34 @@ public class Aircraft extends Vehicle {
 			}
 		}
 		
-		if(doLoop == true) {
+		if(looping == true) {
 			currentImage = currentLoopImage;
 		}
 		
 		return currentImage;
 	}
 	
-	public boolean getDoLoop() {
-		return doLoop;
+	@Override
+	public boolean getAirborne() {
+		return airborne;
+	}
+	
+	public boolean getLooping() {
+		return looping;
+	}
+	
+	@Override
+	public Effect getExplosionAnimation() {
+		String animationName = chooseExplosionAnimation();
+		int frameSpeed = 2;
+		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
+		return explosion;
 	}
 	
 	@Override
 	public void move() {
-		if(doLoop == true) {
+		if(looping == true) {
 			doLoop();
 		}
 		
@@ -186,13 +201,13 @@ public class Aircraft extends Vehicle {
 	}
 	
 	public void doLoop() {
-		if(doLoop == false) {
+		if(looping == false) {
 			if(speed == STALL_SPEED) {
 				return;
 			}
 			
 			loop = 0;
-			doLoop = true;
+			looping = true;
 			invulnerable = true;
 			return;
 		}
@@ -283,7 +298,7 @@ public class Aircraft extends Vehicle {
 			currentLoopImage = imageLevelFlight;
 			break;
 		case 46:
-			doLoop = false;
+			looping = false;
 			invulnerable = false;
 			speed--;
 			return;
@@ -397,6 +412,10 @@ public class Aircraft extends Vehicle {
 		if(altitude > MAX_ALTITUDE) {
 			altitude = MAX_ALTITUDE;
 		}
+		
+		if(altitude > 1) {
+			airborne = true;
+		}
 	}
 	
 	public void dive() {
@@ -405,17 +424,13 @@ public class Aircraft extends Vehicle {
 		if(altitude < 0) {
 			altitude = 0;
 		}
+		
+		if(altitude == 1) {
+			airborne = false;
+		}
 	}
 
 	public void setY(int position) {
 		centerY = position;
-	}
-
-	public Effect getExplosionAnimation() {
-		String animationName = chooseExplosionAnimation();
-		int frameSpeed = 2;
-		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
-				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
-		return explosion;
 	}
 }
