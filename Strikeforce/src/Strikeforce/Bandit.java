@@ -140,7 +140,9 @@ public class Bandit extends Aircraft {
 			return;
 		}
 		
-		int changeOfHeading = getHeadingChange(pointX, pointY);
+		int headingToPoint = headingToPoint(pointX, pointY);
+		
+		int changeOfHeading = getHeadingChange(headingToPoint);
 		
 		if(speed < movementSpeed) {
 			accelerate(movementSpeed);
@@ -158,9 +160,7 @@ public class Bandit extends Aircraft {
 		}
 	}
 
-	private int getHeadingChange(int pointX, int pointY) {
-		int headingToPoint = headingToPoint(pointX, pointY);
-		
+	private int getHeadingChange(int headingToPoint) {		
 		int changeOfHeading = headingToPoint - direction;
 		
 		List<Integer> headingChoices = new ArrayList<>();
@@ -250,8 +250,13 @@ public class Bandit extends Aircraft {
 			offsetY = 0;
 		}
 		
-		moveToPoint(leadX + offsetX, leadY + offsetY, MAX_SPEED);
+		moveToPoint(leadX + offsetX, leadY + offsetY, CRUISING_SPEED);
 		
+		int range = 5;
+		boolean atFormationPosition = targetInRange(leadX + offsetX, leadY + offsetY, range);
+		if(atFormationPosition == false) {
+			return;
+		}
 		int changeOfDirection = leadDirection - direction;
 		
 		if(changeOfDirection > 5) {
@@ -261,9 +266,7 @@ public class Bandit extends Aircraft {
 			turnLeft(changeOfDirection);
 		}
 		
-		int range = 5;
-		boolean atFormationPosition = targetInRange(leadX + offsetX, leadY + offsetY, range);
-		holdingFormation = atFormationPosition;
+		holdingFormation = true;
 	}
 	
 	public void despawn() {
@@ -427,7 +430,7 @@ public class Bandit extends Aircraft {
 			
 			int formationPosition = formation.getFormationPosition(performer);
 			if(formationPosition != 0) {
-				int spread = 10;
+				int spread = 20;
 				flyFormation(spread);
 				return;
 			}
@@ -456,7 +459,7 @@ public class Bandit extends Aircraft {
 		public void perform(Bandit performer) {
 			int formationPosition = formation.getFormationPosition(performer);
 			if(formationPosition != 0) {
-				int spread = 10;
+				int spread = 20;
 				flyFormation(spread);
 				return;
 			}
