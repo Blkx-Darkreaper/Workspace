@@ -1,8 +1,5 @@
 package Strikeforce;
 
-import static Strikeforce.Global.resLoader;
-
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
