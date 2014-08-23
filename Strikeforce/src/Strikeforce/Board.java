@@ -54,7 +54,8 @@ public class Board extends JPanel implements ActionListener {
 		List<Weapon> basicWeaponSetup = new ArrayList<>();
 		List<Weapon> otherWeaponSetup = new ArrayList<>();
 		basicWeaponSetup.add(singleShot);
-		otherWeaponSetup.add(splitShot);
+		basicWeaponSetup.add(splitShot);
+		otherWeaponSetup.add(dumbBomb);
 		player.setWeaponSetA(basicWeaponSetup);
 		player.setWeaponSetB(otherWeaponSetup);
 		
@@ -179,8 +180,17 @@ public class Board extends JPanel implements ActionListener {
 			aVehicle.sortie();
 			aVehicle.move();
 			
-			for(Projectile aProjectile : aVehicle.getAllProjectiles()) {
+			for(Iterator<Projectile> projectileIter = aVehicle.getAllProjectiles().iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
 				aProjectile.move();
+				
+				boolean detonate = aProjectile.getDetonate();
+				if(detonate == false) {
+					continue;
+				}
+				
+				allEffects.add(aProjectile.getExplosionAnimation());
+				projectileIter.remove();
 			}
 		}
 		
@@ -188,8 +198,17 @@ public class Board extends JPanel implements ActionListener {
 			anEffect.animate();
 		}
 		
-		for(Projectile aProjectile : player.getAllProjectiles()) {
+		for(Iterator<Projectile> projectileIter = player.getAllProjectiles().iterator(); projectileIter.hasNext();) {
+			Projectile aProjectile = projectileIter.next();
 			aProjectile.move();
+			
+			boolean detonate = aProjectile.getDetonate();
+			if(detonate == false) {
+				continue;
+			}
+			
+			allEffects.add(aProjectile.getExplosionAnimation());
+			projectileIter.remove();
 		}
 		
 		repaint();
@@ -250,13 +269,13 @@ public class Board extends JPanel implements ActionListener {
 		
 		detectCollisions();
 		
-		updateSurfaceBuildings(g2d);
+		updateBuildings(g2d);
 		updateGroundVehicles(g2d);
-		updateCoverBuildings(g2d);
+		updateBuildingCover(g2d);
 		updatePlayerProjectiles(g2d);
 		updateAirEnemies(g2d);
-		updateEffects(g2d);
 		updatePlayer(g2d);
+		updateEffects(g2d);
 		
 		// View bounds
 		drawEntity(g2d, view); //debug
@@ -426,7 +445,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void updateSurfaceBuildings(Graphics2D g2d) {
+	private void updateBuildings(Graphics2D g2d) {
 		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
 			Building aBuilding = buildingIter.next();
 			boolean cover = aBuilding.getCovers();
@@ -443,7 +462,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void updateCoverBuildings(Graphics2D g2d) {
+	private void updateBuildingCover(Graphics2D g2d) {
 		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
 			Building aBuilding = buildingIter.next();
 			boolean cover = aBuilding.getCovers();

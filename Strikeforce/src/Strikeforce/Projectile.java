@@ -8,6 +8,7 @@ public class Projectile extends Mover {
 	
 	protected int damage;
 	protected boolean hitsGround;
+	protected boolean detonate = false;
 
 	public Projectile(ImageIcon icon, int startingX, int startingY, int inSpeed, int inDamage, int inDirection, int inAltitude) {
 		super(icon, startingX, startingY, inDirection, inAltitude);
@@ -28,5 +29,13 @@ public class Projectile extends Mover {
 	
 	public boolean getHitsGround() {
 		return hitsGround;
+	}
+	
+	public boolean getDetonate() {
+		return detonate;
+	}
+	
+	public Effect getExplosionAnimation() {
+		return null;
 	}
 }

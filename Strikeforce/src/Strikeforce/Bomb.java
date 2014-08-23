@@ -1,0 +1,98 @@
+package Strikeforce;
+
+import static Strikeforce.Global.EXPLOSION_ANIMATION_FRAMES;
+import static Strikeforce.Global.chooseExplosionAnimation;
+import static Strikeforce.Global.resLoader;
+
+import java.awt.Image;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+
+public class Bomb extends Projectile {
+	
+	protected List<Image> animationImages = new ArrayList<>();
+	protected boolean animationOver = false;
+	protected int count = 0;
+	protected int frameSpeed;
+	protected int fuseDelay;
+	protected boolean falls;
+
+	public Bomb(String inName, int inX, int inY, int inDirection,
+			int inAltitude, int inSpeed, int inDamage, boolean inHitsGround, int inFuseDelay, boolean inFalls, int frames, int inFrameSpeed) {
+		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsGround);
+		
+		for(int i = 2; i <= frames; i++) {
+			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
+			Image image = icon.getImage();
+			animationImages.add(image);
+		}
+		frameSpeed = inFrameSpeed;
+		fuseDelay = inFuseDelay;
+		falls = inFalls;
+	}
+	
+	public int getFuseDelay() {
+		return fuseDelay;
+	}
+	
+	public boolean getFalls() {
+		return falls;
+	}
+	
+	@Override
+	public Effect getExplosionAnimation() {
+		String animationName = chooseExplosionAnimation();
+		int frameSpeed = 2;
+		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
+		return explosion;
+	}
+	
+	public void animate() {
+		if(animationOver == true) {
+			return;
+		}
+		
+		int frame = count / frameSpeed;
+		
+		currentImage = animationImages.get(frame);
+		count++;
+		
+		if(frame == (animationImages.size() - 1)) {
+			animationOver = true;
+		}
+	}
+	
+	@Override
+	public void move() {
+		animate();
+		
+		fuseDelay--;
+		
+		if(falls == true) {
+			fall();
+		}
+		
+		super.move();
+		
+		detonate();
+	}
+	
+	public void fall() {
+		altitude--;
+		
+		if(altitude < 0) {
+			altitude = 0;
+		}
+	}
+	
+	public void detonate() {
+		if(fuseDelay > 0) {
+			return;
+		}
+		
+		detonate = true;
+	}
+}

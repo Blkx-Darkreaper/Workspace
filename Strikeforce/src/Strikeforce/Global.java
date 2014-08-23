@@ -92,6 +92,29 @@ public class Global {
 		}
 	};
 	
+	public static Weapon dumbBomb = new Weapon("Dumb bomb", "Drops a small unguided bomb", 2, 10, 50) {
+		@Override
+		public List<Projectile> openFire(int originX, int originY, int inDirection, int inAltitude) {
+			if(reload > 0) {
+				return null;
+			}
+			
+			List<Projectile> allShots = new ArrayList<>();
+			
+			String bombName = "bomb";
+			boolean hitsGround = true;
+			int fuseDelay = 100;
+			boolean falls = true;
+			int frames = 8;
+			int frameSpeed = 2;
+
+			allShots.add(new Bomb(bombName, originX, originY, inDirection, inAltitude, muzzleVelocity, damage, 
+					hitsGround, fuseDelay, falls, frames, frameSpeed));
+			
+			return allShots;
+		}
+	};
+	
 	public static String chooseExplosionAnimation() {
 		String explosionName = "explosion";
 		
