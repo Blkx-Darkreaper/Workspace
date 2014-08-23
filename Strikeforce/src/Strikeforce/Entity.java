@@ -2,7 +2,9 @@ package Strikeforce;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+
 import javax.swing.ImageIcon;
+
 import static Strikeforce.Global.*;
 
 public class Entity {
@@ -75,6 +77,15 @@ public class Entity {
 	
 	public Image getImage() {
 		return currentImage;
+	}
+	
+	public Effect getExplosionAnimation() {
+		String explosionSize = "";
+		String animationName = chooseExplosionAnimation(explosionSize);
+		int frameSpeed = 2;
+		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
+		return explosion;
 	}
 	
 	public Rectangle getBounds() {

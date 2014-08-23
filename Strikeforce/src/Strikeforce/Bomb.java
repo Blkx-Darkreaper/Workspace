@@ -43,7 +43,8 @@ public class Bomb extends Projectile {
 	
 	@Override
 	public Effect getExplosionAnimation() {
-		String animationName = chooseExplosionAnimation();
+		String explosionSize = "";
+		String animationName = chooseExplosionAnimation(explosionSize);
 		int frameSpeed = 2;
 		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
 				EXPLOSION_ANIMATION_FRAMES, frameSpeed);

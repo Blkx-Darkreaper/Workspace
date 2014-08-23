@@ -359,6 +359,34 @@ public class Board extends JPanel implements ActionListener {
 				return;
 			}
 		}
+		
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
+			Building aBuilding = buildingIter.next();
+
+			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
+				
+				boolean hitsGround = aProjectile.getHitsGround();
+				
+				if(hitsGround == false) {
+					continue;
+				}
+				
+				boolean collision = aBuilding.checkForCollision(aProjectile);
+				
+				if(collision == false) {
+					continue;
+				}
+				
+				int damage = aProjectile.getDamage();
+				aBuilding.dealDamage(damage);
+				if(aBuilding.criticalDamage() == true) {
+					allEffects.add(aBuilding.getExplosionAnimation());
+					buildingIter.remove();
+				}
+				projectileIter.remove();
+			}
+		}
 	}
 	
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {

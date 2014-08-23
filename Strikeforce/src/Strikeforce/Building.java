@@ -32,4 +32,16 @@ public class Building extends Entity {
 	public void takeoffsAndLandings() {
 		return;
 	}
+	
+	public void dealDamage(int damageDealt) {
+		hitPoints -= damageDealt;
+	}
+	
+	public boolean criticalDamage() {
+		if(hitPoints > 0) {
+			return false;
+		}
+		
+		return true;
+	}
 }

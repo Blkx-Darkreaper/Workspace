@@ -112,8 +112,8 @@ public class Global {
 		}
 	};
 	
-	public static String chooseExplosionAnimation() {
-		String explosionName = "explosion";
+	public static String chooseExplosionAnimation(String size) {
+		String explosionName = size + "explosion";
 		
 		String choice;
 		Random rand = new Random();
