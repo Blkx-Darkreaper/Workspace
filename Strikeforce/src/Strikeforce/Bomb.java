@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
+import Strikeforce.Entity.Circle;
+
 public class Bomb extends Projectile {
 	
 	protected List<Image> animationImages = new ArrayList<>();
@@ -18,10 +20,12 @@ public class Bomb extends Projectile {
 	protected int frameSpeed;
 	protected int fuseDelay;
 	protected boolean falls;
+	protected int blastRadius;
 
 	public Bomb(String inName, int inX, int inY, int inDirection,
-			int inAltitude, int inSpeed, int inDamage, boolean inHitsGround, int inFuseDelay, boolean inFalls, int frames, int inFrameSpeed) {
-		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsGround);
+			int inAltitude, int inSpeed, int inDamage, boolean inHitsGround, boolean inLive, int inFuseDelay, 
+			boolean inFalls, int inBlastRadius, int frames, int inFrameSpeed) {
+		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsGround, inLive);
 		
 		for(int i = 2; i <= frames; i++) {
 			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
@@ -31,6 +35,7 @@ public class Bomb extends Projectile {
 		frameSpeed = inFrameSpeed;
 		fuseDelay = inFuseDelay;
 		falls = inFalls;
+		blastRadius = inBlastRadius;
 	}
 	
 	public int getFuseDelay() {
@@ -44,11 +49,34 @@ public class Bomb extends Projectile {
 	@Override
 	public Effect getExplosionAnimation() {
 		String explosionSize = "";
+
+/*		if(blastRadius < 10) {
+			explosionSize = "small";
+		}*/
+		if(blastRadius > 16) {
+			explosionSize = "big";
+		}
+		if(blastRadius > 24) {
+			explosionSize = "huge";
+		}
+/*		if(blastRadius > 32) {
+			explosionSize = "massive";
+		}*/
+		
 		String animationName = chooseExplosionAnimation(explosionSize);
 		int frameSpeed = 2;
 		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
 				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
 		return explosion;
+	}
+	
+	@Override
+	public Circle getCircularHitBox() {
+		if(detonate == false) {
+			return super.getCircularHitBox();
+		}
+		
+		return new Circle(centerX, centerY, blastRadius);
 	}
 	
 	public void animate() {
@@ -95,5 +123,6 @@ public class Bomb extends Projectile {
 		}
 		
 		detonate = true;
+		live = true;
 	}
 }

@@ -8,19 +8,23 @@ public class Projectile extends Mover {
 	
 	protected int damage;
 	protected boolean hitsGround;
+	protected boolean live;
 	protected boolean detonate = false;
 
-	public Projectile(ImageIcon icon, int startingX, int startingY, int inSpeed, int inDamage, int inDirection, int inAltitude) {
+	public Projectile(ImageIcon icon, int startingX, int startingY, int inSpeed, int inDamage, int inDirection, 
+			int inAltitude) {
 		super(icon, startingX, startingY, inDirection, inAltitude);
 		speed = inSpeed;
 		damage = inDamage;
 		updateVectors();
 	}
 	
-	public Projectile(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inDamage, boolean inHitsGround) {
+	public Projectile(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inDamage, 
+			boolean inHitsGround, boolean inLive) {
 		super(inName, inX, inY, inDirection, inAltitude, inSpeed);
 		damage = inDamage;
 		hitsGround = inHitsGround;
+		live = inLive;
 	}
 	
 	public int getDamage() {
@@ -29,6 +33,10 @@ public class Projectile extends Mover {
 	
 	public boolean getHitsGround() {
 		return hitsGround;
+	}
+	
+	public boolean getLive() {
+		return live;
 	}
 	
 	public boolean getDetonate() {

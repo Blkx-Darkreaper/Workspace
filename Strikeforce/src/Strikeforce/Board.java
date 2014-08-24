@@ -208,7 +208,6 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			allEffects.add(aProjectile.getExplosionAnimation());
-			projectileIter.remove();
 		}
 		
 		repaint();
@@ -294,9 +293,13 @@ public class Board extends JPanel implements ActionListener {
 			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
 				
+				boolean live = aProjectile.getLive();
+				if(live == false) {
+					continue;
+				}
+				
 				boolean airborne = aBandit.getAirborne();
 				boolean hitsGround = aProjectile.getHitsGround();
-				
 				if(airborne == hitsGround) {
 					continue;
 				}
@@ -366,8 +369,12 @@ public class Board extends JPanel implements ActionListener {
 			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
 				
-				boolean hitsGround = aProjectile.getHitsGround();
+				boolean live = aProjectile.getLive();
+				if(live == false) {
+					continue;
+				}
 				
+				boolean hitsGround = aProjectile.getHitsGround();
 				if(hitsGround == false) {
 					continue;
 				}
