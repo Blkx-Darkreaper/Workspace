@@ -27,7 +27,6 @@ public class Board extends JPanel implements ActionListener {
 	private List<Effect> allEffects;
 	private List<Vehicle> allVehicles;
 	private List<Building> allBuildings;
-	private Image background;
 	private Timer time;
 
 	public Board() {
@@ -333,12 +332,16 @@ public class Board extends JPanel implements ActionListener {
 				aBandit.dealDamage(damage);
 				if(aBandit.criticalDamage() == true) {
 					allEffects.add(aBandit.getExplosionAnimation());
-					banditIter.remove();
+					
+					if(airborne == true) {
+						banditIter.remove();
+					}
 				}
 				projectileIter.remove();
 			}
 			
 			List<Effect> effectsToAdd = new ArrayList<>();
+			
 			for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
 				Effect anEffect = effectIter.next();
 				
@@ -367,9 +370,13 @@ public class Board extends JPanel implements ActionListener {
 				aBandit.dealDamage(damage);
 				if(aBandit.criticalDamage() == true) {
 					effectsToAdd.add(aBandit.getExplosionAnimation());
-					banditIter.remove();
+					
+					if(airborne == true) {
+						banditIter.remove();
+					}
 				}
 			}
+			
 			allEffects.addAll(effectsToAdd);
 			
 			if(playerCraft.getInvulnerable() == true) {
@@ -408,7 +415,10 @@ public class Board extends JPanel implements ActionListener {
 				aBandit.dealDamage(damage);
 				if(aBandit.criticalDamage() == true) {
 					allEffects.add(aBandit.getExplosionAnimation());
-					banditIter.remove();
+					
+					if(airborne == true) {
+						banditIter.remove();
+					}
 				}
 				//gameover();
 				return;
@@ -441,10 +451,11 @@ public class Board extends JPanel implements ActionListener {
 				aBuilding.dealDamage(damage);
 				if(aBuilding.criticalDamage() == true) {
 					allEffects.add(aBuilding.getExplosionAnimation());
-					buildingIter.remove();
 				}
 				projectileIter.remove();
 			}
+			
+			List<Effect> effectsToAdd = new ArrayList<>();
 			
 			for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
 				Effect anEffect = effectIter.next();
@@ -463,10 +474,11 @@ public class Board extends JPanel implements ActionListener {
 				int damage = anEffect.getDamage();
 				aBuilding.dealDamage(damage);
 				if(aBuilding.criticalDamage() == true) {
-					allEffects.add(aBuilding.getExplosionAnimation());
-					buildingIter.remove();
+					effectsToAdd.add(aBuilding.getExplosionAnimation());
 				}
 			}
+			
+			allEffects.addAll(effectsToAdd);
 		}
 	}
 	
@@ -631,16 +643,6 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updateBackground(Graphics2D g2d) {
-/*		//System.out.println(background.getWidth(null));
-		int vertOffset = BACKGROUND_HEIGHT * (positionY / BACKGROUND_HEIGHT);
-		//System.out.println("X: " + player.getX());
-		//System.out.println("Offset: " + offset);
-		//System.out.println("Mod: " + player.getX() / 512);
-		
-		g2d.drawImage(background, 0, positionY - (vertOffset - BACKGROUND_HEIGHT), null);
-		g2d.drawImage(background, 0, positionY - vertOffset, null);
-		g2d.drawImage(background, 0, positionY - (vertOffset + BACKGROUND_HEIGHT), null);*/
-		
 		for(Entity aSector : currentLevel.getAllSectors()) {
 			if(checkWithinView(aSector) == false) {
 				continue;

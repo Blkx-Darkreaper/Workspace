@@ -2,6 +2,7 @@ package Strikeforce;
 
 import static Strikeforce.Global.*;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class Vehicle extends Mover {
 	protected int boostMultiplier = 1;
 	protected int revs = 0;
 	protected int turnSpeed;
+	protected int MAX_SPEED = 3;
+	protected boolean invulnerable = false;
 	
 	protected int firingDirection = 0;
 	protected int turretTurnSpeed;
@@ -23,9 +26,7 @@ public class Vehicle extends Mover {
 	
 	protected List<Projectile> allProjectiles;
 	
-	protected boolean invulnerable = false;
-	
-	protected int MAX_SPEED = 3;
+	protected Image imageDestroyed;
 
 	public Vehicle(ImageIcon icon, int startingX, int startingY, int inDirection, int inAltitude) {
 		super(icon, startingX, startingY, inDirection, inAltitude);
@@ -42,6 +43,10 @@ public class Vehicle extends Mover {
 		turnSpeed = 10;
 		turretTurnSpeed = 5;
 		allProjectiles = new ArrayList<>();
+		
+		String extension = "png";
+		ImageIcon icon = resLoader.getImageIcon(inName + "destroyed" + "." + extension);
+		imageDestroyed = icon.getImage();
 	}
 	
 	public int getHitPoints() {
@@ -244,6 +249,7 @@ public class Vehicle extends Mover {
 			return false;
 		}
 		
+		currentImage = imageDestroyed;
 		return true;
 	}
 	
