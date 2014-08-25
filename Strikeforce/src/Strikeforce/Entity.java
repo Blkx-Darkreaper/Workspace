@@ -100,7 +100,7 @@ public class Entity {
 		int width = currentImage.getWidth(null);
 		int height = currentImage.getHeight(null);
 		
-		int radius = Math.min(width, height);
+		int radius = Math.round(Math.min(width, height) / 2);
 		return new Circle(centerX, centerY, radius);
 	}
 	

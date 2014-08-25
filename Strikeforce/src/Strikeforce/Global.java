@@ -50,13 +50,14 @@ public class Global {
 			ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
+			boolean hitsAir = true;
 			boolean hitsGround = false;
 			boolean live = true;
 			
 			/*allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
 					damage, inDirection, inAltitude));*/
 			allShots.add(new Projectile(bulletName, startX, startY, inDirection, inAltitude, 
-					muzzleVelocity, damage, hitsGround, live));
+					muzzleVelocity, damage, hitsAir, hitsGround, live));
 			
 			return allShots;
 		}
@@ -75,6 +76,7 @@ public class Global {
 			ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 			int startX = originX;
 			int startY = originY + bulletIcon.getIconHeight() / 2;
+			boolean hitsAir = true;
 			boolean hitsGround = false;
 			boolean live = true;
 			
@@ -83,9 +85,9 @@ public class Global {
 			allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
 					damage, inDirection + 15, inAltitude));*/
 			allShots.add(new Projectile(bulletName, startX, startY, inDirection - 15, inAltitude, 
-					muzzleVelocity, damage, hitsGround, live));
+					muzzleVelocity, damage, hitsAir, hitsGround, live));
 			allShots.add(new Projectile(bulletName, startX, startY, inDirection + 15, inAltitude, 
-					muzzleVelocity, damage, hitsGround, live));
+					muzzleVelocity, damage, hitsAir, hitsGround, live));
 			
 			return allShots;
 		}
@@ -101,16 +103,17 @@ public class Global {
 			List<Projectile> allShots = new ArrayList<>();
 			
 			String bombName = "bomb";
+			boolean hitsAir = false;
 			boolean hitsGround = true;
 			int fuseDelay = 100;
 			boolean falls = true;
 			int frames = 8;
 			int frameSpeed = 2;
-			int blastRadius = 30;
+			String blastRadius = "huge";
 			boolean live = false;
 
 			allShots.add(new Bomb(bombName, originX, originY, inDirection, inAltitude, muzzleVelocity, damage, 
-					hitsGround, live, fuseDelay, falls, blastRadius, frames, frameSpeed));
+					hitsAir, hitsGround, live, fuseDelay, falls, blastRadius, frames, frameSpeed));
 			
 			return allShots;
 		}

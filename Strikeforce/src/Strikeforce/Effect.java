@@ -12,12 +12,9 @@ public class Effect extends Entity {
 	private int frameSpeed;
 	private int count = 0;
 	private boolean animationOver = false;
-
-	public Effect(ImageIcon icon, int startX, int startY, List<Image> inImages, int inFrameSpeed, int inAltitude) {
-		super(icon, startX, startY, 0, inAltitude);
-		animationImages = inImages;
-		frameSpeed = inFrameSpeed;
-	}
+	protected int damage;
+	protected boolean hitsAir;
+	protected boolean hitsGround;
 	
 	public Effect(String inName, int inX, int inY, int inDirection, int inAltitude, int frames, int inFrameSpeed) {
 		super(inName + "1", inX, inY, inDirection, inAltitude);
@@ -27,10 +24,38 @@ public class Effect extends Entity {
 			animationImages.add(image);
 		}
 		frameSpeed = inFrameSpeed;
+		hitsAir = false;
+		hitsGround = false;
+	}
+	
+	public Effect(String inName, int inX, int inY, int inDirection, int inAltitude, int frames, int inFrameSpeed, 
+			int inDamage, boolean inHitsAir, boolean inHitsGround) {
+		super(inName + "1", inX, inY, inDirection, inAltitude);
+		for(int i = 2; i <= frames; i++) {
+			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
+			Image image = icon.getImage();
+			animationImages.add(image);
+		}
+		frameSpeed = inFrameSpeed;
+		damage = inDamage;
+		hitsAir = inHitsAir;
+		hitsGround = inHitsGround;
 	}
 	
 	public boolean getAnimationOver() {
 		return animationOver;
+	}
+	
+	public int getDamage() {
+		return damage;
+	}
+	
+	public boolean getHitsAir() {
+		return hitsAir;
+	}
+	
+	public boolean getHitsGround() {
+		return hitsGround;
 	}
 
 	public void animate() {

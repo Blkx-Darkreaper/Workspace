@@ -194,8 +194,16 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
-		for(Effect anEffect : allEffects) {
+		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+			Effect anEffect = effectIter.next();
 			anEffect.animate();
+			
+			boolean animationOver = anEffect.getAnimationOver();
+			if(animationOver == false) {
+				continue;
+			}
+			
+			effectIter.remove();
 		}
 		
 		for(Iterator<Projectile> projectileIter = player.getAllProjectiles().iterator(); projectileIter.hasNext();) {
@@ -208,6 +216,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			allEffects.add(aProjectile.getExplosionAnimation());
+			projectileIter.remove();
 		}
 		
 		repaint();
@@ -289,6 +298,7 @@ public class Board extends JPanel implements ActionListener {
 		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
 		for(Iterator<Vehicle> banditIter = allVehicles.iterator(); banditIter.hasNext();) {
 			Vehicle aBandit = banditIter.next();
+			boolean airborne = aBandit.getAirborne();
 
 			for(Iterator<Projectile> projectileIter = allFriendlyProjectiles.iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
@@ -298,10 +308,19 @@ public class Board extends JPanel implements ActionListener {
 					continue;
 				}
 				
-				boolean airborne = aBandit.getAirborne();
 				boolean hitsGround = aProjectile.getHitsGround();
-				if(airborne == hitsGround) {
-					continue;
+				boolean hitsAir = aProjectile.getHitsAir();
+				if(airborne == true) {
+					
+					if(hitsAir == false) {
+						continue;
+					}
+
+				} else {
+					
+					if(hitsGround == false) {
+						continue;
+					}
 				}
 				
 				boolean collision = aBandit.checkForCollision(aProjectile);
@@ -318,6 +337,40 @@ public class Board extends JPanel implements ActionListener {
 				}
 				projectileIter.remove();
 			}
+			
+			List<Effect> effectsToAdd = new ArrayList<>();
+			for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+				Effect anEffect = effectIter.next();
+				
+				boolean hitsAir = anEffect.getHitsAir();
+				boolean hitsGround = anEffect.getHitsGround();
+				if(airborne == true) {
+					
+					if(hitsAir == false) {
+						continue;
+					}
+
+				} else {
+					
+					if(hitsGround == false) {
+						continue;
+					}
+				}
+				
+				boolean collision = aBandit.checkForCollision(anEffect);
+				
+				if(collision == false) {
+					continue;
+				}
+				
+				int damage = anEffect.getDamage();
+				aBandit.dealDamage(damage);
+				if(aBandit.criticalDamage() == true) {
+					effectsToAdd.add(aBandit.getExplosionAnimation());
+					banditIter.remove();
+				}
+			}
+			allEffects.addAll(effectsToAdd);
 			
 			if(playerCraft.getInvulnerable() == true) {
 				continue;
@@ -344,7 +397,6 @@ public class Board extends JPanel implements ActionListener {
 				projectileIter.remove();
 			}
 			
-			boolean airborne = aBandit.getAirborne();
 			if(airborne == false) {
 				continue;
 			}
@@ -392,6 +444,28 @@ public class Board extends JPanel implements ActionListener {
 					buildingIter.remove();
 				}
 				projectileIter.remove();
+			}
+			
+			for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+				Effect anEffect = effectIter.next();
+				
+				boolean hitsGround = anEffect.getHitsGround();
+				if(hitsGround == false) {
+					continue;
+				}
+				
+				boolean collision = aBuilding.checkForCollision(anEffect);
+				
+				if(collision == false) {
+					continue;
+				}
+				
+				int damage = anEffect.getDamage();
+				aBuilding.dealDamage(damage);
+				if(aBuilding.criticalDamage() == true) {
+					allEffects.add(aBuilding.getExplosionAnimation());
+					buildingIter.remove();
+				}
 			}
 		}
 	}

@@ -20,12 +20,12 @@ public class Bomb extends Projectile {
 	protected int frameSpeed;
 	protected int fuseDelay;
 	protected boolean falls;
-	protected int blastRadius;
+	protected String blastRadius;
 
 	public Bomb(String inName, int inX, int inY, int inDirection,
-			int inAltitude, int inSpeed, int inDamage, boolean inHitsGround, boolean inLive, int inFuseDelay, 
-			boolean inFalls, int inBlastRadius, int frames, int inFrameSpeed) {
-		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsGround, inLive);
+			int inAltitude, int inSpeed, int inDamage, boolean inHitsAir, boolean inHitsGround, boolean inLive, 
+			int inFuseDelay, boolean inFalls, String inBlastRadius, int frames, int inFrameSpeed) {
+		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsAir, inHitsGround, inLive);
 		
 		for(int i = 2; i <= frames; i++) {
 			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
@@ -48,35 +48,12 @@ public class Bomb extends Projectile {
 	
 	@Override
 	public Effect getExplosionAnimation() {
-		String explosionSize = "";
-
-/*		if(blastRadius < 10) {
-			explosionSize = "small";
-		}*/
-		if(blastRadius > 16) {
-			explosionSize = "big";
-		}
-		if(blastRadius > 24) {
-			explosionSize = "huge";
-		}
-/*		if(blastRadius > 32) {
-			explosionSize = "massive";
-		}*/
 		
-		String animationName = chooseExplosionAnimation(explosionSize);
+		String animationName = chooseExplosionAnimation(blastRadius);
 		int frameSpeed = 2;
 		Effect explosion = new Effect(animationName, centerX, centerY, direction, altitude, 
-				EXPLOSION_ANIMATION_FRAMES, frameSpeed);
+				EXPLOSION_ANIMATION_FRAMES, frameSpeed, damage, hitsAir, hitsGround);
 		return explosion;
-	}
-	
-	@Override
-	public Circle getCircularHitBox() {
-		if(detonate == false) {
-			return super.getCircularHitBox();
-		}
-		
-		return new Circle(centerX, centerY, blastRadius);
 	}
 	
 	public void animate() {
