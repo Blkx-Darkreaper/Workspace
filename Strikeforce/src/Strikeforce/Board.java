@@ -20,13 +20,15 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
+	private String currentPhase = "Planning";
 	private int windowScale = 1;
 	private static View view;
 	static Level currentLevel;
-	private static Player player;
+	private static Fighter playerFighter;
+	private static Cursor playerCursor;
 	private List<Effect> allEffects;
 	private List<Vehicle> allVehicles;
-	private List<Building> allBuildings;
+	private static List<Building> allBuildings;
 	private Timer time;
 
 	public Board() {
@@ -42,6 +44,12 @@ public class Board extends JPanel implements ActionListener {
 		view = new View(viewIcon, viewX, viewY, direction, altitude);
 		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
+		String name = "cursor";
+		int cursorX = CELL_SIZE / 2;
+		int cursorY = CELL_SIZE / 2;
+		int levelTop = LEVEL_HEIGHT;
+		playerCursor = new Cursor(name, cursorX, cursorY, levelTop);
+		
 		String playerName = "f18";
 		int startX = currentLevel.getWidth() / 2;
 		int startY = 100;
@@ -49,20 +57,20 @@ public class Board extends JPanel implements ActionListener {
 		altitude = 50;
 		int speed = 1;
 		int hitPoints = 1;
-		player = new Player(playerName, startX, startY, direction, altitude, speed, hitPoints);
+		playerFighter = new Fighter(playerName, startX, startY, direction, altitude, speed, hitPoints);
 		List<Weapon> basicWeaponSetup = new ArrayList<>();
 		List<Weapon> otherWeaponSetup = new ArrayList<>();
 		basicWeaponSetup.add(singleShot);
 		basicWeaponSetup.add(splitShot);
 		otherWeaponSetup.add(dumbBomb);
-		player.setWeaponSetA(basicWeaponSetup);
-		player.setWeaponSetB(otherWeaponSetup);
+		playerFighter.setWeaponSetA(basicWeaponSetup);
+		playerFighter.setWeaponSetB(otherWeaponSetup);
 		
 		allEffects = new ArrayList<>();
 		allVehicles = new ArrayList<>();
 		allBuildings = new ArrayList<>();
 		
-		String name = "airstrip";
+		name = "airstrip";
 		startX = 150;
 		startY = 2000;
 		direction = 180;
@@ -127,12 +135,20 @@ public class Board extends JPanel implements ActionListener {
 		time.start();
 	}
 	
+	public String getPhase () {
+		return currentPhase;
+	}
+	
+	public void setPhase(String inPhase) {
+		currentPhase = inPhase;
+	}
+	
 	public View getView() {
 		return view;
 	}
 	
-	public static Player getPlayer() {
-		return player;
+	public static Fighter getPlayer() {
+		return playerFighter;
 	}
 	
 	public List<Vehicle> getAllVehicles() {
@@ -157,16 +173,32 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		String currentPhase = player.getPhase();
-		if(currentPhase != "Raid") {
-			return;
+		switch(currentPhase) {
+		case "Planning":
+			planningMode();
+			break;
+		case "Build":
+			break;
+		case "Raid":
+			raidMode();
+			break;
 		}
 		
+		repaint();
+	}
+	
+	private void planningMode() {
+		view.update();
+		playerCursor.update();
+		keepPlayerInView();
+	}
+	
+	private void raidMode() {
 		setViewScrollRate();
 		setViewPanRate();
-		view.move();
+		view.update();
 		
-		player.move();
+		playerFighter.update();
 		keepPlayerInView();
 		//System.out.println("X: " + player.getPlayerCraft().getX() + ", Y: " + player.getPlayerCraft().getY()); //debug
 		
@@ -177,11 +209,11 @@ public class Board extends JPanel implements ActionListener {
 		
 		for(Vehicle aVehicle : allVehicles) {
 			aVehicle.sortie();
-			aVehicle.move();
+			aVehicle.update();
 			
 			for(Iterator<Projectile> projectileIter = aVehicle.getAllProjectiles().iterator(); projectileIter.hasNext();) {
 				Projectile aProjectile = projectileIter.next();
-				aProjectile.move();
+				aProjectile.update();
 				
 				boolean detonate = aProjectile.getDetonate();
 				if(detonate == false) {
@@ -205,9 +237,9 @@ public class Board extends JPanel implements ActionListener {
 			effectIter.remove();
 		}
 		
-		for(Iterator<Projectile> projectileIter = player.getAllProjectiles().iterator(); projectileIter.hasNext();) {
+		for(Iterator<Projectile> projectileIter = playerFighter.getAllProjectiles().iterator(); projectileIter.hasNext();) {
 			Projectile aProjectile = projectileIter.next();
-			aProjectile.move();
+			aProjectile.update();
 			
 			boolean detonate = aProjectile.getDetonate();
 			if(detonate == false) {
@@ -217,38 +249,62 @@ public class Board extends JPanel implements ActionListener {
 			allEffects.add(aProjectile.getExplosionAnimation());
 			projectileIter.remove();
 		}
-		
-		repaint();
 	}
 	
 	private void keepPlayerInView() {
-		boolean looping = player.getLooping();
-		if(looping == true) {
-			return;
-		}
+		int upperBoundsY;
+		int lowerBoundsY;
 		
-		int upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
-		int lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
+		int playerX;
+		int playerY;
 		
-		int playerY = player.getCenterY();
-		int altitude = player.getAltitude();
-		double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
-		int halfPlayerHeight = (int) Math.round(player.getImage().getHeight(null) * scale / 2);
-		
-		if((playerY - halfPlayerHeight) < lowerBoundsY) {
-			player.setY(lowerBoundsY + halfPlayerHeight);
-		}
-		
-		if((playerY + halfPlayerHeight) > upperBoundsY) {
-			player.setY(upperBoundsY - halfPlayerHeight);
+		switch (currentPhase) {
+		case "Raid":
+			boolean looping = playerFighter.getLooping();
+			if(looping == true) {
+				return;
+			}
+			
+			upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
+			lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
+			
+			playerY = playerFighter.getCenterY();
+			int altitude = playerFighter.getAltitude();
+			double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
+			int halfPlayerHeight = (int) Math.round(playerFighter.getImage().getHeight(null) * scale / 2);
+			
+			if((playerY - halfPlayerHeight) < lowerBoundsY) {
+				playerFighter.setY(lowerBoundsY + halfPlayerHeight);
+			}
+			
+			if((playerY + halfPlayerHeight) > upperBoundsY) {
+				playerFighter.setY(upperBoundsY - halfPlayerHeight);
+			}
+			break;
+			
+		case "Planning":
+			upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
+			lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
+			
+			playerX = playerCursor.getCenterX();
+			playerY = playerCursor.getCenterY();
+			
+			if((playerY - CELL_SIZE / 2) < lowerBoundsY) {
+				view.moveDown();
+			}
+			
+			if((playerY + CELL_SIZE / 2) > upperBoundsY) {
+				view.moveUp();
+			}
+			break;
 		}
 	}
 
 	private void setViewPanRate() {
-		int panRate = player.getSpeed();
+		int panRate = playerFighter.getSpeed();
 		int panDirection = 0;
 
-		int playerX = player.getCenterX();
+		int playerX = playerFighter.getCenterX();
 		int viewX = view.getCenterX();
 		int thirdViewWidth = VIEW_WIDTH / 3;
 		
@@ -264,7 +320,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void setViewScrollRate() {
-		int scrollRate = player.getSpeed();
+		int scrollRate = playerFighter.getSpeed();
 		view.setSpeed(scrollRate);
 	}
 
@@ -293,7 +349,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void detectCollisions () {
-		Aircraft playerCraft = player;
+		Aircraft playerCraft = playerFighter;
 		List<Projectile> allFriendlyProjectiles = playerCraft.getAllProjectiles();
 		for(Iterator<Vehicle> banditIter = allVehicles.iterator(); banditIter.hasNext();) {
 			Vehicle aBandit = banditIter.next();
@@ -395,9 +451,9 @@ public class Board extends JPanel implements ActionListener {
 				}
 				
 				int damage = aProjectile.getDamage();
-				player.dealDamage(damage);
-				if(player.criticalDamage() == true) {
-					allEffects.add(player.getExplosionAnimation());
+				playerFighter.dealDamage(damage);
+				if(playerFighter.criticalDamage() == true) {
+					allEffects.add(playerFighter.getExplosionAnimation());
 					//gameover();
 					return;
 				}
@@ -514,7 +570,11 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
-		for(Iterator<Projectile> bulletIter = player.getAllProjectiles().iterator(); 
+		if(currentPhase != "Raid") {
+			return;
+		}
+		
+		for(Iterator<Projectile> bulletIter = playerFighter.getAllProjectiles().iterator(); 
 				bulletIter.hasNext();) {
 			Projectile aProjectile = bulletIter.next();
 			
@@ -528,7 +588,16 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updatePlayer(Graphics2D g2d) {
-		drawEntity(g2d, player);
+		switch (currentPhase) {
+		case "Planning":
+			drawEntity(g2d, playerCursor);
+			break;
+		case "Build":
+			break;
+		case "Raid":
+			drawEntity(g2d, playerFighter);
+			break;
+		}
 	}
 
 	private void updateGroundVehicles(Graphics2D g2d) {
@@ -601,7 +670,11 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateAirEnemies(Graphics2D g2d) {
-		allVehicles.addAll(currentLevel.spawnLine(player.getCenterY()));
+		if(currentPhase != "Raid") {
+			return;
+		}
+		
+		allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
 		
 		for(Iterator<Vehicle> airborneIter = allVehicles.iterator(); airborneIter.hasNext();) {
 			Vehicle aBandit = airborneIter.next();
@@ -631,6 +704,10 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateEffects(Graphics2D g2d) {
+		if(currentPhase != "Raid") {
+			return;
+		}
+		
 		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
 			Effect anEffect = effectIter.next();
 			
@@ -652,20 +729,57 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
+	public static Building selectBuildingInArea(Rectangle areaToCheck) {
+		for(Building aBuilding : allBuildings) {
+			Rectangle hitBox = aBuilding.getBounds();
+			boolean inArea = areaToCheck.intersects(hitBox);
+			
+			if(inArea == false) {
+				continue;
+			}
+			
+			return aBuilding;
+		}
+		
+		return null;
+	}
+	
 	public void gameover() {
 		JOptionPane.showMessageDialog(null, "You have been shot down!", "Game Over", 
 				JOptionPane.INFORMATION_MESSAGE);
-		player.gameover();
+		playerFighter.gameover();
 	}
 	
 	private class KeyActionListener extends KeyAdapter {
 		
 		public void keyReleased (KeyEvent e) {
-			player.keyReleased(e);
+			String phase = getPhase();
+			
+			switch(phase) {
+			case "Planning":
+				playerCursor.keyReleased(e);
+				break;
+			case "Build":
+				break;
+			case "Raid":
+				playerFighter.keyReleased(e);
+				break;
+			}
 		}
 		
 		public void keyPressed (KeyEvent e) {
-			player.keyPressed(e);
+			String phase = getPhase();
+			
+			switch(phase) {
+			case "Planning":
+				playerCursor.keyPressed(e);
+				break;
+			case "Build":
+				break;
+			case "Raid":
+				playerFighter.keyPressed(e);
+				break;
+			}
 		}
 	}
 }
@@ -684,12 +798,52 @@ class View extends Mover {
 		Rectangle viewBox = getBounds();
 		return toCheck.getBounds().intersects(viewBox);
 	}
+	
+	@Override
+	public void moveUp() {
+		super.moveUp();
+		
+/*		int topEdge = LEVEL_HEIGHT - VIEW_HEIGHT / 2;
+		if(centerY > topEdge) {
+			centerY = topEdge;
+		}*/
+	}
+	
+	@Override
+	public void moveDown() {
+		super.moveDown();
+		
+		int bottomEdge = VIEW_HEIGHT / 2;
+		if(centerY < bottomEdge) {
+			centerY = bottomEdge;
+		}
+	}
+	
+	@Override
+	public void moveLeft() {
+		super.moveLeft();
+		
+		int leftEdge = VIEW_WIDTH / 2;
+		if(centerX < leftEdge) {
+			centerX = leftEdge;
+		}
+	}
+	
+	@Override
+	public void moveRight() {
+		super.moveRight();
+		
+		int rightEdge = LEVEL_WIDTH - VIEW_WIDTH / 2;
+		if(centerX > rightEdge) {
+			centerX = rightEdge;
+		}
+	}
 }
 
 class Level {
 	
-	private static final int CELL_HEIGHT = 16;
-	private static final int CELL_WIDTH = 16;
+	private static final int CELL_HEIGHT = CELL_SIZE;
+	private static final int CELL_WIDTH = CELL_SIZE;
 	
 	private List<Entity> allSectors = new ArrayList<>();
 	private List<String> spawnLines = new ArrayList<>();
@@ -720,12 +874,18 @@ class Level {
 		int direction = 0;
 		int altitude = 0;
 		
+		int levelHeight = BACKGROUND_HEIGHT;
+		
 		for(int i = 1; i < 9; i++) {
 			backgroundIcon = resLoader.getImageIcon("Germany" + i + ".png");
 			Entity sector = new Entity(backgroundIcon, startPositionX, startPositionY, direction, altitude);
 			allSectors.add(sector);
 			startPositionY += backgroundIcon.getIconHeight();
+			levelHeight += backgroundIcon.getIconHeight();
 		}
+		
+		LEVEL_WIDTH = BACKGROUND_WIDTH;
+		LEVEL_HEIGHT = levelHeight;
 	}
 	
 	public List<Aircraft> spawnLine(int playerY) {

@@ -189,7 +189,7 @@ public class Aircraft extends Vehicle {
 	}
 	
 	@Override
-	public void move() {
+	public void update() {
 		if(looping == true) {
 			doLoop();
 		}
@@ -198,7 +198,7 @@ public class Aircraft extends Vehicle {
 			boost();
 		}
 		
-		super.move();
+		super.update();
 	}
 	
 	public void doLoop() {

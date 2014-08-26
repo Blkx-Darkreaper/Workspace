@@ -19,7 +19,9 @@ public class Global {
 	public static final int VIEW_POSITION_X = 100;
 	public static final int VIEW_POSITION_Y = 50;
 	
-	public static final int LEVEL_WIDTH = 400;
+	public static final int CELL_SIZE = 16;
+	public static int LEVEL_WIDTH;
+	public static int LEVEL_HEIGHT;
 
 	public static final int UPPER_BOUNDS_X = LEVEL_WIDTH - 10;
 	public static final int LOWER_BOUNDS_X = 10;

@@ -110,8 +110,8 @@ public class Vehicle extends Mover {
 	}
 	
 	@Override
-	public void move() {
-		super.move();
+	public void update() {
+		super.update();
 		
 		if(weaponSetA != null) {
 			for(Weapon aWeapon : weaponSetA) {

@@ -4,9 +4,8 @@ import java.awt.event.KeyEvent;
 
 import static Strikeforce.Global.*;
 
-public class Player extends Aircraft {
+public class Fighter extends Aircraft {
 	
-	private String phase = "Raid";
 	private boolean playerFiringA = false;
 	private boolean playerFiringB = false;
 	private boolean playerBoosting = false;
@@ -20,16 +19,8 @@ public class Player extends Aircraft {
 	private final int boostKey = KeyEvent.VK_D;
 	private final int doLoopKey = KeyEvent.VK_F;
 	
-	public Player(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
+	public Fighter(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
 		super(inName, inX, inY, inDirection, inAltitude, inSpeed, inHitPoints);
-	}
-	
-	public String getPhase () {
-		return phase;
-	}
-	
-	public void setPhase(String inPhase) {
-		phase = inPhase;
 	}
 	
 	public boolean getPlayerFiringA () {
@@ -127,18 +118,6 @@ public class Player extends Aircraft {
 			setPlayerBoosting(false);
 			break;
 		}
-	}
-	
-	private void planningPhase (int keyPressed) {
-		
-	}
-	
-	private void buildPhase (int keyPressed) {
-		
-	}
-	
-	private void raidPhase (int keyPressed) {
-		
 	}
 
 	public void gameover() {

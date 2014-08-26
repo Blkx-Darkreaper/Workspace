@@ -104,6 +104,18 @@ public class Entity {
 		return new Circle(centerX, centerY, radius);
 	}
 	
+	public int compareTo (Entity other) {
+		int difference = centerX - other.getCenterX();
+		
+		if(difference != 0) {
+			return difference;
+		}
+		
+		difference = centerY - other.getCenterY();
+		
+		return difference;
+	}
+	
 	public boolean checkForCollision(Entity other) {
 		//return other.getBounds().intersects(getBounds());
 		return other.getCircularHitBox().intersects(getCircularHitBox());

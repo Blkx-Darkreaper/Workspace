@@ -72,7 +72,7 @@ public class Bomb extends Projectile {
 	}
 	
 	@Override
-	public void move() {
+	public void update() {
 		animate();
 		
 		fuseDelay--;
@@ -81,7 +81,7 @@ public class Bomb extends Projectile {
 			fall();
 		}
 		
-		super.move();
+		super.update();
 		
 		detonate();
 	}

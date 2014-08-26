@@ -1,6 +1,7 @@
 package Strikeforce;
 
 import static Strikeforce.Board.*;
+import static Strikeforce.Global.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class Mover extends Entity {
 		updateVectors();
 	}
 
-	public void move() {
+	public void update() {
 		centerX += dx;
 		centerY += dy;
 		
@@ -75,5 +76,21 @@ public class Mover extends Entity {
 		if(centerY < lowerBoundsY) {
 			centerY = lowerBoundsY;
 		}*/
+	}
+	
+	public void moveUp() {
+		centerY += CELL_SIZE;
+	}
+	
+	public void moveDown() {
+		centerY -= CELL_SIZE;
+	}
+	
+	public void moveLeft() {
+		centerX -= CELL_SIZE;
+	}
+	
+	public void moveRight() {
+		centerX += CELL_SIZE;
 	}
 }
