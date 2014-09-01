@@ -19,21 +19,6 @@ public class Hangar extends Building {
 	private Airstrip nearestRunway;
 	private Queue<Point> patrolPath;
 
-	public Hangar(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude, 
-			Deque<Bandit> inContents, Board inWorld) {
-		super(icon, startX, startY, inDirection, inAltitude);
-		
-		contents = inContents;
-		world = inWorld;
-		
-		spawnPoint = new Point(startX, startY);
-		
-		int distance = Math.max(icon.getIconWidth(), icon.getIconHeight());
-		int offsetX = (int) (.75 * distance * Math.sin(Math.toRadians(direction)));
-		int offsetY = (int) (.75 * distance * Math.cos(Math.toRadians(direction)));
-		departurePoint = new Point(startX + offsetX, startY + offsetY);
-	}
-	
 	public Hangar(String inName, int inX, int inY, int inDirection, int inAltitude, int inHitPoints, Deque<Bandit> inContents, Board inWorld) {
 		super(inName, inX, inY, inDirection, inAltitude, inHitPoints);
 		

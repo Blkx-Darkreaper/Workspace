@@ -627,7 +627,7 @@ public class Bandit extends Aircraft {
 			}
 			
 			if(altitude != 0) {
-				dive();
+				descend();
 			}
 			
 			range = 5;

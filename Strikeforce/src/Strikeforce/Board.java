@@ -3,6 +3,7 @@ package Strikeforce;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 
-	private String currentPhase = "Planning";
+	private String currentPhase = "Build";
 	private int windowScale = 1;
 	private static View view;
 	static Level currentLevel;
@@ -36,12 +37,12 @@ public class Board extends JPanel implements ActionListener {
 		
 		currentLevel = new Level("1");
 		
-		ImageIcon viewIcon = resLoader.getImageIcon("view.png");
+		String viewName = "view";
 		int viewX = currentLevel.getWidth() / 2;
 		int viewY = VIEW_HEIGHT / 2;
 		int direction = 0;
 		int altitude = 0;
-		view = new View(viewIcon, viewX, viewY, direction, altitude);
+		view = new View(viewName, viewX, viewY, direction, altitude);
 		//view = new View(BACKGROUND_WIDTH / 2, VIEW_HEIGHT / 2, VIEW_WIDTH, VIEW_HEIGHT);
 		
 		String name = "cursor";
@@ -178,6 +179,7 @@ public class Board extends JPanel implements ActionListener {
 			planningMode();
 			break;
 		case "Build":
+			buildMode();
 			break;
 		case "Raid":
 			raidMode();
@@ -191,6 +193,60 @@ public class Board extends JPanel implements ActionListener {
 		view.update();
 		playerCursor.update();
 		keepPlayerInView();
+	}
+	
+	private void buildMode() {
+		view.update();
+		playerCursor.update();
+		keepPlayerInView();
+		
+		for(Building aBuilding : allBuildings) {
+			aBuilding.spawn();
+			aBuilding.takeoffsAndLandings();
+		}
+		
+		for(Vehicle aVehicle : allVehicles) {
+			aVehicle.sortie();
+			aVehicle.update();
+			
+			for(Iterator<Projectile> projectileIter = aVehicle.getAllProjectiles().iterator(); projectileIter.hasNext();) {
+				Projectile aProjectile = projectileIter.next();
+				aProjectile.update();
+				
+				boolean detonate = aProjectile.getDetonate();
+				if(detonate == false) {
+					continue;
+				}
+				
+				allEffects.add(aProjectile.getExplosionAnimation());
+				projectileIter.remove();
+			}
+		}
+		
+		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+			Effect anEffect = effectIter.next();
+			anEffect.animate();
+			
+			boolean animationOver = anEffect.getAnimationOver();
+			if(animationOver == false) {
+				continue;
+			}
+			
+			effectIter.remove();
+		}
+		
+		for(Iterator<Projectile> projectileIter = playerFighter.getAllProjectiles().iterator(); projectileIter.hasNext();) {
+			Projectile aProjectile = projectileIter.next();
+			aProjectile.update();
+			
+			boolean detonate = aProjectile.getDetonate();
+			if(detonate == false) {
+				continue;
+			}
+			
+			allEffects.add(aProjectile.getExplosionAnimation());
+			projectileIter.remove();
+		}
 	}
 	
 	private void raidMode() {
@@ -297,6 +353,22 @@ public class Board extends JPanel implements ActionListener {
 				view.moveUp();
 			}
 			break;
+			
+		case "Build":
+			upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
+			lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
+			
+			playerX = playerCursor.getCenterX();
+			playerY = playerCursor.getCenterY();
+			
+			if((playerY - CELL_SIZE / 2) < lowerBoundsY) {
+				view.moveDown();
+			}
+			
+			if((playerY + CELL_SIZE / 2) > upperBoundsY) {
+				view.moveUp();
+			}
+			break;
 		}
 	}
 
@@ -342,6 +414,8 @@ public class Board extends JPanel implements ActionListener {
 		
 		// View bounds
 		drawEntity(g2d, view); //debug
+		
+		g2d.dispose();
 	}
 
 	public static boolean checkWithinView(Entity toCheck) {
@@ -541,10 +615,9 @@ public class Board extends JPanel implements ActionListener {
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
 		AffineTransform defaultOrientation = g2d.getTransform();
 		
-		Image image = toDraw.getImage();
+		BufferedImage image = toDraw.getImage();
 		
-		int altitude = toDraw.getAltitude();
-		double scale = windowScale + (double) altitude / MAX_ALTITUDE_SKY;
+		double scale = windowScale * toDraw.getScale();
 		
 		int width = image.getWidth(null);
 		int height = image.getHeight(null);
@@ -565,6 +638,16 @@ public class Board extends JPanel implements ActionListener {
 
 		//g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
 		g2d.drawImage(image, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
+		
+		boolean selected = toDraw.getIsSelected();
+		if(selected == true) {
+			g2d.setStroke(new BasicStroke(2));
+			g2d.setColor(Color.RED);
+			//g2d.setPaint(Color.RED);
+			
+			Rectangle imageBox = toDraw.getBounds();
+			g2d.draw(imageBox);
+		}
 		
 		g2d.setTransform(defaultOrientation);
 	}
@@ -593,6 +676,7 @@ public class Board extends JPanel implements ActionListener {
 			drawEntity(g2d, playerCursor);
 			break;
 		case "Build":
+			drawEntity(g2d, playerCursor);
 			break;
 		case "Raid":
 			drawEntity(g2d, playerFighter);
@@ -670,9 +754,9 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void updateAirEnemies(Graphics2D g2d) {
-		if(currentPhase != "Raid") {
+/*		if(currentPhase != "Raid") {
 			return;
-		}
+		}*/
 		
 		allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
 		
@@ -760,6 +844,7 @@ public class Board extends JPanel implements ActionListener {
 				playerCursor.keyReleased(e);
 				break;
 			case "Build":
+				playerCursor.keyReleased(e);
 				break;
 			case "Raid":
 				playerFighter.keyReleased(e);
@@ -775,6 +860,7 @@ public class Board extends JPanel implements ActionListener {
 				playerCursor.keyPressed(e);
 				break;
 			case "Build":
+				playerCursor.keyPressed(e);
 				break;
 			case "Raid":
 				playerFighter.keyPressed(e);
@@ -790,8 +876,8 @@ class View extends Mover {
 		super(startX, startY, inWidth, inHeight);
 	}
 	
-	public View (ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
-		super(icon, startX, startY, inDirection, inAltitude);
+	public View (String inName, int startX, int startY, int inDirection, int inAltitude) {
+		super(inName, startX, startY, inDirection, inAltitude, 0);
 	}
 	
 	public boolean checkWithinBounds(Entity toCheck) {
@@ -864,11 +950,12 @@ class Level {
 		spawnedLines = new boolean[spawnLines.size()];
 		
 		
-		ImageIcon backgroundIcon = resLoader.getImageIcon("Germany1.png");
-		Image background = backgroundIcon.getImage();
+		String backgroundName = "Germany1";
+		Entity background = new Entity(backgroundName, 0, 0, 0, 0);
+		BufferedImage backgroundImage = background.getImage();
 		
-		BACKGROUND_HEIGHT = background.getHeight(null);
-		BACKGROUND_WIDTH = background.getWidth(null);
+		BACKGROUND_HEIGHT = backgroundImage.getHeight(null);
+		BACKGROUND_WIDTH = backgroundImage.getWidth(null);
 		int startPositionX = BACKGROUND_WIDTH / 2;
 		int startPositionY = BACKGROUND_HEIGHT / 2;
 		int direction = 0;
@@ -877,11 +964,11 @@ class Level {
 		int levelHeight = BACKGROUND_HEIGHT;
 		
 		for(int i = 1; i < 9; i++) {
-			backgroundIcon = resLoader.getImageIcon("Germany" + i + ".png");
-			Entity sector = new Entity(backgroundIcon, startPositionX, startPositionY, direction, altitude);
+			backgroundName = "Germany" + i;
+			Entity sector = new Entity(backgroundName, startPositionX, startPositionY, direction, altitude);
 			allSectors.add(sector);
-			startPositionY += backgroundIcon.getIconHeight();
-			levelHeight += backgroundIcon.getIconHeight();
+			startPositionY += sector.getImage().getHeight();
+			levelHeight += sector.getImage().getHeight();
 		}
 		
 		LEVEL_WIDTH = BACKGROUND_WIDTH;
@@ -895,7 +982,7 @@ class Level {
 		if(index < spawnLines.size() && !spawnedLines[index]) {
 			spawnedLines[index] = true; // Set so we don't spawn these guys again
 			
-			ImageIcon banditIcon = resLoader.getImageIcon("enemy-jet.png");
+			String banditName = "f18";
 			
 			// Look through the chars of the level file's current line
 			int x = 20;
@@ -904,11 +991,13 @@ class Level {
 					case '1': { // Basic bandit
 						int y = VIEW_HEIGHT + playerY;
 						int direction = 180;
-						int altitude = 50;
-						Aircraft bandit = new Aircraft(banditIcon, x, y, direction, altitude);
+						int altitude = 25;
+						int speed = 1;
+						int hitpoints = 1;
+						Aircraft bandit = new Aircraft(banditName, x, y, direction, altitude, speed, hitpoints);
 						//System.out.println("Spawning basic bandit at: " + bandit.getX() + ", " + bandit.getY());
 						//bandit.setSpeed(-1);
-						bandit.setSpeed(1);
+						bandit.setAirborne(true);
 						bandits.add(bandit);
 						break;
 					}

@@ -1,6 +1,7 @@
 package Strikeforce;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,24 +11,32 @@ import static Strikeforce.Global.*;
 
 public class Aircraft extends Vehicle {
 
-	private Image imageLevelFlight;
-	private Image imageBankLeft;
-	private Image imageBankLeftHard;
-	private Image imageBankRight;
-	private Image imageBankRightHard;
+	private BufferedImage levelFlight;
+	private BufferedImage bankLeft;
+	private BufferedImage bankLeftHard;
+	private BufferedImage bankLeftMax;
+	private BufferedImage bankRight;
+	private BufferedImage bankRightHard;
+	private BufferedImage bankRightMax;
 	
-	private Image boostLevelFlight;
-	private Image boostBankLeft;
-	private Image boostBankLeftHard;
-	private Image boostBankRight;
-	private Image boostBankRightHard;
+	private BufferedImage inverted;
+	private BufferedImage invBankLeft;
+	private BufferedImage invBankLeftHard;
+	private BufferedImage invBankRight;
+	private BufferedImage invBankRightHard;
 	
-	private Image currentLoopImage;
-	private List<Image> loopImages = new ArrayList<>();
+	private BufferedImage boostLevelFlight;
+	private BufferedImage boostBankLeft;
+	private BufferedImage boostBankLeftHard;
+	private BufferedImage boostBankRight;
+	private BufferedImage boostBankRightHard;
+	
+	private BufferedImage currentLoopImage;
+	private List<BufferedImage> loopImages = new ArrayList<>();
 	
 	protected final int CRUISING_SPEED = 2;
 	protected final int STALL_SPEED = 1;
-	protected int climbRate = 1;
+	protected int climbRate = 10;
 	protected final int MAX_ALTITUDE = 100;
 	protected final int CRUISING_ALTITUDE = 50;
 	protected final int BOOST_DURATION = 20;
@@ -36,127 +45,83 @@ public class Aircraft extends Vehicle {
 	protected int roll = 0;
 	protected boolean looping = false;
 	protected int loop = 0;
+	protected boolean doingImmelmann = false;
+	protected int immelmann = 0;
+	protected boolean doingSplitS = false;
+	protected int splitS = 0;
 	protected boolean boosting = false;
 	protected int boost = 0;
-
-	public Aircraft(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
-		super(icon, startX, startY, inDirection, inAltitude);
-		
-		imageLevelFlight = icon.getImage();
-		
-		ImageIcon resourceIcon = resLoader.getImageIcon("f18-bankleft.png");
-		imageBankLeft = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-banklefthard.png");
-		imageBankLeftHard = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-bankright.png");
-		imageBankRight = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-bankrighthard.png");
-		imageBankRightHard = resourceIcon.getImage();
-		
-		resourceIcon = resLoader.getImageIcon("f18-boost.png");
-		boostLevelFlight = resourceIcon.getImage();
-		
-		resourceIcon = resLoader.getImageIcon("f18-boostbankleft.png");
-		boostBankLeft = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-boostbanklefthard.png");
-		boostBankLeftHard = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-boostbankright.png");
-		boostBankRight = resourceIcon.getImage();
-
-		resourceIcon = resLoader.getImageIcon("f18-boostbankrighthard.png");
-		boostBankRightHard = resourceIcon.getImage();
-		
-		for(int i = 1; i < 16; i++) {
-			resourceIcon = resLoader.getImageIcon("f18-loop" + i + ".png");
-			loopImages.add(resourceIcon.getImage());
-		}
-		
-		speed = 1;
-		updateVectors();
-	}
 	
 	public Aircraft(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
 		super(inName, inX, inY, inDirection, inAltitude, inSpeed, inHitPoints);
 		String extension = "png";
 		
-		ImageIcon icon = resLoader.getImageIcon(inName + "." + extension);
-		imageLevelFlight = icon.getImage();
-		
-		icon = resLoader.getImageIcon(inName + "-bankleft" + "." + extension);
-		imageBankLeft = icon.getImage();
-		
-		icon = resLoader.getImageIcon(inName + "-banklefthard" + "." + extension);
-		imageBankLeftHard = icon.getImage();
+		levelFlight = loadImage(inName + "." + extension);
+		bankLeft = loadImage(inName + "-bankleft" + "." + extension);
+		bankLeftHard = loadImage(inName + "-banklefthard" + "." + extension);
+		bankLeftMax = loadImage(inName + "-bankleftmax" + "." + extension);
+		bankRight = loadImage(inName + "-bankright" + "." + extension);
+		bankRightHard = loadImage(inName + "-bankrighthard" + "." + extension);
+		bankRightMax = loadImage(inName + "-bankrightmax" + "." + extension);
+		 
+		inverted = loadImage(inName + "-inv" + "." + extension);
+		invBankLeft = loadImage(inName + "-invbankleft" + "." + extension);
+		invBankLeftHard = loadImage(inName + "-invbanklefthard" + "." + extension);
+		invBankRight = loadImage(inName + "-invbankright" + "." + extension);
+		invBankRightHard = loadImage(inName + "-invbankrighthard" + "." + extension);
 
-		icon = resLoader.getImageIcon(inName + "-bankright" + "." + extension);
-		imageBankRight = icon.getImage();
-
-		icon = resLoader.getImageIcon(inName + "-bankrighthard" + "." + extension);
-		imageBankRightHard = icon.getImage();
-		
-		icon = resLoader.getImageIcon(inName + "-boost" + "." + extension);
-		boostLevelFlight = icon.getImage();
-		
-		icon = resLoader.getImageIcon(inName + "-boostbankleft" + "." + extension);
-		boostBankLeft = icon.getImage();
-
-		icon = resLoader.getImageIcon(inName + "-boostbanklefthard" + "." + extension);
-		boostBankLeftHard = icon.getImage();
-
-		icon = resLoader.getImageIcon(inName + "-boostbankright" + "." + extension);
-		boostBankRight = icon.getImage();
-
-		icon = resLoader.getImageIcon(inName + "-boostbankrighthard" + "." + extension);
-		boostBankRightHard = icon.getImage();
+		boostLevelFlight = loadImage(inName + "-boost" + "." + extension);
+		boostBankLeft = loadImage(inName + "-boostbankleft" + "." + extension);
+		boostBankLeftHard = loadImage(inName + "-boostbanklefthard" + "." + extension);
+		boostBankRight = loadImage(inName + "-boostbankright" + "." + extension);
+		boostBankRightHard = loadImage(inName + "-boostbankrighthard" + "." + extension);
 		
 		for(int i = 1; i < 16; i++) {
-			icon = resLoader.getImageIcon(inName + "-loop" + i + "." + extension);
-			loopImages.add(icon.getImage());
+			loopImages.add(loadImage(inName + "-loop" + i + "." + extension));
 		}
 		
 		turnSpeed = 5;
 		MAX_SPEED = 5;
 	}
+
+	public void setY(int position) {
+		centerY = position;
+	}
 	
 	@Override
-	public Image getImage() {
+	public BufferedImage getImage() {
 		//System.out.println(bank); //debug
 		
 		if(roll == 0) {
-			currentImage = imageLevelFlight;
+			currentImage = levelFlight;
 			if(boosting == true) {
 				currentImage = boostLevelFlight;
 			}
 		}
 		
 		if(roll > 0) {
-			currentImage = imageBankRight;
+			currentImage = bankRight;
 			if(boosting == true) {
 				currentImage = boostBankRight;
 			}
 		}
 		
 		if(roll > HARD_BANK_ANGLE) {
-			currentImage = imageBankRightHard;
+			currentImage = bankRightHard;
 			if(boosting == true) {
 				currentImage = boostBankRightHard;
 			}
 		}
 		
 		if(roll < 0) {
-			currentImage = imageBankLeft;
+			currentImage = bankLeft;
 			if(boosting == true) {
 				currentImage = boostBankLeft;
 			}
 		}
 		
 		if(roll < -HARD_BANK_ANGLE) {
-			currentImage = imageBankLeftHard;
+			currentImage = bankLeftHard;
 			if(boosting == true) {
 				currentImage = boostBankLeftHard;
 			}
@@ -172,6 +137,10 @@ public class Aircraft extends Vehicle {
 	@Override
 	public boolean getAirborne() {
 		return airborne;
+	}
+	
+	public void setAirborne(boolean condition) {
+		airborne = condition;
 	}
 	
 	public boolean getLooping() {
@@ -192,6 +161,10 @@ public class Aircraft extends Vehicle {
 	public void update() {
 		if(looping == true) {
 			doLoop();
+		}
+		
+		if(doingImmelmann == true) {
+			doImmelmann();
 		}
 		
 		if(boosting == true) {
@@ -296,7 +269,7 @@ public class Aircraft extends Vehicle {
 			centerY += 4;
 			break;
 		case 44:
-			currentLoopImage = imageLevelFlight;
+			currentLoopImage = levelFlight;
 			break;
 		case 46:
 			looping = false;
@@ -305,6 +278,95 @@ public class Aircraft extends Vehicle {
 			return;
 		}
 		loop++;
+	}
+	
+	public void doImmelmann() {
+		if(doingImmelmann == false) {	
+			immelmann = 0;
+			doingImmelmann = true;
+			invulnerable = true;
+			return;
+		}
+		
+		switch(immelmann) {
+		case 0:
+			centerY -= 2;
+			currentLoopImage = boostLevelFlight;
+			break;
+		case 2:
+			centerY += 7;
+			break;
+		case 4:
+			centerY += 18;
+			currentLoopImage = loopImages.get(0);
+			break;
+		case 6:
+			centerY += 5;
+			break;
+		case 8:
+			centerY += 5;
+			break;
+		case 10:
+			centerY += 7;
+			currentLoopImage = loopImages.get(1);
+			break;
+		case 12:
+			centerY -= 6;
+			currentLoopImage = loopImages.get(2);
+			break;
+		case 14:
+			centerY -= 5;
+			currentLoopImage = loopImages.get(3);
+			break;
+		case 16:
+			centerY -= 1;
+			currentLoopImage = loopImages.get(4);
+			break;
+		case 18:
+			centerY -= 19;
+			currentLoopImage = loopImages.get(5);
+			break;
+		case 20:
+			centerY -= 6;
+			currentLoopImage = loopImages.get(6);
+			break;
+		case 22:
+			altitude += 20;
+			
+			if(altitude > MAX_ALTITUDE) {
+				altitude = MAX_ALTITUDE;
+			}
+			
+			currentLoopImage = inverted;
+			break;
+		case 24:
+			currentLoopImage = invBankRight;
+			break;
+		case 26:
+			currentLoopImage = invBankRightHard;
+			break;
+		case 28:
+			currentLoopImage = bankRightMax;
+			break;
+		case 30:
+			currentLoopImage = bankRightHard;
+			break;
+		case 32:
+			currentLoopImage = bankRight;
+			break;
+		case 44:
+			currentLoopImage = levelFlight;
+			break;
+		case 46:
+			doingImmelmann = false;
+			invulnerable = false;
+			return;
+		}
+		immelmann++;
+	}
+	
+	public void doSplitS() {
+		
 	}
 	
 	public void boost() {
@@ -414,24 +476,20 @@ public class Aircraft extends Vehicle {
 			altitude = MAX_ALTITUDE;
 		}
 		
-		if(altitude > 1) {
+		if(altitude > 0) {
 			airborne = true;
 		}
 	}
 	
-	public void dive() {
+	public void descend() {
 		altitude--;
 		
 		if(altitude < 0) {
 			altitude = 0;
 		}
 		
-		if(altitude == 1) {
+		if(altitude == 0) {
 			airborne = false;
 		}
-	}
-
-	public void setY(int position) {
-		centerY = position;
 	}
 }

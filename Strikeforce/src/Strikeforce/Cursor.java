@@ -66,9 +66,16 @@ public class Cursor extends Entity {
 	public void select() {
 		Rectangle cursorBox = getBounds();
 		selectedEntity = selectBuildingInArea(cursorBox);
+		
+		if(selectedEntity == null) {
+			return;
+		}
+		
+		selectedEntity.setIsSelected(true);
 	}
 	
 	public void deselect() {
+		selectedEntity.setIsSelected(false);
 		selectedEntity = null;
 	}
 	
@@ -95,6 +102,7 @@ public class Cursor extends Entity {
 		case selectKey:
 			if(selectedEntity != null) {
 				deselect();
+				break;
 			}
 			
 			select();

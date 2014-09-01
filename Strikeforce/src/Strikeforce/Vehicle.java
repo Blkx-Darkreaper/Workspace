@@ -3,6 +3,7 @@ package Strikeforce;
 import static Strikeforce.Global.*;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +27,7 @@ public class Vehicle extends Mover {
 	
 	protected List<Projectile> allProjectiles;
 	
-	protected Image imageDestroyed;
-
-	public Vehicle(ImageIcon icon, int startingX, int startingY, int inDirection, int inAltitude) {
-		super(icon, startingX, startingY, inDirection, inAltitude);
-		hitPoints = 1;
-		accelerationRate = 1;
-		turnSpeed = 10;
-		allProjectiles = new ArrayList<>();
-	}
+	protected BufferedImage imageDestroyed;
 	
 	public Vehicle(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed, int inHitPoints) {
 		super(inName, inX, inY, inDirection, inAltitude, inSpeed);
@@ -45,8 +38,7 @@ public class Vehicle extends Mover {
 		allProjectiles = new ArrayList<>();
 		
 		String extension = "png";
-		ImageIcon icon = resLoader.getImageIcon(inName + "destroyed" + "." + extension);
-		imageDestroyed = icon.getImage();
+		imageDestroyed = loadImage(inName + "destroyed" + "." + extension);
 	}
 	
 	public int getHitPoints() {
@@ -92,6 +84,11 @@ public class Vehicle extends Mover {
 	
 	public boolean getAirborne() {
 		return false;
+	}
+	
+	@Override
+	public double getScale() {
+		return 0.5 + (double) altitude / MAX_ALTITUDE_SKY;
 	}
 	
 	@Override

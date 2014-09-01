@@ -5,6 +5,7 @@ import static Strikeforce.Global.chooseExplosionAnimation;
 import static Strikeforce.Global.resLoader;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import Strikeforce.Entity.Circle;
 
 public class Bomb extends Projectile {
 	
-	protected List<Image> animationImages = new ArrayList<>();
+	protected List<BufferedImage> animationImages = new ArrayList<>();
 	protected boolean animationOver = false;
 	protected int count = 0;
 	protected int frameSpeed;
@@ -28,9 +29,7 @@ public class Bomb extends Projectile {
 		super(inName + "1", inX, inY, inDirection, inAltitude, inSpeed, inDamage, inHitsAir, inHitsGround, inLive);
 		
 		for(int i = 2; i <= frames; i++) {
-			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
-			Image image = icon.getImage();
-			animationImages.add(image);
+			animationImages.add(loadImage(inName + i + ".png"));
 		}
 		frameSpeed = inFrameSpeed;
 		fuseDelay = inFuseDelay;

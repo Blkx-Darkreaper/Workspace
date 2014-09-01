@@ -1,14 +1,17 @@
 package Strikeforce;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
 import static Strikeforce.Global.*;
+
 import javax.swing.ImageIcon;
 
 public class Effect extends Entity {
 	
-	private List<Image> animationImages = new ArrayList<>();
+	private List<BufferedImage> animationImages = new ArrayList<>();
 	private int frameSpeed;
 	private int count = 0;
 	private boolean animationOver = false;
@@ -19,9 +22,7 @@ public class Effect extends Entity {
 	public Effect(String inName, int inX, int inY, int inDirection, int inAltitude, int frames, int inFrameSpeed) {
 		super(inName + "1", inX, inY, inDirection, inAltitude);
 		for(int i = 2; i <= frames; i++) {
-			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
-			Image image = icon.getImage();
-			animationImages.add(image);
+			animationImages.add(loadImage(inName + i + ".png"));
 		}
 		frameSpeed = inFrameSpeed;
 		hitsAir = false;
@@ -32,9 +33,7 @@ public class Effect extends Entity {
 			int inDamage, boolean inHitsAir, boolean inHitsGround) {
 		super(inName + "1", inX, inY, inDirection, inAltitude);
 		for(int i = 2; i <= frames; i++) {
-			ImageIcon icon = resLoader.getImageIcon(inName + i + ".png");
-			Image image = icon.getImage();
-			animationImages.add(image);
+			animationImages.add(loadImage(inName + i + ".png"));
 		}
 		frameSpeed = inFrameSpeed;
 		damage = inDamage;

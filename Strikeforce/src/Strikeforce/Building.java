@@ -3,6 +3,7 @@ package Strikeforce;
 import static Strikeforce.Global.resLoader;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
@@ -11,20 +12,14 @@ public class Building extends Entity {
 	private int hitPoints;
 	protected boolean covers;
 	
-	protected Image imageDestroyed;
-	
-	public Building(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
-		super(icon, startX, startY, inDirection, inAltitude);
-		hitPoints = 1;
-	}
+	protected BufferedImage imageDestroyed;
 	
 	public Building(String inName, int inX, int inY, int inDirection, int inAltitude, int inHitPoints) {
 		super(inName, inX, inY, inDirection, inAltitude);
 		hitPoints = inHitPoints;
 		
 		String extension = "png";
-		ImageIcon icon = resLoader.getImageIcon(inName + "destroyed" + "." + extension);
-		imageDestroyed = icon.getImage();
+		imageDestroyed = loadImage(inName + "destroyed" + "." + extension);
 	}
 	
 	public boolean getCovers() {

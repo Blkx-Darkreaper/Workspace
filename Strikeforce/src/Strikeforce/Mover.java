@@ -17,10 +17,6 @@ public class Mover extends Entity {
 		super(startX, startY, inWidth, inHeight);
 	}
 	
-	public Mover(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
-		super(icon, startX, startY, inDirection, inAltitude);
-	}
-	
 	public Mover(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed) {
 		super(inName, inX, inY, inDirection, inAltitude);
 		speed = inSpeed;

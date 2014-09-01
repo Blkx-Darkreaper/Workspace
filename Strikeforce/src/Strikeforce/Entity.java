@@ -2,7 +2,11 @@ package Strikeforce;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import static Strikeforce.Global.*;
@@ -13,32 +17,39 @@ public class Entity {
 	protected int centerX, centerY;
 	protected int direction = 0; // degrees
 	protected int altitude = 0;
-	protected Image currentImage;
+	protected BufferedImage currentImage;
+	protected boolean isSelected;
 	
 	public Entity(int startX, int startY, int inWidth, int inHeight) {
 		centerX = startX;
 		centerY = startY;
 	}
 	
-	public Entity(ImageIcon icon, int startX, int startY, int inDirection, int inAltitude) {
-		currentImage = icon.getImage();
-		centerX = startX;
-		centerY = startY;
-		direction = inDirection % 360;
-		altitude = inAltitude;
-	}
-	
 	public Entity(String inName, int inX, int inY, int inDirection, int inAltitude) {
 		name = inName;
 		String extension = "png";
-		ImageIcon icon = resLoader.getImageIcon(name + "." + extension);
-		currentImage = icon.getImage();
+		//ImageIcon icon = resLoader.getImageIcon(name + "." + extension);
+		//currentImage = icon.getImage();
+		currentImage = loadImage(name + "." + extension);
 		centerX = inX;
 		centerY = inY;
 		direction = inDirection % 360;
 		altitude = inAltitude;
 	}
 	
+	protected BufferedImage loadImage(String fileName) {
+		File imageFile = resLoader.getFile(fileName);
+		BufferedImage image;
+		try {
+			image = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			System.out.println("Image could not be read");
+			image = null;
+		}
+		
+		return image;
+	}
+
 	public int getCenterX() {
 		return centerX;
 	}
@@ -75,8 +86,20 @@ public class Entity {
 		}
 	}
 	
-	public Image getImage() {
+	public BufferedImage getImage() {
 		return currentImage;
+	}
+	
+	public double getScale() {
+		return 1;
+	}
+	
+	public boolean getIsSelected() {
+		return isSelected;
+	}
+	
+	public void setIsSelected(boolean condition) {
+		isSelected = condition;
 	}
 	
 	public Effect getExplosionAnimation() {
