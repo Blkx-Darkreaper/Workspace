@@ -1,14 +1,10 @@
 package Strikeforce;
 
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import static Strikeforce.Global.*;
 
 public class Entity {

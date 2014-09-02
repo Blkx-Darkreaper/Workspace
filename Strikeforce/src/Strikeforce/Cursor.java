@@ -75,6 +75,10 @@ public class Cursor extends Entity {
 	}
 	
 	public void deselect() {
+		if(selectedEntity == null) {
+			return;
+		}
+		
 		selectedEntity.setIsSelected(false);
 		selectedEntity = null;
 	}

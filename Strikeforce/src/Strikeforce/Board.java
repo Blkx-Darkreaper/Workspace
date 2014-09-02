@@ -19,11 +19,11 @@ import static Strikeforce.Global.*;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class Board extends JPanel implements ActionListener {
 
 	private String currentPhase = "Build";
 	private int windowScale = 1;
-	private static View view;
 	static Level currentLevel;
 	private static Fighter playerFighter;
 	private static Cursor playerCursor;
@@ -640,14 +640,17 @@ public class Board extends JPanel implements ActionListener {
 		g2d.drawImage(image, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
 		
 		boolean selected = toDraw.getIsSelected();
-		if(selected == true) {
-			g2d.setStroke(new BasicStroke(2));
-			g2d.setColor(Color.RED);
-			//g2d.setPaint(Color.RED);
-			
-			Rectangle imageBox = toDraw.getBounds();
-			g2d.draw(imageBox);
+		if(selected == false) {
+			g2d.setTransform(defaultOrientation);
+			return;
 		}
+		
+		g2d.setStroke(new BasicStroke(2));
+		g2d.setColor(Color.RED);
+		//g2d.setPaint(Color.RED);
+		
+		Rectangle border = new Rectangle(absolutePositionX, absolutePositionY, scaledWidth, scaledHeight);
+		g2d.draw(border);
 		
 		g2d.setTransform(defaultOrientation);
 	}

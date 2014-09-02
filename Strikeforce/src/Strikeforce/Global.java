@@ -14,6 +14,7 @@ public class Global {
 	
 	public static final int TIME_INTERVAL = 20;
 	
+	public static View view;
 	public static final int VIEW_WIDTH = 250;
 	public static final int VIEW_HEIGHT = 500;
 	public static final int VIEW_POSITION_X = 100;
