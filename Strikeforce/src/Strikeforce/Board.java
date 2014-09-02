@@ -645,8 +645,8 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
-		g2d.setStroke(new BasicStroke(2));
-		g2d.setColor(Color.RED);
+		g2d.setStroke(new BasicStroke(selectionStroke));
+		g2d.setColor(selectionColour);
 		//g2d.setPaint(Color.RED);
 		
 		Rectangle border = new Rectangle(absolutePositionX, absolutePositionY, scaledWidth, scaledHeight);
