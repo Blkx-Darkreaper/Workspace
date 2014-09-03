@@ -1,11 +1,9 @@
 package Strikeforce;
 
-import static Strikeforce.Global.resLoader;
+import static Strikeforce.Global.*;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
 
 public class Building extends Entity {
 	
@@ -49,5 +47,46 @@ public class Building extends Entity {
 		
 		currentImage = imageDestroyed;
 		return true;
+	}
+
+	public void shiftLeft() {
+		centerX -= CELL_SIZE;
+		
+		int leftEdge = CELL_SIZE / 2;
+		if(centerX < leftEdge) {
+			centerX = leftEdge;
+		}
+	}
+
+	public void shiftRight() {
+		centerX += CELL_SIZE;
+		
+		int rightEdge = LEVEL_WIDTH - CELL_SIZE / 2;
+		if(centerX > rightEdge) {
+			centerX = rightEdge;
+		}
+	}
+
+	public void shiftUp() {
+		centerY += CELL_SIZE;
+		
+		int topEdge = levelTop - CELL_SIZE / 2;
+		if(centerY > topEdge) {
+			centerY = topEdge;
+		}
+	}
+
+	public void shiftDown() {
+		centerY -= CELL_SIZE;
+		
+		int bottomEdge = CELL_SIZE / 2;
+		if(centerY < bottomEdge) {
+			centerY = bottomEdge;
+		}		
+	}
+
+	public void rotate() {
+		direction += 90;
+		direction %= 360;
 	}
 }

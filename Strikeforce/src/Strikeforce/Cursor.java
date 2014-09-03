@@ -14,73 +14,101 @@ public class Cursor extends Entity {
 	private final int moveRightKey = KeyEvent.VK_RIGHT;
 	private final int selectKey = KeyEvent.VK_A;
 	private final int cancelKey = KeyEvent.VK_S;
+	private final int buildMenuKey = KeyEvent.VK_D;
 	
-	private Entity selectedEntity;
-	private int levelTop;
+	private Building selectedBuilding;
 
-	public Cursor(String inName, int inX, int inY, int inLevelTop) {
+	public Cursor(String inName, int inX, int inY) {
 		super(inName, inX, inY, 0, 0);
-		levelTop = inLevelTop;
 	}
 	
-	public void setLevelTop(int inLevelTop) {
-		levelTop = inLevelTop;
-	}
-	
-	public void moveLeft() {
+	public void shiftLeft() {
 		centerX -= CELL_SIZE;
 		
 		int leftEdge = CELL_SIZE / 2;
 		if(centerX < leftEdge) {
 			centerX = leftEdge;
 		}
+		
+		if(selectedBuilding == null) {
+			return;
+		}
+		
+		selectedBuilding.shiftLeft();
 	}
 	
-	public void moveRight() {
+	public void shiftRight() {
 		centerX += CELL_SIZE;
 		
 		int rightEdge = LEVEL_WIDTH - CELL_SIZE / 2;
 		if(centerX > rightEdge) {
 			centerX = rightEdge;
 		}
+		
+		if(selectedBuilding == null) {
+			return;
+		}
+		
+		selectedBuilding.shiftRight();
 	}
 	
-	public void moveUp() {
+	public void shiftUp() {
 		centerY += CELL_SIZE;
 		
 		int topEdge = levelTop - CELL_SIZE / 2;
 		if(centerY > topEdge) {
 			centerY = topEdge;
 		}
+		
+		if(selectedBuilding == null) {
+			return;
+		}
+		
+		selectedBuilding.shiftUp();
 	}
 	
-	public void moveDown() {
+	public void shiftDown() {
 		centerY -= CELL_SIZE;
 		
 		int bottomEdge = CELL_SIZE / 2;
 		if(centerY < bottomEdge) {
 			centerY = bottomEdge;
 		}
+		
+		if(selectedBuilding == null) {
+			return;
+		}
+		
+		selectedBuilding.shiftDown();
 	}
 	
 	public void select() {
 		Rectangle cursorBox = getBounds();
-		selectedEntity = selectBuildingInArea(cursorBox);
+		selectedBuilding = selectBuildingInArea(cursorBox, null);
 		
-		if(selectedEntity == null) {
+		if(selectedBuilding == null) {
 			return;
 		}
 		
-		selectedEntity.setIsSelected(true);
+		selectedBuilding.setIsSelected(true);
 	}
 	
 	public void deselect() {
-		if(selectedEntity == null) {
+		if(selectedBuilding == null) {
 			return;
 		}
 		
-		selectedEntity.setIsSelected(false);
-		selectedEntity = null;
+		Rectangle area = selectedBuilding.getBounds();
+		//boolean areaOccupied = checkAreaForBuildings(area);
+		Building obstruction = selectBuildingInArea(area, selectedBuilding);
+		
+		if(obstruction != null) {
+			obstruction.setIsSelected(true);
+			return;
+		}
+		
+		selectedBuilding.setIsSelected(false);
+		selectedBuilding = null;
 	}
 	
 	public void update() {
@@ -92,28 +120,30 @@ public class Cursor extends Entity {
 
 		switch (key) {
 		case moveLeftKey:
-			moveLeft();
+			shiftLeft();
 			break;
 		case moveRightKey:
-			moveRight();
+			shiftRight();
 			break;
 		case moveUpKey:
-			moveUp();
+			shiftUp();
 			break;
 		case moveDownKey:
-			moveDown();
+			shiftDown();
 			break;
 		case selectKey:
-			if(selectedEntity != null) {
-				deselect();
+			if(selectedBuilding == null) {
+				select();
 				break;
 			}
 			
-			select();
+			selectedBuilding.rotate();
 			break;
 		case cancelKey:
 			deselect();
 			break;
+		case buildMenuKey:
+			
 		}
 	}
 	

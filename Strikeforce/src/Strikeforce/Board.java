@@ -48,8 +48,8 @@ public class Board extends JPanel implements ActionListener {
 		String name = "cursor";
 		int cursorX = CELL_SIZE / 2;
 		int cursorY = CELL_SIZE / 2;
-		int levelTop = LEVEL_HEIGHT;
-		playerCursor = new Cursor(name, cursorX, cursorY, levelTop);
+		levelTop = LEVEL_HEIGHT;
+		playerCursor = new Cursor(name, cursorX, cursorY);
 		
 		String playerName = "f18";
 		int startX = currentLevel.getWidth() / 2;
@@ -816,8 +816,27 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	public static Building selectBuildingInArea(Rectangle areaToCheck) {
+	public static boolean buildingInArea(Rectangle areaToCheck) {
 		for(Building aBuilding : allBuildings) {
+			Rectangle hitBox = aBuilding.getBounds();
+			boolean inArea = areaToCheck.intersects(hitBox);
+			
+			if(inArea == false) {
+				continue;
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static Building selectBuildingInArea(Rectangle areaToCheck, Building toIgnore) {
+		for(Building aBuilding : allBuildings) {
+			if(aBuilding == toIgnore) {
+				continue;
+			}
+			
 			Rectangle hitBox = aBuilding.getBounds();
 			boolean inArea = areaToCheck.intersects(hitBox);
 			

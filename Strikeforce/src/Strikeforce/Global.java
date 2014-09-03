@@ -32,6 +32,7 @@ public class Global {
 	public static final int LOWER_BOUNDS_X = 10;
 	public static final int UPPER_BOUNDS_Y = VIEW_HEIGHT - 20;
 	public static final int LOWER_BOUNDS_Y = 20;
+	public static int levelTop;
 	
 	public static final int MAX_ALTITUDE_SKY = 100;
 	
