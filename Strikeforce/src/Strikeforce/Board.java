@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -617,14 +618,13 @@ public class Board extends JPanel implements ActionListener {
 		
 		BufferedImage image = toDraw.getImage();
 		
-		double scale = windowScale * toDraw.getScale();
-		
 		int width = image.getWidth(null);
 		int height = image.getHeight(null);
+		
+		double scale = windowScale * toDraw.getScale();
+		
 		int scaledWidth = (int) Math.round(width * scale);
 		int scaledHeight = (int) Math.round(height * scale);
-		
-		int direction = toDraw.getDirection();
 		
 		int positionXRelativeToViewCenter = (toDraw.getCenterX() - scaledWidth / 2) - view.getCenterX();
 		int positionYRelativeToViewCenter = (toDraw.getCenterY() + scaledHeight / 2) - view.getCenterY();
@@ -632,12 +632,15 @@ public class Board extends JPanel implements ActionListener {
 		int absolutePositionX = VIEW_POSITION_X + VIEW_WIDTH / 2 + positionXRelativeToViewCenter;
 		int absolutePositionY = VIEW_POSITION_Y + VIEW_HEIGHT / 2 - positionYRelativeToViewCenter;
 		
-		int rotationPointX = absolutePositionX + scaledWidth / 2;
-		int rotationPointY = absolutePositionY + scaledHeight / 2;
-		g2d.rotate(Math.toRadians(direction), rotationPointX, rotationPointY);
+		setOpacity(g2d, toDraw);
+		setRotation(g2d, toDraw, scaledWidth, scaledHeight, absolutePositionX, absolutePositionY);
+		BufferedImage fill = getFill(image, Color.RED, 50);
 
 		//g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
 		g2d.drawImage(image, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
+		if(fill != null) {
+			g2d.drawImage(fill, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
+		}
 		
 		boolean selected = toDraw.getIsSelected();
 		if(selected == false) {
@@ -645,14 +648,75 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
+		drawBorder(g2d, scaledWidth, scaledHeight, absolutePositionX,
+				absolutePositionY);
+		
+		g2d.setTransform(defaultOrientation);
+	}
+
+	private void setOpacity(Graphics2D g2d, Entity toDraw) {
+		float opacity = (float) toDraw.getOpacity() / 100;
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+	}
+	
+	private void setRotation(Graphics2D g2d, Entity toDraw, int scaledWidth,
+			int scaledHeight, int absolutePositionX, int absolutePositionY) {
+		int direction = toDraw.getDirection();
+		
+		int rotationPointX = absolutePositionX + scaledWidth / 2;
+		int rotationPointY = absolutePositionY + scaledHeight / 2;
+		g2d.rotate(Math.toRadians(direction), rotationPointX, rotationPointY);
+	}
+
+	private BufferedImage getFill(BufferedImage image, Color colour, int opacity) {
+		if(opacity == 0) {
+			return null;
+		}
+		
+		int red = colour.getRed();
+		int green = colour.getGreen();
+		int blue = colour.getBlue();
+		
+		int width = image.getWidth();
+		int height = image.getHeight();
+		WritableRaster raster = image.getRaster();
+		int imageType = image.getType();
+		
+		BufferedImage fill = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		WritableRaster fillRaster = fill.getRaster();
+
+		for (int x = 0; x < width; x++) {
+		    for (int y = 0; y < height; y++) {
+		        int[] rgb = new int[4];
+		        
+		        if(imageType != BufferedImage.TYPE_INT_ARGB) {
+		        	rgb[3] = 255;
+		        }
+		        
+		        raster.getPixel(x, y, rgb);
+		        rgb[0] = red;
+		        rgb[1] = green;
+		        rgb[2] = blue;
+		        
+		        int oldAlpha = rgb[3];
+		        int newAlpha = oldAlpha * opacity / 100;
+		        rgb[3] = newAlpha;
+
+		        fillRaster.setPixel(x, y, rgb);
+		    }
+		}
+		
+		return fill;
+	}
+
+	private void drawBorder(Graphics2D g2d, int scaledWidth, int scaledHeight,
+			int absolutePositionX, int absolutePositionY) {
 		g2d.setStroke(new BasicStroke(selectionStroke));
 		g2d.setColor(selectionColour);
 		//g2d.setPaint(Color.RED);
 		
 		Rectangle border = new Rectangle(absolutePositionX, absolutePositionY, scaledWidth, scaledHeight);
 		g2d.draw(border);
-		
-		g2d.setTransform(defaultOrientation);
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {

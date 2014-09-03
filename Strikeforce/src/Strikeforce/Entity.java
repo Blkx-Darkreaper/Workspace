@@ -15,6 +15,7 @@ public class Entity {
 	protected int altitude = 0;
 	protected BufferedImage currentImage;
 	protected boolean isSelected;
+	protected int opacity = 100;
 	
 	public Entity(int startX, int startY, int inWidth, int inHeight) {
 		centerX = startX;
@@ -96,6 +97,10 @@ public class Entity {
 	
 	public void setIsSelected(boolean condition) {
 		isSelected = condition;
+	}
+	
+	public float getOpacity() {
+		return opacity;
 	}
 	
 	public Effect getExplosionAnimation() {
