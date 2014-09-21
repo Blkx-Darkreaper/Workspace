@@ -1,10 +1,16 @@
 package Strikeforce;
 
+import static Strikeforce.Global.resLoader;
+
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Global {
@@ -170,5 +176,18 @@ public class Global {
 		explosionName += choice;
 		
 		return explosionName;
+	}
+	
+	public static BufferedImage loadImage(String fileName) {
+		File imageFile = resLoader.getFile(fileName);
+		BufferedImage image;
+		try {
+			image = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			System.out.println("Image could not be read");
+			image = null;
+		}
+		
+		return image;
 	}
 }

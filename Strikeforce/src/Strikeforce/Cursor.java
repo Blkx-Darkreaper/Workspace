@@ -13,7 +13,7 @@ public class Cursor extends Entity {
 	private final int moveLeftKey = KeyEvent.VK_LEFT;
 	private final int moveRightKey = KeyEvent.VK_RIGHT;
 	private final int selectKey = KeyEvent.VK_A;
-	private final int cancelKey = KeyEvent.VK_S;
+	private final int modifyKey = KeyEvent.VK_S;
 	private final int buildMenuKey = KeyEvent.VK_D;
 	
 	private Building selectedBuilding;
@@ -103,6 +103,7 @@ public class Cursor extends Entity {
 		Building obstruction = selectBuildingInArea(area, selectedBuilding);
 		
 		if(obstruction != null) {
+			illegalAction();
 			obstruction.setIsSelected(true);
 			return;
 		}
@@ -111,6 +112,10 @@ public class Cursor extends Entity {
 		selectedBuilding = null;
 	}
 	
+	private void illegalAction() {
+		return;
+	}
+
 	public void update() {
 		return;
 	}
@@ -132,15 +137,19 @@ public class Cursor extends Entity {
 			shiftDown();
 			break;
 		case selectKey:
+			if(selectedBuilding != null) {
+				deselect();
+				break;
+			}
+			
+			select();
+			break;
+		case modifyKey:
 			if(selectedBuilding == null) {
-				select();
 				break;
 			}
 			
 			selectedBuilding.rotate();
-			break;
-		case cancelKey:
-			deselect();
 			break;
 		case buildMenuKey:
 			

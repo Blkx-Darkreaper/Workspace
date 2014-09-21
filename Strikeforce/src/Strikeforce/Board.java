@@ -36,10 +36,12 @@ public class Board extends JPanel implements ActionListener {
 	public Board() {
 		resLoader = new ResLoader(this.getClass().getClassLoader());
 		
-		currentLevel = new Level("1");
+		String levelName = "germany";
+		String tileSetName = "Germany";
+		currentLevel = new Level(levelName, tileSetName);
 		
 		String viewName = "view";
-		int viewX = currentLevel.getWidth() / 2;
+		int viewX = LEVEL_WIDTH / 2;
 		int viewY = VIEW_HEIGHT / 2;
 		int direction = 0;
 		int altitude = 0;
@@ -67,6 +69,7 @@ public class Board extends JPanel implements ActionListener {
 		otherWeaponSetup.add(dumbBomb);
 		playerFighter.setWeaponSetA(basicWeaponSetup);
 		playerFighter.setWeaponSetB(otherWeaponSetup);
+		playerFighter.setHasShadow(true);
 		
 		allEffects = new ArrayList<>();
 		allVehicles = new ArrayList<>();
@@ -634,7 +637,8 @@ public class Board extends JPanel implements ActionListener {
 		
 		setOpacity(g2d, toDraw);
 		setRotation(g2d, toDraw, scaledWidth, scaledHeight, absolutePositionX, absolutePositionY);
-		BufferedImage fill = getFill(image, Color.RED, 50);
+		drawShadow(g2d, toDraw, scaledWidth, scaledHeight, absolutePositionX, absolutePositionY);
+		BufferedImage fill = getFill(image, Color.RED, 0);
 
 		//g2d.drawImage(image, absolutePositionX, absolutePositionY, null);
 		g2d.drawImage(image, absolutePositionX, absolutePositionY, scaledWidth, scaledHeight, null);
@@ -652,6 +656,53 @@ public class Board extends JPanel implements ActionListener {
 				absolutePositionY);
 		
 		g2d.setTransform(defaultOrientation);
+	}
+
+	private void drawShadow(Graphics2D g2d, Entity toDraw, int scaledWidth, int scaledHeight, 
+			int absolutePositionX, int absolutePositionY) {
+		boolean hasShadow = toDraw.getHasShadow();
+		if(hasShadow == false) {
+			return;
+		}
+		
+		BufferedImage image = toDraw.getImage();
+		int width = image.getWidth();
+		int height = image.getHeight();
+		
+		BufferedImage shadow = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		int opacity = 100;
+		int alphaLoss = (100 - opacity) * 255 / 100;
+		int shadowColour = 0;
+
+		for (int x = 0; x < width; x++) {
+		    for (int y = 0; y < height; y++) {
+				Color pixel = new Color(image.getRGB(x, y));
+				int red = pixel.getRed();
+				int green = pixel.getGreen();
+				int blue = pixel.getBlue();
+				int alpha = pixel.getAlpha();
+				
+				alpha -= alphaLoss;
+				
+				if(alpha < 0) {
+					alpha = 0;
+				}
+				
+				Color newColour = new Color(shadowColour, shadowColour, shadowColour, alpha);
+				int rgb = newColour.getRGB();
+				shadow.setRGB(x, y, rgb);
+		    }
+		}
+		
+		int altitude = toDraw.getAltitude();
+		
+		int offset = (int) (altitude / 2.5) + 2;
+		
+		double scale = 0.9 - 0.65 * (double) altitude / MAX_ALTITUDE_SKY;
+		int shadowWidth = (int) (scale * scaledWidth);
+		int shadowHeight = (int) (scale * scaledHeight);
+		
+		g2d.drawImage(shadow, absolutePositionX + offset, absolutePositionY + offset, shadowWidth, shadowHeight, null);
 	}
 
 	private void setOpacity(Graphics2D g2d, Entity toDraw) {
@@ -680,7 +731,8 @@ public class Board extends JPanel implements ActionListener {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		WritableRaster raster = image.getRaster();
-		int imageType = image.getType();
+		//int imageType = image.getType();
+		boolean hasAlpha = image.getColorModel().hasAlpha();
 		
 		BufferedImage fill = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		WritableRaster fillRaster = fill.getRaster();
@@ -689,7 +741,7 @@ public class Board extends JPanel implements ActionListener {
 		    for (int y = 0; y < height; y++) {
 		        int[] rgb = new int[4];
 		        
-		        if(imageType != BufferedImage.TYPE_INT_ARGB) {
+		        if(hasAlpha == false) {
 		        	rgb[3] = 255;
 		        }
 		        
@@ -705,6 +757,27 @@ public class Board extends JPanel implements ActionListener {
 		        fillRaster.setPixel(x, y, rgb);
 		    }
 		}
+		
+/*		int red = colour.getRed();
+		int green = colour.getGreen();
+		int blue = colour.getBlue();
+		
+		int width = image.getWidth();
+		int height = image.getHeight();
+		
+		BufferedImage fill = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < width; x++) {
+		    for (int y = 0; y < height; y++) {
+		    	Color pixel = new Color(image.getRGB(x, y));
+		    	int alpha = pixel.getAlpha();
+		    	
+		    	Color fillPixel = new Color(red, green, blue, alpha);
+		    	
+		    	int rgb = fillPixel.getRGB();
+		    	
+		    	fill.setRGB(x, y, rgb);
+		    }
+		}*/
 		
 		return fill;
 	}
@@ -825,7 +898,7 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}*/
 		
-		allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
+		//allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
 		
 		for(Iterator<Vehicle> airborneIter = allVehicles.iterator(); airborneIter.hasNext();) {
 			Vehicle aBandit = airborneIter.next();
@@ -1018,25 +1091,106 @@ class Level {
 	private static final int CELL_WIDTH = CELL_SIZE;
 	
 	private List<Entity> allSectors = new ArrayList<>();
-	private List<String> spawnLines = new ArrayList<>();
-	private boolean[] spawnedLines;
+	private List<String> mapLines = new ArrayList<>();
+	private List<BufferedImage> allTiles = new ArrayList<>();
+	//private List<String> spawnLines = new ArrayList<>();
+	//private boolean[] spawnedLines;
+	private boolean[] renderedTiles;
 	private int BACKGROUND_HEIGHT;
 	private int BACKGROUND_WIDTH;
 	
-	public Level (String levelName) {
+	public Level (String levelName, String tileSetName) {
+		readLevelFile(levelName);
+		
+		loadTileSet(tileSetName);
+		
+		generateLevel(2);
+	}
+
+	public Entity getSectorAtIndex (int index) {
+		if(index < 0) {
+			return null;
+		}
+		
+		if(index >= allSectors.size()) {
+			return null;
+		}
+		
+		return allSectors.get(index);
+	}
+	
+	public List<Entity> getAllSectors () {
+		return allSectors;
+	}
+	
+	public int getWidth() {
+		return BACKGROUND_WIDTH;
+	}
+
+	public int getHeight() {
+		return BACKGROUND_HEIGHT;
+	}
+	
+	private void readLevelFile(String levelName) {
 		try(BufferedReader br = new BufferedReader(new FileReader("levels/" + levelName + ".lvl"))) {
 			for(String line; (line = br.readLine()) != null; ) {
-				spawnLines.add(line);
+				if(line == null) {
+					continue;
+				}
+				
+				mapLines.add(line);
+				//spawnLines.add(line);
+				
+				int width = line.length() * CELL_WIDTH;
+				if(width > LEVEL_WIDTH) {
+					LEVEL_WIDTH = width;
+				}
 			}
 		} catch (IOException e) {
 			System.out.println("Level load error: " + e);
 		}
 		
-		Collections.reverse(spawnLines);
-		spawnedLines = new boolean[spawnLines.size()];
+		//Collections.reverse(spawnLines);
+		//spawnedLines = new boolean[spawnLines.size()];
+		Collections.reverse(mapLines);
+		renderedTiles = new boolean[mapLines.size()];
+		LEVEL_HEIGHT = mapLines.size() * CELL_HEIGHT;
+	}
+	
+	private void loadTileSet(String tileSetName) {
+		String extension = "png";
+		String fileName = "tileset" + tileSetName + "." + extension;
+		BufferedImage tileSet = loadImage(fileName);
+		int cellsWide = tileSet.getWidth() / CELL_WIDTH;
+		int cellsHigh = tileSet.getHeight() / CELL_HEIGHT;
 		
+		for(int y = 0; y < cellsHigh; y++) {
+			int offsetY = y * CELL_HEIGHT;
+			for(int x = 0; x < cellsWide; x++) {
+				int offsetX = x * CELL_WIDTH;
+				
+				allTiles.add(tileSet.getSubimage(offsetX, offsetY, CELL_WIDTH, CELL_HEIGHT));
+			}
+		}
+	}
+
+	private void generateLevel(int totalSectors) {
+		int sectorWidth = LEVEL_WIDTH;
+		int sectorHeight = Math.max(LEVEL_HEIGHT / totalSectors, 16);
+		int linesPerSector = Math.max(mapLines.size() / totalSectors, 1);
 		
-		String backgroundName = "Germany1";
+		int startLine = 0;
+		
+		int startPositionX = sectorWidth / 2;
+		int startPositionY = sectorHeight / 2;
+		
+		for(int i = 0; i < totalSectors; i++) {
+			generateSector(sectorWidth, sectorHeight, startLine, linesPerSector, startPositionX, startPositionY);
+			startLine += linesPerSector;
+			startPositionY += linesPerSector * CELL_HEIGHT;
+		}
+		
+		/*String backgroundName = "Germany1";
 		Entity background = new Entity(backgroundName, 0, 0, 0, 0);
 		BufferedImage backgroundImage = background.getImage();
 		
@@ -1058,10 +1212,35 @@ class Level {
 		}
 		
 		LEVEL_WIDTH = BACKGROUND_WIDTH;
-		LEVEL_HEIGHT = levelHeight;
+		LEVEL_HEIGHT = levelHeight;*/
+	}
+
+	private void generateSector(int sectorWidth, int sectorHeight,
+			int startLine, int linesPerSector, int startPositionX, int startPositionY) {
+		BufferedImage sectorBackground = new BufferedImage(sectorWidth, sectorHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = sectorBackground.createGraphics();
+		
+		for(int y = 0; y < linesPerSector; y++) {
+			String line = mapLines.get(y + startLine);
+			int cornerY = sectorHeight - (y + 1) * CELL_HEIGHT;
+			
+			for(int x = 0; x < line.length(); x++) {
+				char character = line.charAt(x);
+				int tileValue = (int) character - 65; // start with A being 0
+				BufferedImage tile = allTiles.get(tileValue);
+				
+				int cornerX = x * CELL_WIDTH;
+				
+				g2d.drawImage(tile, cornerX, cornerY, null);
+			}
+		}
+		
+		Entity sector = new Entity(sectorBackground, startPositionX, startPositionY);
+		allSectors.add(sector);
+		g2d.dispose();
 	}
 	
-	public List<Aircraft> spawnLine(int playerY) {
+/*	public List<Aircraft> spawnLine(int playerY) {
 		List<Aircraft> bandits = new ArrayList<>();
 		
 		int index = playerY / CELL_HEIGHT;
@@ -1093,29 +1272,5 @@ class Level {
 		}
 		
 		return bandits;
-	}
-
-	public Entity getSectorAtIndex (int index) {
-		if(index < 0) {
-			return null;
-		}
-		
-		if(index >= allSectors.size()) {
-			return null;
-		}
-		
-		return allSectors.get(index);
-	}
-	
-	public List<Entity> getAllSectors () {
-		return allSectors;
-	}
-	
-	public int getWidth() {
-		return BACKGROUND_WIDTH;
-	}
-
-	public int getHeight() {
-		return BACKGROUND_HEIGHT;
-	}
+	}*/
 }

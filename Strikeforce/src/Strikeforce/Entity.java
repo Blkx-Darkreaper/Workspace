@@ -16,10 +16,18 @@ public class Entity {
 	protected BufferedImage currentImage;
 	protected boolean isSelected;
 	protected int opacity = 100;
+	protected boolean hasShadow;
 	
 	public Entity(int startX, int startY, int inWidth, int inHeight) {
 		centerX = startX;
 		centerY = startY;
+	}
+	
+	public Entity(BufferedImage inImage, int inX, int inY) {
+		currentImage = inImage;
+		centerX = inX;
+		centerY = inY;
+		hasShadow = false;
 	}
 	
 	public Entity(String inName, int inX, int inY, int inDirection, int inAltitude) {
@@ -101,6 +109,14 @@ public class Entity {
 	
 	public float getOpacity() {
 		return opacity;
+	}
+	
+	public boolean getHasShadow() {
+		return hasShadow;
+	}
+	
+	public void setHasShadow(boolean condition) {
+		hasShadow = condition;
 	}
 	
 	public Effect getExplosionAnimation() {
