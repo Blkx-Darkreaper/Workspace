@@ -51,7 +51,7 @@ public class Fighter extends Aircraft {
 		int key = e.getKeyCode();
 
 		switch (key) {
-/*		case KeyEvent.VK_F:
+/*		case doLoopKey:
 			craft.doLoop();
 			break;*/
 		case moveLeftKey:

@@ -21,6 +21,11 @@ public class Global {
 	
 	public static final int TIME_INTERVAL = 20;
 	
+	public static Menu mainMenu;
+	public static final int MENU_WIDTH = (int) (FRAME_WIDTH * 0.8);
+	public static final int MENU_HEIGHT = (int) (FRAME_HEIGHT * 0.8);
+	public static int MENU_TITLE_HEIGHT;
+	
 	public static View view;
 	public static final int VIEW_WIDTH = 250;
 	public static final int VIEW_HEIGHT = 500;

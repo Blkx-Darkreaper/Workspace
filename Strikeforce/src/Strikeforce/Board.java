@@ -23,7 +23,11 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class Board extends JPanel implements ActionListener {
 
-	private String currentPhase = "Build";
+	private enum State {Menu, Planning, Build, Raid};
+	private State currentState = State.Planning;
+	private State previousState;
+	private final int menuKey = KeyEvent.VK_ESCAPE;
+	
 	private int windowScale = 1;
 	static Level currentLevel;
 	private static Fighter playerFighter;
@@ -39,6 +43,14 @@ public class Board extends JPanel implements ActionListener {
 		String levelName = "germany";
 		String tileSetName = "Germany";
 		currentLevel = new Level(levelName, tileSetName);
+		
+		String menuName = "menu";
+		List<String> menuOptions = new ArrayList<>();
+		menuOptions.add("Planning");
+		menuOptions.add("Build");
+		menuOptions.add("Raid");
+		menuOptions.add("Exit");
+		mainMenu = new Menu(menuName, 150, menuOptions);
 		
 		String viewName = "view";
 		int viewX = LEVEL_WIDTH / 2;
@@ -75,63 +87,7 @@ public class Board extends JPanel implements ActionListener {
 		allVehicles = new ArrayList<>();
 		allBuildings = new ArrayList<>();
 		
-		name = "airstrip";
-		startX = 150;
-		startY = 2000;
-		direction = 180;
-		altitude = 0;
-		hitPoints = 1;
-		Airstrip runway = new Airstrip(name, startX, startY, direction, altitude, hitPoints);
-		allBuildings.add(runway);
-		
-		String testJetName = "f18";
-		Deque<Bandit> hangarAircraft = new LinkedList<>();
-		startX = 0;
-		startY = 0;
-		direction = 0;
-		altitude = 0;
-		speed = 0;
-		hitPoints = 1;
-		Bandit bandit1 = new Bandit(testJetName, startX, startY, direction, altitude, 
-				speed, hitPoints);
-		Bandit bandit2 = new Bandit(testJetName, startX, startY, direction, altitude, 
-				speed, hitPoints);
-		
-		bandit1.setWeaponSetA(basicWeaponSetup);
-		List<Bandit> formationMembers = new ArrayList<>();
-		formationMembers.add(bandit1);
-		formationMembers.add(bandit2);
-		
-		String formationType = "line";
-		Formation formation = new Formation(formationType, formationMembers);
-		bandit1.setFormation(formation);
-		bandit2.setFormation(formation);
-		
-		hangarAircraft.push(bandit1);
-		hangarAircraft.push(bandit2);
-		String hangarName = "hangar";
-		startX = 60;
-		startY = 2150;
-		direction = 90;
-		altitude = 0;
-		hitPoints = 10;
-		Hangar hangar = new Hangar(hangarName, startX, startY, direction, altitude, hitPoints, hangarAircraft, this);
-		Queue<Point> patrolPath = new LinkedList<>();
-		patrolPath.offer(new Point(150, 800));
-		patrolPath.offer(new Point(50, 600));
-		hangar.setPatrolPath(patrolPath);
-		hangar.setNearestRunway(runway);
-		hangar.setCovers(true);
-		allBuildings.add(hangar);
-		
-/*		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
-		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
-		ImageIcon turretIcon = resLoader.getImageIcon("tank-turret.png");
-		Entity turret = new Entity(turretIcon, currentLevel.getWidth() / 2, 300);
-		tank.setTurret(turret);
-		tank.setDirection(180);
-		tank.setFiringDirection(180);
-		allGroundVehicles.add(tank);*/
+		addEntities();
 		
 		addKeyListener(new KeyActionListener());
 		setFocusable(true);
@@ -140,12 +96,12 @@ public class Board extends JPanel implements ActionListener {
 		time.start();
 	}
 	
-	public String getPhase () {
-		return currentPhase;
+	public State getState () {
+		return currentState;
 	}
 	
-	public void setPhase(String inPhase) {
-		currentPhase = inPhase;
+	public void setState(State inState) {
+		currentState = inState;
 	}
 	
 	public View getView() {
@@ -178,19 +134,226 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		switch(currentPhase) {
-		case "Planning":
+		switch(currentState) {
+		case Planning:
 			planningMode();
 			break;
-		case "Build":
+		case Build:
 			buildMode();
 			break;
-		case "Raid":
+		case Raid:
 			raidMode();
+			break;
+		case Menu:
+			menu();
 			break;
 		}
 		
 		repaint();
+	}
+	
+	private class KeyActionListener extends KeyAdapter {
+		
+		public void keyReleased (KeyEvent e) {
+			State currentState = getState();
+			
+			switch(currentState) {
+			case Planning:
+
+			case Build:
+				playerCursor.keyReleased(e);
+				break;
+			case Raid:
+				playerFighter.keyReleased(e);
+				break;
+			}
+		}
+		
+		public void keyPressed (KeyEvent e) {
+			State currentState = getState();
+			
+			int key = e.getKeyCode();
+			if(key == menuKey) {
+				if(currentState != State.Menu) {
+					previousState = currentState;
+					setState(State.Menu);
+					return;
+				}
+				
+				if(previousState == null) {
+					return;
+				}
+				
+				setState(previousState);
+				return;
+			}
+			
+			switch(currentState) {
+			case Planning:
+
+			case Build:
+				playerCursor.keyPressed(e);
+				break;
+			case Raid:
+				playerFighter.keyPressed(e);
+				break;
+			case Menu:
+				break;
+			}
+		}
+	}
+	
+	private void updatePlayer(Graphics2D g2d) {
+		switch (currentState) {
+		case Planning:
+
+		case Build:
+			drawEntity(g2d, playerCursor);
+			break;
+		case Raid:
+			drawEntity(g2d, playerFighter);
+			break;
+		case Menu:
+			break;
+		}
+	}
+	
+	private void updateMenu(Graphics2D g2d) {
+		drawEntity(g2d, mainMenu);
+		
+		for(Iterator<Entity> optionIter = mainMenu.getMenuOptions().iterator(); optionIter.hasNext();) {
+			Entity menuOption = optionIter.next();
+			drawEntity(g2d, menuOption);
+		}
+	}
+
+	private void updateGroundVehicles(Graphics2D g2d) {
+		for(Iterator<Vehicle> groundIter = allVehicles.iterator(); groundIter.hasNext();) {
+			Vehicle aVehicle = groundIter.next();
+			boolean airborne = aVehicle.getAirborne();
+			
+			if(airborne == true) {
+				continue;
+			}
+			
+			for(Iterator<Projectile> bulletIter = aVehicle.getAllProjectiles().iterator(); bulletIter.hasNext();) {
+				Projectile aProjectile = bulletIter.next();
+				
+				if(checkWithinView(aProjectile) == false) {
+					bulletIter.remove();
+					continue;
+				}
+				
+				drawEntity(g2d, aProjectile);
+			}
+			
+			if(checkWithinView(aVehicle) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aVehicle);
+			
+			Entity turret = aVehicle.getTurret();
+			if(turret == null) {
+				continue;
+			}
+			
+			drawEntity(g2d, turret);
+		}
+	}
+	
+	private void updateBuildings(Graphics2D g2d) {
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
+			Building aBuilding = buildingIter.next();
+			boolean cover = aBuilding.getCovers();
+			
+			if(cover == true) {
+				continue;
+			}
+			
+			if(checkWithinView(aBuilding) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBuilding);
+		}
+	}
+	
+	private void updateBuildingCover(Graphics2D g2d) {
+		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
+			Building aBuilding = buildingIter.next();
+			boolean cover = aBuilding.getCovers();
+			
+			if(cover == false) {
+				continue;
+			}
+			
+			if(checkWithinView(aBuilding) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBuilding);
+		}
+	}
+	
+	private void updateAirEnemies(Graphics2D g2d) {
+/*		if(currentPhase != "Raid") {
+			return;
+		}*/
+		
+		//allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
+		
+		for(Iterator<Vehicle> airborneIter = allVehicles.iterator(); airborneIter.hasNext();) {
+			Vehicle aBandit = airborneIter.next();
+			boolean airborne = aBandit.getAirborne();
+			
+			if(airborne == false) {
+				continue;
+			}
+		
+			for(Iterator<Projectile> bulletIter = aBandit.getAllProjectiles().iterator(); bulletIter.hasNext();) {
+				Projectile aProjectile = bulletIter.next();
+				
+				if(checkWithinView(aProjectile) == false) {
+					bulletIter.remove();
+					continue;
+				}
+				
+				drawEntity(g2d, aProjectile);
+			}
+			
+			if(checkWithinView(aBandit) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aBandit);
+		}
+	}
+	
+	private void updateEffects(Graphics2D g2d) {
+		if(currentState != State.Raid) {
+			return;
+		}
+		
+		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
+			Effect anEffect = effectIter.next();
+			
+			if(anEffect.getAnimationOver() == true) {
+				continue;
+			}
+			
+			drawEntity(g2d, anEffect);
+		}
+	}
+
+	private void updateBackground(Graphics2D g2d) {
+		for(Entity aSector : currentLevel.getAllSectors()) {
+			if(checkWithinView(aSector) == false) {
+				continue;
+			}
+			
+			drawEntity(g2d, aSector);
+		}
 	}
 	
 	private void planningMode() {
@@ -311,6 +474,76 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
+	private void menu() {
+		
+	}
+	
+	private void addEntities() {
+		String name = "airstrip";
+		int startX = 150;
+		int startY = 2000;
+		int direction = 180;
+		int altitude = 0;
+		int hitPoints = 1;
+		Airstrip runway = new Airstrip(name, startX, startY, direction, altitude, hitPoints);
+		allBuildings.add(runway);
+		
+		String testJetName = "f18";
+		Deque<Bandit> hangarAircraft = new LinkedList<>();
+		startX = 0;
+		startY = 0;
+		direction = 0;
+		altitude = 0;
+		int speed = 0;
+		hitPoints = 1;
+		Bandit bandit1 = new Bandit(testJetName, startX, startY, direction, altitude, 
+				speed, hitPoints);
+		Bandit bandit2 = new Bandit(testJetName, startX, startY, direction, altitude, 
+				speed, hitPoints);
+		
+		List<Weapon> basicWeaponSetup = new ArrayList<>();
+		List<Weapon> otherWeaponSetup = new ArrayList<>();
+		basicWeaponSetup.add(singleShot);
+		basicWeaponSetup.add(splitShot);
+		otherWeaponSetup.add(dumbBomb);
+		
+		bandit1.setWeaponSetA(basicWeaponSetup);
+		List<Bandit> formationMembers = new ArrayList<>();
+		formationMembers.add(bandit1);
+		formationMembers.add(bandit2);
+		
+		String formationType = "line";
+		Formation formation = new Formation(formationType, formationMembers);
+		bandit1.setFormation(formation);
+		bandit2.setFormation(formation);
+		
+		hangarAircraft.push(bandit1);
+		hangarAircraft.push(bandit2);
+		String hangarName = "hangar";
+		startX = 60;
+		startY = 2150;
+		direction = 90;
+		altitude = 0;
+		hitPoints = 10;
+		Hangar hangar = new Hangar(hangarName, startX, startY, direction, altitude, hitPoints, hangarAircraft, this);
+		Queue<Point> patrolPath = new LinkedList<>();
+		patrolPath.offer(new Point(150, 800));
+		patrolPath.offer(new Point(50, 600));
+		hangar.setPatrolPath(patrolPath);
+		hangar.setNearestRunway(runway);
+		hangar.setCovers(true);
+		allBuildings.add(hangar);
+		
+/*		ImageIcon tankIcon = resLoader.getImageIcon("tank-body.png");
+		Vehicle tank = new Vehicle(tankIcon, currentLevel.getWidth() / 2, 300);
+		ImageIcon turretIcon = resLoader.getImageIcon("tank-turret.png");
+		Entity turret = new Entity(turretIcon, currentLevel.getWidth() / 2, 300);
+		tank.setTurret(turret);
+		tank.setDirection(180);
+		tank.setFiringDirection(180);
+		allGroundVehicles.add(tank);*/
+	}
+	
 	private void keepPlayerInView() {
 		int upperBoundsY;
 		int lowerBoundsY;
@@ -318,8 +551,8 @@ public class Board extends JPanel implements ActionListener {
 		int playerX;
 		int playerY;
 		
-		switch (currentPhase) {
-		case "Raid":
+		switch (currentState) {
+		case Raid:
 			boolean looping = playerFighter.getLooping();
 			if(looping == true) {
 				return;
@@ -342,23 +575,9 @@ public class Board extends JPanel implements ActionListener {
 			}
 			break;
 			
-		case "Planning":
-			upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
-			lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
+		case Planning:
 			
-			playerX = playerCursor.getCenterX();
-			playerY = playerCursor.getCenterY();
-			
-			if((playerY - CELL_SIZE / 2) < lowerBoundsY) {
-				view.moveDown();
-			}
-			
-			if((playerY + CELL_SIZE / 2) > upperBoundsY) {
-				view.moveUp();
-			}
-			break;
-			
-		case "Build":
+		case Build:
 			upperBoundsY = view.getCenterY() + VIEW_HEIGHT / 2;
 			lowerBoundsY = view.getCenterY() - VIEW_HEIGHT / 2;
 			
@@ -418,6 +637,10 @@ public class Board extends JPanel implements ActionListener {
 		
 		// View bounds
 		drawEntity(g2d, view); //debug
+		
+		if(currentState == State.Menu) {
+			updateMenu(g2d);
+		}
 		
 		g2d.dispose();
 	}
@@ -617,6 +840,10 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	private void drawEntity(Graphics2D g2d, Entity toDraw) {
+		if(toDraw == null) {
+			return;
+		}
+		
 		AffineTransform defaultOrientation = g2d.getTransform();
 		
 		BufferedImage image = toDraw.getImage();
@@ -793,7 +1020,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void updatePlayerProjectiles(Graphics2D g2d) {
-		if(currentPhase != "Raid") {
+		if(currentState != State.Raid) {
 			return;
 		}
 		
@@ -807,149 +1034,6 @@ public class Board extends JPanel implements ActionListener {
 			}
 			
 			drawEntity(g2d, aProjectile);
-		}
-	}
-
-	private void updatePlayer(Graphics2D g2d) {
-		switch (currentPhase) {
-		case "Planning":
-			drawEntity(g2d, playerCursor);
-			break;
-		case "Build":
-			drawEntity(g2d, playerCursor);
-			break;
-		case "Raid":
-			drawEntity(g2d, playerFighter);
-			break;
-		}
-	}
-
-	private void updateGroundVehicles(Graphics2D g2d) {
-		for(Iterator<Vehicle> groundIter = allVehicles.iterator(); groundIter.hasNext();) {
-			Vehicle aVehicle = groundIter.next();
-			boolean airborne = aVehicle.getAirborne();
-			
-			if(airborne == true) {
-				continue;
-			}
-			
-			for(Iterator<Projectile> bulletIter = aVehicle.getAllProjectiles().iterator(); bulletIter.hasNext();) {
-				Projectile aProjectile = bulletIter.next();
-				
-				if(checkWithinView(aProjectile) == false) {
-					bulletIter.remove();
-					continue;
-				}
-				
-				drawEntity(g2d, aProjectile);
-			}
-			
-			if(checkWithinView(aVehicle) == false) {
-				continue;
-			}
-			
-			drawEntity(g2d, aVehicle);
-			
-			Entity turret = aVehicle.getTurret();
-			if(turret == null) {
-				continue;
-			}
-			
-			drawEntity(g2d, turret);
-		}
-	}
-	
-	private void updateBuildings(Graphics2D g2d) {
-		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
-			Building aBuilding = buildingIter.next();
-			boolean cover = aBuilding.getCovers();
-			
-			if(cover == true) {
-				continue;
-			}
-			
-			if(checkWithinView(aBuilding) == false) {
-				continue;
-			}
-			
-			drawEntity(g2d, aBuilding);
-		}
-	}
-	
-	private void updateBuildingCover(Graphics2D g2d) {
-		for(Iterator<Building> buildingIter = allBuildings.iterator(); buildingIter.hasNext();) {
-			Building aBuilding = buildingIter.next();
-			boolean cover = aBuilding.getCovers();
-			
-			if(cover == false) {
-				continue;
-			}
-			
-			if(checkWithinView(aBuilding) == false) {
-				continue;
-			}
-			
-			drawEntity(g2d, aBuilding);
-		}
-	}
-	
-	private void updateAirEnemies(Graphics2D g2d) {
-/*		if(currentPhase != "Raid") {
-			return;
-		}*/
-		
-		//allVehicles.addAll(currentLevel.spawnLine(playerFighter.getCenterY()));
-		
-		for(Iterator<Vehicle> airborneIter = allVehicles.iterator(); airborneIter.hasNext();) {
-			Vehicle aBandit = airborneIter.next();
-			boolean airborne = aBandit.getAirborne();
-			
-			if(airborne == false) {
-				continue;
-			}
-		
-			for(Iterator<Projectile> bulletIter = aBandit.getAllProjectiles().iterator(); bulletIter.hasNext();) {
-				Projectile aProjectile = bulletIter.next();
-				
-				if(checkWithinView(aProjectile) == false) {
-					bulletIter.remove();
-					continue;
-				}
-				
-				drawEntity(g2d, aProjectile);
-			}
-			
-			if(checkWithinView(aBandit) == false) {
-				continue;
-			}
-			
-			drawEntity(g2d, aBandit);
-		}
-	}
-	
-	private void updateEffects(Graphics2D g2d) {
-		if(currentPhase != "Raid") {
-			return;
-		}
-		
-		for(Iterator<Effect> effectIter = allEffects.iterator(); effectIter.hasNext();) {
-			Effect anEffect = effectIter.next();
-			
-			if(anEffect.getAnimationOver() == true) {
-				continue;
-			}
-			
-			drawEntity(g2d, anEffect);
-		}
-	}
-
-	private void updateBackground(Graphics2D g2d) {
-		for(Entity aSector : currentLevel.getAllSectors()) {
-			if(checkWithinView(aSector) == false) {
-				continue;
-			}
-			
-			drawEntity(g2d, aSector);
 		}
 	}
 	
@@ -991,41 +1075,6 @@ public class Board extends JPanel implements ActionListener {
 		JOptionPane.showMessageDialog(null, "You have been shot down!", "Game Over", 
 				JOptionPane.INFORMATION_MESSAGE);
 		playerFighter.gameover();
-	}
-	
-	private class KeyActionListener extends KeyAdapter {
-		
-		public void keyReleased (KeyEvent e) {
-			String phase = getPhase();
-			
-			switch(phase) {
-			case "Planning":
-				playerCursor.keyReleased(e);
-				break;
-			case "Build":
-				playerCursor.keyReleased(e);
-				break;
-			case "Raid":
-				playerFighter.keyReleased(e);
-				break;
-			}
-		}
-		
-		public void keyPressed (KeyEvent e) {
-			String phase = getPhase();
-			
-			switch(phase) {
-			case "Planning":
-				playerCursor.keyPressed(e);
-				break;
-			case "Build":
-				playerCursor.keyPressed(e);
-				break;
-			case "Raid":
-				playerFighter.keyPressed(e);
-				break;
-			}
-		}
 	}
 }
 
@@ -1239,7 +1288,7 @@ class Level {
 		allSectors.add(sector);
 		g2d.dispose();
 	}
-	
+
 /*	public List<Aircraft> spawnLine(int playerY) {
 		List<Aircraft> bandits = new ArrayList<>();
 		
