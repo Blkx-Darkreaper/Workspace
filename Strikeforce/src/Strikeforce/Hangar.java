@@ -1,12 +1,9 @@
 package Strikeforce;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Queue;
-
-import javax.swing.ImageIcon;
 
 public class Hangar extends Building {
 

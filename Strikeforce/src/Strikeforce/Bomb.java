@@ -1,17 +1,11 @@
 package Strikeforce;
 
-import static Strikeforce.Global.EXPLOSION_ANIMATION_FRAMES;
-import static Strikeforce.Global.chooseExplosionAnimation;
-import static Strikeforce.Global.resLoader;
+import static Strikeforce.Global.*;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-
-import Strikeforce.Entity.Circle;
 
 public class Bomb extends Projectile {
 	

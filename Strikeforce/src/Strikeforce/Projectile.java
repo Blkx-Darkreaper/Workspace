@@ -1,7 +1,5 @@
 package Strikeforce;
 
-import javax.swing.ImageIcon;
-
 import static Strikeforce.Board.*;
 
 public class Projectile extends Mover {

@@ -166,6 +166,8 @@ public class Board extends JPanel implements ActionListener {
 			case Raid:
 				playerFighter.keyReleased(e);
 				break;
+			case Menu:
+				break;
 			}
 		}
 		
@@ -904,9 +906,9 @@ public class Board extends JPanel implements ActionListener {
 		for (int x = 0; x < width; x++) {
 		    for (int y = 0; y < height; y++) {
 				Color pixel = new Color(image.getRGB(x, y));
-				int red = pixel.getRed();
+/*				int red = pixel.getRed();
 				int green = pixel.getGreen();
-				int blue = pixel.getBlue();
+				int blue = pixel.getBlue();*/
 				int alpha = pixel.getAlpha();
 				
 				alpha -= alphaLoss;

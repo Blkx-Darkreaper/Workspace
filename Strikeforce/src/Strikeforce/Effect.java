@@ -1,13 +1,10 @@
 package Strikeforce;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import static Strikeforce.Global.*;
-
-import javax.swing.ImageIcon;
 
 public class Effect extends Entity {
 	

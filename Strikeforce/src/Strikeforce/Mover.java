@@ -3,11 +3,6 @@ package Strikeforce;
 import static Strikeforce.Board.*;
 import static Strikeforce.Global.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-
 public class Mover extends Entity {
 	
 	protected int dx, dy;

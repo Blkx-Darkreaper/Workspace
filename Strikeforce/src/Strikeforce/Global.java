@@ -1,7 +1,5 @@
 package Strikeforce;
 
-import static Strikeforce.Global.resLoader;
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
