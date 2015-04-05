@@ -14,25 +14,55 @@ public abstract class Weapon {
 	
 	protected int muzzleVelocity;
 	protected int damage;
+	protected int cooldown;
+	protected int reload = 0;
 	
-	public Weapon (String inName, String inDescription, int inMuzzleVelocity, int inDamage) {
+	public Weapon (String inName, String inDescription, int inMuzzleVelocity, int inDamage, int inCooldown) {
 		name = inName;
 		description = inDescription;
 		muzzleVelocity = inMuzzleVelocity;
 		damage = inDamage;
+		cooldown = inCooldown;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 
-	public List<Projectile> openFire(int originX, int originY, int direction) {
+	public List<Projectile> openFire(int originX, int originY, int inDirection, int inAltitude) {
+		if(reload > 0) {
+			return null;
+		}
+		
 		List<Projectile> allShots = new ArrayList<>();
 		
-		ImageIcon bulletIcon = resLoader.getImageIcon("bullet.png");
+		String bulletName = "bullet";
+		ImageIcon bulletIcon = resLoader.getImageIcon(bulletName + ".png");
 		int startX = originX;
 		int startY = originY + bulletIcon.getIconHeight() / 2;
+		boolean hitsAir = true;
+		boolean hitsGround = false;
+		boolean live = true;
 		
-		int dx = (int) (muzzleVelocity * Math.sin(Math.toRadians(direction)));
-		int dy = (int) (muzzleVelocity * Math.cos(Math.toRadians(direction)));
+		/*allShots.add(new Projectile(bulletIcon, startX, startY, muzzleVelocity, 
+				damage, inDirection, inAltitude));*/
+		allShots.add(new Projectile(bulletName, startX, startY, inDirection, inAltitude, 
+				muzzleVelocity, damage, hitsAir, hitsGround, live));
 		
-		allShots.add(new Projectile(bulletIcon, startX, startY, dx, dy, damage));
+		reload += cooldown;
+		
 		return allShots;
+	}
+	
+	public void reload() {
+		if(reload == 0) {
+			return;
+		}
+		
+		reload--;
 	}
 }

@@ -1,27 +1,21 @@
 package Strikeforce;
 
 import static Strikeforce.Board.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.ImageIcon;
+import static Strikeforce.Global.*;
 
 public class Mover extends Entity {
 	
 	protected int dx, dy;
 	protected int speed = 0;
 	
-	protected List<Projectile> allProjectiles;
-	
 	public Mover(int startX, int startY, int inWidth, int inHeight) {
 		super(startX, startY, inWidth, inHeight);
-		allProjectiles = new ArrayList<>();
 	}
 	
-	public Mover(ImageIcon icon, int startX, int startY) {
-		super(icon, startX, startY);
-		allProjectiles = new ArrayList<>();
+	public Mover(String inName, int inX, int inY, int inDirection, int inAltitude, int inSpeed) {
+		super(inName, inX, inY, inDirection, inAltitude);
+		speed = inSpeed;
+		updateVectors();
 	}
 	
 	public int getDeltaX() {
@@ -43,8 +37,8 @@ public class Mover extends Entity {
 	}
 	
 	public void updateVectors() {
-		dx = (int) (speed * Math.sin(Math.toRadians(direction)));
-		dy = (int) (speed * Math.cos(Math.toRadians(direction)));
+		dx = (int) Math.round(speed * Math.sin(Math.toRadians(direction)));
+		dy = (int) Math.round(speed * Math.cos(Math.toRadians(direction)));
 	}
 	
 	public int getSpeed() {
@@ -55,12 +49,8 @@ public class Mover extends Entity {
 		speed = inValue;
 		updateVectors();
 	}
-	
-	public List<Projectile> getAllProjectiles() {
-		return allProjectiles;
-	}
 
-	public void move() {
+	public void update() {
 		centerX += dx;
 		centerY += dy;
 		
@@ -77,5 +67,21 @@ public class Mover extends Entity {
 		if(centerY < lowerBoundsY) {
 			centerY = lowerBoundsY;
 		}*/
+	}
+	
+	public void moveUp() {
+		centerY += CELL_SIZE;
+	}
+	
+	public void moveDown() {
+		centerY -= CELL_SIZE;
+	}
+	
+	public void moveLeft() {
+		centerX -= CELL_SIZE;
+	}
+	
+	public void moveRight() {
+		centerX += CELL_SIZE;
 	}
 }

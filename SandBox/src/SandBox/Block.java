@@ -12,13 +12,14 @@ public class Block extends Material {
 	private int permeability; //mm2
 	
 	public Block (String inName, int inElevation, int inTemp, int inWaterContent, int inWaterContentTemp, 
-			int inWaterStorageCapacity, int inPermeability) {
+			int inWaterStorageCapacity, int inPermeability, boolean onSurface) {
 		super(inName, inElevation, inTemp);
 		surface = true;
 		waterContent = inWaterContent;
 		waterContentTemperature = inWaterContentTemp;
 		waterStorageCapacity = inWaterStorageCapacity;
 		permeability = inPermeability;
+		surface = onSurface;
 	}
 	
 	public boolean getOnSurface () {

@@ -4,16 +4,18 @@ import static SandBox.Global.*;
 
 public class WaterBody extends Fluid {
 
+	private String name = "Water Body";
 	private boolean surface;
 	private int depth; //mm
 	private int turbulence;
 	private int viscocity; //g/km*s
 
-	public WaterBody(int inElevation, int inTemp, int inDepth) {
+	public WaterBody(int inElevation, int inTemp, int inDepth, boolean onSurface) {
 		super("water", inElevation, inTemp);
 		depth = inDepth;
 		turbulence = 0;
 		viscocity = 1002;
+		surface = onSurface;
 	}
 	
 	public boolean getOnSurface() {

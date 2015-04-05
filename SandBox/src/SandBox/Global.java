@@ -16,6 +16,11 @@ public class Global {
 	static final int DRY_ADIABATIC_LAPSE_RATE = -98; //K/10000m
 	static final int WET_ADIABATIC_LAPSE_RATE = -50; //K/10000m
 	
+	static final int STANDARD_TEMPERATURE = 293;
+	static final int STANDARD_PRESSURE = 101325;
+	
+	static final int AVERAGE_IRRADIANCE = 1361; //W/m2
+	
 	private int getWaterViscocity (int waterTemp) {
 		int fluidViscosity = (int) (2.414*Math.pow(10.0, -5.0) * Math.pow(10, 247.8/(waterTemp - 140)));
 		

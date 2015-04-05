@@ -2,9 +2,10 @@ package SandBox;
 
 import static SandBox.Global.*;
 
-public class Material {
+public class Material implements Comparable<Material> {
 
 	private String name;
+	private int positionX, positionY;
 	private int elevation; //mm
 	private int crossSectionalArea; //mm2
 	private int temperature; //K
@@ -73,6 +74,26 @@ public class Material {
 	
 	public int getAlbedo () {
 		return albedo;
+	}
+	
+	@Override
+	public int compareTo(Material other) {
+		int comparison;
+		
+		int elevation = getElevation();
+		int otherElevation = other.getElevation();
+		
+		comparison = elevation - otherElevation;
+		
+		return comparison;
+	}
+	
+	public int illuminate(int energy) {
+		int energyAbsorbed = albedo * energy;
+		heat(energyAbsorbed);
+		
+		int energyRemaining = energy - energyAbsorbed;
+		return energyRemaining;
 	}
 	
 	public void heat (int energyAdded) {

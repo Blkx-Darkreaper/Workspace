@@ -6,6 +6,7 @@ import java.util.List;
 
 public class AirPocket extends Fluid {
 
+	private String name = "Air Pocket";
 	private int humidityContent; //g/mm3
 	private int humidityContentCapacity; //g/mm3
 	private int relativeHumidity; //%
