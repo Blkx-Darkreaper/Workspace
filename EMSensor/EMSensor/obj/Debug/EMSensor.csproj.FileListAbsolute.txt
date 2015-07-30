@@ -1,0 +1,9 @@
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\bin\Debug\EMSensor.exe.config
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.Form1.resources
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.Properties.Resources.resources
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.csproj.GenerateResource.Cache
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\bin\Debug\EMSensor.exe
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\bin\Debug\EMSensor.pdb
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.exe
+D:\Users\Darkreaper\Git\Workspace\EMSensor\EMSensor\obj\Debug\EMSensor.pdb
