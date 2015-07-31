@@ -254,8 +254,17 @@ namespace EMSensor
         private void button1_Click(object sender, EventArgs e)
         {
             displayOn = !displayOn;
+
             UpdateScreen(18);
             UpdateWorld();
+
+            if (displayOn == true)
+            {
+                DisplayToggle.Text = "Display On";
+                return;
+            }
+
+            DisplayToggle.Text = "Diplay Off";
         }
 
         private void Up_Click(object sender, EventArgs e)

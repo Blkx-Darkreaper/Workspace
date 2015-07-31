@@ -134,7 +134,7 @@
             // 
             this.DisplayToggle.Location = new System.Drawing.Point(418, 155);
             this.DisplayToggle.Name = "DisplayToggle";
-            this.DisplayToggle.Size = new System.Drawing.Size(75, 23);
+            this.DisplayToggle.Size = new System.Drawing.Size(75, 44);
             this.DisplayToggle.TabIndex = 9;
             this.DisplayToggle.Text = "Display Off";
             this.DisplayToggle.UseVisualStyleBackColor = true;
