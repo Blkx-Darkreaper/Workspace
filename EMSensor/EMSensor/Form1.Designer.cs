@@ -42,6 +42,8 @@
             this.Down = new System.Windows.Forms.Button();
             this.Left = new System.Windows.Forms.Button();
             this.Right = new System.Windows.Forms.Button();
+            this.Start = new System.Windows.Forms.Button();
+            this.Stop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Screen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.World)).BeginInit();
             this.SuspendLayout();
@@ -130,7 +132,7 @@
             // 
             // DisplayToggle
             // 
-            this.DisplayToggle.Location = new System.Drawing.Point(418, 84);
+            this.DisplayToggle.Location = new System.Drawing.Point(418, 155);
             this.DisplayToggle.Name = "DisplayToggle";
             this.DisplayToggle.Size = new System.Drawing.Size(75, 23);
             this.DisplayToggle.TabIndex = 9;
@@ -182,11 +184,35 @@
             this.Right.UseVisualStyleBackColor = true;
             this.Right.Click += new System.EventHandler(this.Right_Click);
             // 
+            // Start
+            // 
+            this.Start.Enabled = false;
+            this.Start.Location = new System.Drawing.Point(418, 70);
+            this.Start.Name = "Start";
+            this.Start.Size = new System.Drawing.Size(75, 23);
+            this.Start.TabIndex = 14;
+            this.Start.Text = "Start";
+            this.Start.UseVisualStyleBackColor = true;
+            this.Start.Click += new System.EventHandler(this.Start_Click);
+            // 
+            // Stop
+            // 
+            this.Stop.Enabled = false;
+            this.Stop.Location = new System.Drawing.Point(418, 99);
+            this.Stop.Name = "Stop";
+            this.Stop.Size = new System.Drawing.Size(75, 23);
+            this.Stop.TabIndex = 15;
+            this.Stop.Text = "Stop";
+            this.Stop.UseVisualStyleBackColor = true;
+            this.Stop.Click += new System.EventHandler(this.Stop_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(810, 475);
+            this.Controls.Add(this.Stop);
+            this.Controls.Add(this.Start);
             this.Controls.Add(this.Right);
             this.Controls.Add(this.Left);
             this.Controls.Add(this.Down);
@@ -226,6 +252,8 @@
         private System.Windows.Forms.Button Down;
         private System.Windows.Forms.Button Left;
         private System.Windows.Forms.Button Right;
+        private System.Windows.Forms.Button Start;
+        private System.Windows.Forms.Button Stop;
     }
 }
 

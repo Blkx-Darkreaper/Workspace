@@ -58,6 +58,10 @@ namespace EMSensor
 
                         readingAtBearing += signalToAdd;
                     }
+
+                    decimal backgroundNoise = signalData.GetAmbientSignals(frequency);
+                    readingAtBearing += backgroundNoise;
+
                     readingAtBearing = Math.Round(readingAtBearing, 2);
 
                     // Add variation to reading

@@ -15,6 +15,7 @@ namespace EMSensor
         public Point receiver { get; set; }
         Sensor sensorPackage { get; set; }
         bool displayOn { get; set; }
+        Timer time { get; set; }
 
         public Form1()
         {
@@ -24,8 +25,11 @@ namespace EMSensor
         public void SetupSensor()
         {
             displayOn = true;
+            time = new Timer();
+            time.Tick += new EventHandler(timer_tick);
+            time.Interval = 2000;   // ms
 
-            decimal propegationVelocity = 5m;
+            Start.Enabled = true;
 
             Random rand = new Random();
 
@@ -37,7 +41,14 @@ namespace EMSensor
                 allFrequencies.Add(frequency);
             }
 
-            Environment world = new Environment(propegationVelocity);
+            decimal propegationVelocity = 5m;
+            Dictionary<decimal, decimal> radiationLevels = new Dictionary<decimal,decimal>();
+            foreach (decimal frequency in allFrequencies)
+            {
+                decimal level = rand.Next(8, 15);
+                radiationLevels.Add(frequency, level);
+            }
+            Environment world = new Environment(propegationVelocity, radiationLevels);
 
             int worldWidth = 100;
             int worldHeight = 150;
@@ -63,6 +74,11 @@ namespace EMSensor
             AddRandomSources(rand, allFrequencies, world, worldWidth, worldHeight);
 
             sensorPackage = new Sensor(world, allFrequencies, 5, 0);
+        }
+
+        private void timer_tick(object sender, EventArgs e)
+        {
+            Update_Click(sender, e);
         }
 
         private void AddSource(Random rand, List<decimal> allFrequencies, Environment world, int locationX, int locationY)
@@ -249,6 +265,11 @@ namespace EMSensor
 
             receiver = new Point(x, y - 2);
 
+            if (time.Enabled == true)
+            {
+                return;
+            }
+
             Update_Click(sender, e);
         }
 
@@ -258,6 +279,11 @@ namespace EMSensor
             int y = receiver.Y;
 
             receiver = new Point(x, y + 2);
+
+            if (time.Enabled == true)
+            {
+                return;
+            }
 
             Update_Click(sender, e);
         }
@@ -269,6 +295,11 @@ namespace EMSensor
 
             receiver = new Point(x - 2, y);
 
+            if (time.Enabled == true)
+            {
+                return;
+            }
+
             Update_Click(sender, e);
         }
 
@@ -279,7 +310,28 @@ namespace EMSensor
 
             receiver = new Point(x + 2, y);
 
+            if (time.Enabled == true)
+            {
+                return;
+            }
+
             Update_Click(sender, e);
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            time.Enabled = true;
+            time.Start();
+            Stop.Enabled = true;
+            Start.Enabled = false;
+        }
+
+        private void Stop_Click(object sender, EventArgs e)
+        {
+            time.Enabled = false;
+            time.Stop();
+            Start.Enabled = true;
+            Stop.Enabled = false;
         }
     }
 }

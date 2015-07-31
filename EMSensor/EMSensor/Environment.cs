@@ -13,13 +13,17 @@ namespace EMSensor
         public List<Emission> allEmissions { get; set; }
         public decimal propegationVelocity { get; set; }
         public bool emissionsToRemove { get; set; }
+        private Dictionary<decimal, decimal> radiationLevels { get; set; }
+        private Dictionary<decimal, decimal> currentRadiationLevels { get; set; }
 
-        public Environment(decimal inVelocity)
+        public Environment(decimal inVelocity, Dictionary<decimal, decimal> inRadiationLevel)
         {
             propegationVelocity = inVelocity;
             allSources = new List<EmissionSource>();
             allEmissions = new List<Emission>();
             emissionsToRemove = false;
+            radiationLevels = inRadiationLevel;
+            currentRadiationLevels = new Dictionary<decimal,decimal>(inRadiationLevel);
         }
 
         public void AddEmissionSource(EmissionSource toAdd)
@@ -95,6 +99,25 @@ namespace EMSensor
             }
 
             return emissionsWithinRange;
+        }
+
+        internal decimal GetAmbientSignals(decimal frequency)
+        {
+            Random rand = new Random();
+            decimal averageRadLevel = radiationLevels[frequency];
+            decimal currentRadLevel = currentRadiationLevels[frequency];
+
+            int coefficient = (int)Math.Abs(1.6m * averageRadLevel - currentRadLevel);
+            decimal max = (decimal)rand.Next(coefficient);
+
+            decimal noise = Math.Round(currentRadLevel + max - coefficient * (currentRadLevel / (2 * averageRadLevel)), 2);
+            if (noise < 0)
+            {
+                noise = 0;
+            }
+            currentRadiationLevels[frequency] = noise;
+
+            return noise;
         }
     }
 }
