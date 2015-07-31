@@ -85,50 +85,6 @@ namespace EMSensor
             return allReadings;
         }
 
-        //public Dictionary<decimal, Dictionary<decimal, decimal>> GetAllSignals(Point receiver, List<decimal> allBearings, List<decimal> allFrequencies)
-        //{
-        //    Dictionary<decimal, Dictionary<decimal, decimal>> allReadings = new Dictionary<decimal, Dictionary<decimal, decimal>>();
-        //    List<Emission> allEmissions = signalData.GetEmissionsWithinRange(receiver, sensitivity);
-
-        //    foreach (Emission incomingSignals in allEmissions)
-        //    {
-        //        foreach (decimal frequency in allFrequencies)
-        //        {
-        //            foreach (decimal bearing in allBearings)
-        //            {
-        //                decimal signalReading = GetSignalAtBearing(bearing, receiver, incomingSignals, frequency);
-        //                decimal variance = Math.Round(precision * (decimal)new Random().NextDouble() - 0.5m * precision, 2);
-
-        //                signalReading += variance;
-
-        //                var bearingReading = allReadings[frequency][bearing];
-        //                if (bearingReading == null)
-        //                {
-        //                    bearingReading = signalReading;
-        //                    continue;
-        //                }
-
-        //                bearingReading += signalReading;
-        //            }
-        //        }
-        //    }
-
-        //    return allReadings;
-        //}
-
-        //private Dictionary<decimal, decimal> GetSignalAlongBearings(Point receiver, Emission incomingSignals, List<decimal> allBearings, decimal frequency)
-        //{
-        //    Dictionary<decimal, decimal> signalReadings = new Dictionary<decimal, decimal>();
-
-        //    foreach (decimal bearing in allBearings)
-        //    {
-        //        decimal signalAtBearing = GetSignalAtBearing(bearing, receiver, incomingSignals, frequency);
-        //        signalReadings.Add(bearing, signalAtBearing);
-        //    }
-
-        //    return signalReadings;
-        //}
-
         private decimal GetSignalAtBearing(decimal bearing, Point receiver, Emission incomingSignals, decimal frequency)
         {
             decimal signal = incomingSignals.GetAttenuatedSignal(frequency, receiver);
@@ -160,8 +116,11 @@ namespace EMSensor
 
         private decimal GetDiffusedSignal(decimal bearing, decimal amplitude, decimal distance)
         {
-            double coefficient = 30;
-            double arc = (180 + coefficient) - coefficient * Math.Sqrt((double)distance);
+            double arc = 180 / Math.Sqrt((double)distance * 0.25 + 1);
+            if (arc == 0)
+            {
+                return 0;
+            }
 
             if (bearing > 90)
             {

@@ -37,7 +37,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.DisplayToggle = new System.Windows.Forms.Button();
+            this.Up = new System.Windows.Forms.Button();
+            this.Down = new System.Windows.Forms.Button();
+            this.Left = new System.Windows.Forms.Button();
+            this.Right = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Screen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.World)).BeginInit();
             this.SuspendLayout();
@@ -124,22 +128,70 @@
             this.label5.TabIndex = 8;
             this.label5.Text = "90";
             // 
-            // button1
+            // DisplayToggle
             // 
-            this.button1.Location = new System.Drawing.Point(418, 84);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "test";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.DisplayToggle.Location = new System.Drawing.Point(418, 84);
+            this.DisplayToggle.Name = "DisplayToggle";
+            this.DisplayToggle.Size = new System.Drawing.Size(75, 23);
+            this.DisplayToggle.TabIndex = 9;
+            this.DisplayToggle.Text = "Display Off";
+            this.DisplayToggle.UseVisualStyleBackColor = true;
+            this.DisplayToggle.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // Up
+            // 
+            this.Up.Enabled = false;
+            this.Up.Location = new System.Drawing.Point(182, 357);
+            this.Up.Name = "Up";
+            this.Up.Size = new System.Drawing.Size(75, 23);
+            this.Up.TabIndex = 10;
+            this.Up.Text = "Up";
+            this.Up.UseVisualStyleBackColor = true;
+            this.Up.Click += new System.EventHandler(this.Up_Click);
+            // 
+            // Down
+            // 
+            this.Down.Enabled = false;
+            this.Down.Location = new System.Drawing.Point(182, 386);
+            this.Down.Name = "Down";
+            this.Down.Size = new System.Drawing.Size(75, 23);
+            this.Down.TabIndex = 11;
+            this.Down.Text = "Down";
+            this.Down.UseVisualStyleBackColor = true;
+            this.Down.Click += new System.EventHandler(this.Down_Click);
+            // 
+            // Left
+            // 
+            this.Left.Enabled = false;
+            this.Left.Location = new System.Drawing.Point(101, 370);
+            this.Left.Name = "Left";
+            this.Left.Size = new System.Drawing.Size(75, 23);
+            this.Left.TabIndex = 12;
+            this.Left.Text = "Left";
+            this.Left.UseVisualStyleBackColor = true;
+            this.Left.Click += new System.EventHandler(this.Left_Click);
+            // 
+            // Right
+            // 
+            this.Right.Enabled = false;
+            this.Right.Location = new System.Drawing.Point(263, 370);
+            this.Right.Name = "Right";
+            this.Right.Size = new System.Drawing.Size(75, 23);
+            this.Right.TabIndex = 13;
+            this.Right.Text = "Right";
+            this.Right.UseVisualStyleBackColor = true;
+            this.Right.Click += new System.EventHandler(this.Right_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(810, 475);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.Right);
+            this.Controls.Add(this.Left);
+            this.Controls.Add(this.Down);
+            this.Controls.Add(this.Up);
+            this.Controls.Add(this.DisplayToggle);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -169,7 +221,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button DisplayToggle;
+        private System.Windows.Forms.Button Up;
+        private System.Windows.Forms.Button Down;
+        private System.Windows.Forms.Button Left;
+        private System.Windows.Forms.Button Right;
     }
 }
 

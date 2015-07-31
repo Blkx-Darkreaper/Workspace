@@ -39,7 +39,7 @@ namespace EMSensor
             foreach (decimal signal in allSignals.Values)
             {
                 decimal attenuatedSignal = GetAttenuatedSignal(distancePropegated, signal);
-                if (attenuatedSignal > 1)
+                if (attenuatedSignal > 10)
                 {
                     return;
                 }

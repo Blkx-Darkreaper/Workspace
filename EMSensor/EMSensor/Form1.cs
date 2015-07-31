@@ -14,6 +14,7 @@ namespace EMSensor
     {
         public Point receiver { get; set; }
         Sensor sensorPackage { get; set; }
+        bool displayOn { get; set; }
 
         public Form1()
         {
@@ -22,6 +23,8 @@ namespace EMSensor
 
         public void SetupSensor()
         {
+            displayOn = true;
+
             decimal propegationVelocity = 5m;
 
             Random rand = new Random();
@@ -41,23 +44,23 @@ namespace EMSensor
 
             receiver = new Point(worldWidth / 2, worldHeight / 2);
 
-            int rightX = worldWidth / 2 + 20;
-            int rightY = worldHeight / 2;
-            AddSource(rand, allFrequencies, world, rightX, rightY);
+            //int rightX = worldWidth / 2 + 20;
+            //int rightY = worldHeight / 2;
+            //AddSource(rand, allFrequencies, world, rightX, rightY);
 
-            int upX = worldWidth / 2;
-            int upY = worldHeight / 2 - 30;
-            AddSource(rand, allFrequencies, world, upX, upY);
+            //int upX = worldWidth / 2;
+            //int upY = worldHeight / 2 - 30;
+            //AddSource(rand, allFrequencies, world, upX, upY);
 
-            int leftX = worldWidth / 2 - 10;
-            int leftY = worldHeight / 2;
-            AddSource(rand, allFrequencies, world, leftX, leftY);
+            //int leftX = worldWidth / 2 - 10;
+            //int leftY = worldHeight / 2;
+            //AddSource(rand, allFrequencies, world, leftX, leftY);
 
-            int downX = worldWidth / 2;
-            int downY = worldHeight / 2 + 10;
-            AddSource(rand, allFrequencies, world, downX, downY);
+            //int downX = worldWidth / 2;
+            //int downY = worldHeight / 2 + 10;
+            //AddSource(rand, allFrequencies, world, downX, downY);
 
-            //AddRandomSources(rand, allFrequencies, world, worldWidth, worldHeight);
+            AddRandomSources(rand, allFrequencies, world, worldWidth, worldHeight);
 
             sensorPackage = new Sensor(world, allFrequencies, 5, 0);
         }
@@ -123,6 +126,12 @@ namespace EMSensor
         {
             SetupSensor();
             Update.Enabled = true;
+
+            Up.Enabled = true;
+            Down.Enabled = true;
+            Left.Enabled = true;
+            Right.Enabled = true;
+
             UpdateScreen(36);
             UpdateWorld();
         }
@@ -138,6 +147,11 @@ namespace EMSensor
         private void UpdateWorld()
         {
             World.Refresh();
+            if (displayOn == false)
+            {
+                return;
+            }
+
             Graphics canvas = World.CreateGraphics();
 
             List<Emission> allEmissions = sensorPackage.signalData.allEmissions;
@@ -212,62 +226,6 @@ namespace EMSensor
             }
         }
 
-        //private void UpdateScreen()
-        //{
-        //    List<decimal> allBearings = new List<decimal>();
-        //    for(int i = -180; i < 180; i += 10)  {
-        //        allBearings.Add(i);
-        //    }
-
-        //    Graphics canvas = screen.CreateGraphics();
-
-        //    Dictionary<decimal, Dictionary<decimal, decimal>> allReadings = sensorPackage.GetAllSignals(receiver, allBearings, allFrequencies);
-        //    foreach (decimal frequency in allFrequencies)
-        //    {
-        //        Color drawColour = GetFrequencyColour(frequency, 500);
-        //        Pen pen = new Pen(drawColour);
-        //        List<Point> allPoints = new List<Point>();
-
-        //        try
-        //        {
-        //            Dictionary<decimal, decimal> signal = allReadings[frequency];
-        //            foreach (decimal bearing in allBearings)
-        //            {
-        //                decimal reading = signal[bearing];
-        //                int drawX = (int)((bearing + 180) / 360 * screen.Width);
-        //                int drawY = screen.Height - (int)Math.Log10((double)reading) - 5;
-        //                if (drawY < 0)
-        //                {
-        //                    drawY = 0;
-        //                }
-
-        //                Point nextPoint = new Point(drawX, drawY);
-        //                allPoints.Add(nextPoint);
-        //            }
-        //        }
-        //        catch (KeyNotFoundException)
-        //        {
-        //            foreach (decimal bearing in allBearings)
-        //            {
-        //                int drawX = (int)((bearing + 180) / 360 * screen.Width);
-        //                int drawY = screen.Height - 5;
-
-        //                Point nextPoint = new Point(drawX, drawY);
-        //                allPoints.Add(nextPoint);
-        //            }
-        //        }
-
-        //        Point firstPoint = allPoints[0];
-        //        for(int i = 1; i < allPoints.Count; i++) {
-        //            Point secondPoint = allPoints[i];
-
-        //            canvas.DrawLine(pen, firstPoint, secondPoint);
-
-        //            firstPoint = secondPoint;
-        //        }
-        //    }
-        //}
-
         private static Color GetFrequencyColour(decimal frequency, decimal maxFrequency)
         {
             var white = Color.White.ToArgb();
@@ -279,7 +237,49 @@ namespace EMSensor
 
         private void button1_Click(object sender, EventArgs e)
         {
+            displayOn = !displayOn;
+            UpdateScreen(18);
+            UpdateWorld();
+        }
 
+        private void Up_Click(object sender, EventArgs e)
+        {
+            int x = receiver.X;
+            int y = receiver.Y;
+
+            receiver = new Point(x, y - 2);
+
+            Update_Click(sender, e);
+        }
+
+        private void Down_Click(object sender, EventArgs e)
+        {
+            int x = receiver.X;
+            int y = receiver.Y;
+
+            receiver = new Point(x, y + 2);
+
+            Update_Click(sender, e);
+        }
+
+        private void Left_Click(object sender, EventArgs e)
+        {
+            int x = receiver.X;
+            int y = receiver.Y;
+
+            receiver = new Point(x - 2, y);
+
+            Update_Click(sender, e);
+        }
+
+        private void Right_Click(object sender, EventArgs e)
+        {
+            int x = receiver.X;
+            int y = receiver.Y;
+
+            receiver = new Point(x + 2, y);
+
+            Update_Click(sender, e);
         }
     }
 }
