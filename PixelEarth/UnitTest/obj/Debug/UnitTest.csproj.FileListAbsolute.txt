@@ -1,0 +1,7 @@
+C:\Users\nicB\Documents\PixelEarth\UnitTest\bin\Debug\UnitTest.dll
+C:\Users\nicB\Documents\PixelEarth\UnitTest\bin\Debug\UnitTest.pdb
+C:\Users\nicB\Documents\PixelEarth\UnitTest\bin\Debug\PixelEarth.exe
+C:\Users\nicB\Documents\PixelEarth\UnitTest\bin\Debug\PixelEarth.pdb
+C:\Users\nicB\Documents\PixelEarth\UnitTest\obj\Debug\UnitTest.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\PixelEarth\UnitTest\obj\Debug\UnitTest.dll
+C:\Users\nicB\Documents\PixelEarth\UnitTest\obj\Debug\UnitTest.pdb
