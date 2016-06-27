@@ -1,0 +1,7 @@
+C:\Users\nicB\Documents\Node\NodeTest\obj\Debug\NodeTest.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\Node\NodeTest\bin\Debug\NodeTest.dll
+C:\Users\nicB\Documents\Node\NodeTest\bin\Debug\NodeTest.pdb
+C:\Users\nicB\Documents\Node\NodeTest\bin\Debug\Node.exe
+C:\Users\nicB\Documents\Node\NodeTest\bin\Debug\Node.pdb
+C:\Users\nicB\Documents\Node\NodeTest\obj\Debug\NodeTest.dll
+C:\Users\nicB\Documents\Node\NodeTest\obj\Debug\NodeTest.pdb
