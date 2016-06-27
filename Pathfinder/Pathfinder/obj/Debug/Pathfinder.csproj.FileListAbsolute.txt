@@ -1,0 +1,9 @@
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\bin\Debug\Pathfinder.exe.config
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\bin\Debug\Pathfinder.exe
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\bin\Debug\Pathfinder.pdb
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.MainForm.resources
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.Properties.Resources.resources
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.csproj.GenerateResource.Cache
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.exe
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.pdb
+C:\Users\nicB\Documents\Pathfinder\Pathfinder\obj\Debug\Pathfinder.csprojResolveAssemblyReference.cache
