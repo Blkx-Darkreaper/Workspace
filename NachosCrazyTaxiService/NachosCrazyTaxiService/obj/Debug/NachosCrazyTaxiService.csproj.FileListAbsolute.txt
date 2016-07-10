@@ -1,0 +1,9 @@
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\bin\Debug\NachosCrazyTaxiService.exe.config
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.MainForm.resources
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.Properties.Resources.resources
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.csproj.GenerateResource.Cache
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\bin\Debug\NachosCrazyTaxiService.exe
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\bin\Debug\NachosCrazyTaxiService.pdb
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.exe
+C:\Users\nicB\Documents\NachosCrazyTaxiService\NachosCrazyTaxiService\obj\Debug\NachosCrazyTaxiService.pdb
