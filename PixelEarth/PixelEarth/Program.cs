@@ -9,9 +9,11 @@ namespace PixelEarth
 {
     public static class Program
     {
-        public static List<Entity> allEntities { get; set; }
+        public static List<Grid> atmosphere { get; set; }
         public static DateTime currentDate { get; set; }
         public static double gmt { get; set; }
+        public enum View { Daylight, Temperature }
+        public static View view { get; set; }
         /// <summary>
         /// The main entry center for the application.
         /// </summary>
@@ -30,8 +32,9 @@ namespace PixelEarth
 
         public static void GenerateWorld(int width, int height)
         {
-            allEntities = new List<Entity>();
+            atmosphere = new List<Grid>();
             gmt = 0;
+            Size worldSize = new Size(width, height);
 
             for (int y = 0; y < height; y++)
             {
@@ -42,19 +45,19 @@ namespace PixelEarth
 
                     //Grid nextGrid = new Grid(positionX, positionY, (int)Entity.metersPerPixel, Color.Black);
 
-                    Grid nextGrid = new Grid(x, y, 1, Color.Black);
-                    allEntities.Add(nextGrid);
+                    Grid nextGrid = new Grid(x, y, worldSize, 5, 1, Color.Black);
+                    atmosphere.Add(nextGrid);
                 }
             }
         }
 
-        public static void Update(float timeElapsed)
+        public static void Update(float hoursElapsed)
         {
-            gmt += timeElapsed;
+            gmt += hoursElapsed;
 
-            foreach (Entity entity in allEntities)
+            foreach (Entity entity in atmosphere)
             {
-                entity.Update(timeElapsed);
+                entity.Update(hoursElapsed);
             }
         }
 
@@ -62,9 +65,22 @@ namespace PixelEarth
         {
             //graphics.FillRectangle(Brushes.Black, new Rectangle(0, 0, screenSize.Width, screenSize.Height));  // fill background
 
-            foreach (Entity entity in allEntities)
+            foreach (Grid grid in atmosphere)
             {
-                entity.Draw(graphics);
+                switch (view)
+                {
+                    case View.Daylight:
+                        grid.DrawDaylight(graphics);
+                        break;
+
+                    case View.Temperature:
+                        grid.DrawTemperature(graphics);
+                        break;
+
+                    default:
+                        grid.Draw(graphics);
+                        break;
+                }
             }
 
             bool drawTimezones = true;
@@ -88,26 +104,28 @@ namespace PixelEarth
                 Pen pen = new Pen(Brushes.Red);
                 int latitude;
 
+                double modifier = (double)screenSize.Height / 180;
+
                 int rightEdge = screenSize.Width - 1;
 
                 // Arctic circle
-                latitude = 23;
+                latitude = (int)(23 * modifier);
                 graphics.DrawLine(pen, 0, latitude, rightEdge, latitude);
 
                 // Tropic of Cancer
-                latitude = 67;
+                latitude = (int)(67 * modifier);
                 graphics.DrawLine(pen, 0, latitude, rightEdge, latitude);
 
                 // Equator
-                latitude = 90;
+                latitude = (int)(90 * modifier);
                 graphics.DrawLine(pen, 0, latitude, rightEdge, latitude);
 
                 // Tropic of Capricorn
-                latitude = 113;
+                latitude = (int)(113 * modifier);
                 graphics.DrawLine(pen, 0, latitude, rightEdge, latitude);
 
                 // Antarctic circle
-                latitude = 157;
+                latitude = (int)(157 * modifier);
                 graphics.DrawLine(pen, 0, latitude, rightEdge, latitude);
             }
         }

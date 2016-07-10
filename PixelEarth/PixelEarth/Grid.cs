@@ -12,36 +12,70 @@ namespace PixelEarth
         public double longitude { get; protected set; }
         public double latitude { get; protected set; }
         public const int MAX_INSOLATION = 1413;
+        public List<Cube> column { get; set; }
 
-        public Grid(int x, int y, int size, Color mainColour)
+        public Grid(int x, int y, Size worldSize, int altitude, int size, Color mainColour)
             : base(new Point(x, y), size, mainColour)
         {
-            //double constant = Entity.metersPerPixel;
-            //this.longitude = x / constant - 180;
-            this.longitude = x - 180;
-            this.latitude = 90 - y;
+            Init(x, y, worldSize, altitude);
         }
 
-        public Grid(Point location, int size, Color mainColour)
+        public Grid(Point location, Size worldSize, int altitude, int size, Color mainColour)
             : base(location, size, mainColour)
         {
-            //double constant = Entity.metersPerPixel;
-            //this.longitude = location.X / constant - 180;
-            this.longitude = location.X - 180;
-            this.latitude = 90 - location.Y;
+            Init(location.X, location.Y, worldSize, altitude);
         }
 
-        public override void Update(float timeElapsed)
+        protected virtual void Init(int x, int y, Size worldSize, int altitude)
         {
-            base.Update(timeElapsed);
+            double width = worldSize.Width;
+            double height = worldSize.Height;
+
+            //double constant = Entity.metersPerPixel;
+            //this.longitude = x / constant - 180;
+            this.longitude = x * 360 / width - 180;
+            this.latitude = 90 - y * 180 / height;
+
+            column = new List<Cube>(altitude);
+            for(int i = 1; i < altitude; i++)
+            {
+                column.Add(new CubeAir(10, 15));
+            }
+        }
+
+        public override void Update(float hoursElapsed)
+        {
+            base.Update(hoursElapsed);
 
             DateTime dateTime = Program.GetDateTime();
 
-            //double lightLevel = GetLightLevel(dateTime, latitude, longitude);
-            //SetInsolation(lightLevel);
+            //double insolation = GetLightLevel(dateTime, latitude, longitude);
+            //SetInsolationColour(insolation);
 
             double insolation = GetInsolation(dateTime, latitude, longitude);
-            SetInsolation(insolation);
+            //SetInsolationColour(insolation);
+
+            Cube cube = column[0];
+            double leftoverEnergy = 0;
+            double reflectedEnergy = 0;
+            cube.Insolate(hoursElapsed, insolation, out leftoverEnergy, out reflectedEnergy);
+        }
+
+        public virtual void DrawDaylight(Graphics graphics)
+        {
+            DateTime dateTime = Program.GetDateTime();
+            double insolation = GetInsolation(dateTime, latitude, longitude);
+            SetInsolationColour(insolation);
+
+            Draw(graphics);
+        }
+
+        public virtual void DrawTemperature(Graphics graphics)
+        {
+            double temp = GetTemperature();
+            SetTemperatureColour(temp);
+
+            Draw(graphics);
         }
 
         public double GetInsolationNormal(DateTime dateTime)
@@ -142,10 +176,81 @@ namespace PixelEarth
             return insolation;
         }
 
-        public void SetInsolation(double lightLevel)
+        public void SetInsolationColour(double insolation)
         {
-            int brightness = (int)Math.Round(lightLevel / MAX_INSOLATION * 255, 0);
+            int brightness = (int)Math.Round(insolation / MAX_INSOLATION * 255, 0);
             mainColour = Color.FromArgb(255, brightness, brightness, brightness);
+        }
+
+        public double GetTemperature()
+        {
+            for (int i = 0; i < column.Count; i++)
+            {
+                Cube cube = column[i];
+
+                bool isSolid = cube.isSolid;
+                if (isSolid == true)
+                {
+                    continue;
+                }
+
+                double temp = cube.temperature;
+                if (temp < -100)
+                {
+                    temp = -100;
+                }
+                if (temp > 100)
+                {
+                    temp = 100;
+                }
+
+                return temp;
+            }
+
+            return -101;
+        }
+
+        public void SetTemperatureColour(double temp)
+        {
+            if (temp == -101)
+            {
+                mainColour = Color.Black;
+                return;
+            }
+
+            int value = (int)(103 / (1 + Math.Pow(Math.E, (temp - 25) / 23)) - 3);
+
+            int red = 255;
+            if (value > 49)
+            {
+                red = (int)(255 * 31 / (double)value);
+            }
+            if (value >= 74)
+            {
+                red = 0;
+            }
+
+            int green = 255;
+            if (value < 48)
+            {
+                green = (int)(255 * (double)value / 48);
+            }
+            if (value > 89)
+            {
+                green = (int)(48 / (double)value);
+            }
+
+            int blue = 255;
+            if (value < 89)
+            {
+                blue = (int)(255 * (double)value / 166);
+            }
+            if (value <= 74)
+            {
+                blue = 0;
+            }
+
+            mainColour = Color.FromArgb(255, red, green, blue);
         }
 
         public double GetAdjustedJulianDate(DateTime dateTime, double longitude)

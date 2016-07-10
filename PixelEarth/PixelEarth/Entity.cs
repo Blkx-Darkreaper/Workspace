@@ -127,7 +127,7 @@ namespace PixelEarth
             DrawDot(graphics, mainColour);
         }
 
-        public virtual void Update(float timeElapsed)
+        public virtual void Update(float hoursElapsed)
         {
             int initialX = location.X;
             int initialY = location.Y;

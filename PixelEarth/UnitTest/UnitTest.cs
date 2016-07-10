@@ -43,8 +43,8 @@ namespace PixelEarth
                             adjIndex = 12960;
                         }
 
-                        Grid grid = (Grid)Program.allEntities[adjIndex];
-                        //double lightLevel = grid.GetInsolation(dateTime, grid.latitude, grid.longitude);
+                        Grid grid = (Grid)Program.atmosphere[adjIndex];
+                        //double insolation = grid.GetInsolation(dateTime, grid.latitude, grid.longitude);
 
                         double latitude = grid.latitude;
                         double longitude = grid.longitude;
@@ -94,8 +94,8 @@ namespace PixelEarth
                             adjIndex = 129960;
                         }
 
-                        Grid grid = (Grid)Program.allEntities[adjIndex];
-                        //double lightLevel = grid.GetInsolation(dateTime, grid.latitude, grid.longitude);
+                        Grid grid = (Grid)Program.atmosphere[adjIndex];
+                        //double insolation = grid.GetInsolation(dateTime, grid.latitude, grid.longitude);
 
                         double latitude = grid.latitude;
                         double longitude = grid.longitude;
@@ -133,7 +133,7 @@ namespace PixelEarth
             Debug.Print(String.Format("Longitude{0}Julian Date{0}Local Time", "\t"));
             foreach (int offset in timezones)
             {
-                Grid grid = (Grid)Program.allEntities[cancerIndex + offset];
+                Grid grid = (Grid)Program.atmosphere[cancerIndex + offset];
 
                 double longitude = grid.longitude;
                 double julianDate = grid.GetAdjustedJulianDate(gmt, longitude);
@@ -151,7 +151,9 @@ namespace PixelEarth
             double insolation;
             double latitude, longitude;
 
-            Grid victoria = new Grid(57, 42, 1, Color.Black);
+            Size worldSize = new Size(360, 180);
+
+            Grid victoria = new Grid(57, 42, worldSize, 1, 1, Color.Black);
             latitude = victoria.latitude;
             Assert.IsTrue(latitude == 48);
 
@@ -162,7 +164,7 @@ namespace PixelEarth
             Assert.IsTrue(insolation == 0);
 
 
-            Grid southernVictoriaGreenwich = new Grid(180, 138, 1, Color.Black);
+            Grid southernVictoriaGreenwich = new Grid(180, 138, worldSize, 1, 1, Color.Black);
             latitude = southernVictoriaGreenwich.latitude;
             Assert.IsTrue(latitude == -48);
 
@@ -171,6 +173,14 @@ namespace PixelEarth
 
             insolation = Math.Round(southernVictoriaGreenwich.GetInsolation(gmt, latitude, longitude), 3);
             Assert.IsTrue(insolation == 0.319);
+        }
+
+        [TestMethod]
+        public void TempColour()
+        {
+            Grid grid = new Grid(0, 0, new Size(360, 180), 1, 1, Color.Black);
+
+            grid.SetTemperatureColour(25);
         }
     }
 }

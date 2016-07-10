@@ -38,15 +38,19 @@
             this.Speed5 = new System.Windows.Forms.RadioButton();
             this.Speed2 = new System.Windows.Forms.RadioButton();
             this.Speed1 = new System.Windows.Forms.RadioButton();
+            this.Views = new System.Windows.Forms.GroupBox();
+            this.ViewTemp = new System.Windows.Forms.RadioButton();
+            this.ViewDaylight = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.Display)).BeginInit();
             this.UpdateSpeed.SuspendLayout();
+            this.Views.SuspendLayout();
             this.SuspendLayout();
             // 
             // Display
             // 
             this.Display.Location = new System.Drawing.Point(12, 25);
             this.Display.Name = "Display";
-            this.Display.Size = new System.Drawing.Size(360, 180);
+            this.Display.Size = new System.Drawing.Size(720, 360);
             this.Display.TabIndex = 0;
             this.Display.TabStop = false;
             // 
@@ -68,7 +72,7 @@
             this.UpdateSpeed.Controls.Add(this.Speed5);
             this.UpdateSpeed.Controls.Add(this.Speed2);
             this.UpdateSpeed.Controls.Add(this.Speed1);
-            this.UpdateSpeed.Location = new System.Drawing.Point(15, 211);
+            this.UpdateSpeed.Location = new System.Drawing.Point(12, 391);
             this.UpdateSpeed.Name = "UpdateSpeed";
             this.UpdateSpeed.Size = new System.Drawing.Size(334, 41);
             this.UpdateSpeed.TabIndex = 2;
@@ -154,11 +158,47 @@
             this.Speed1.UseVisualStyleBackColor = true;
             this.Speed1.CheckedChanged += new System.EventHandler(this.Speed1_CheckedChanged);
             // 
+            // Views
+            // 
+            this.Views.Controls.Add(this.ViewTemp);
+            this.Views.Controls.Add(this.ViewDaylight);
+            this.Views.Location = new System.Drawing.Point(352, 391);
+            this.Views.Name = "Views";
+            this.Views.Size = new System.Drawing.Size(379, 41);
+            this.Views.TabIndex = 3;
+            this.Views.TabStop = false;
+            this.Views.Text = "Views";
+            // 
+            // ViewTemp
+            // 
+            this.ViewTemp.AutoSize = true;
+            this.ViewTemp.Location = new System.Drawing.Point(77, 18);
+            this.ViewTemp.Name = "ViewTemp";
+            this.ViewTemp.Size = new System.Drawing.Size(85, 17);
+            this.ViewTemp.TabIndex = 1;
+            this.ViewTemp.Text = "Temperature";
+            this.ViewTemp.UseVisualStyleBackColor = true;
+            this.ViewTemp.CheckedChanged += new System.EventHandler(this.Temp_CheckedChanged);
+            // 
+            // ViewDaylight
+            // 
+            this.ViewDaylight.AutoSize = true;
+            this.ViewDaylight.Checked = true;
+            this.ViewDaylight.Location = new System.Drawing.Point(7, 18);
+            this.ViewDaylight.Name = "ViewDaylight";
+            this.ViewDaylight.Size = new System.Drawing.Size(63, 17);
+            this.ViewDaylight.TabIndex = 0;
+            this.ViewDaylight.TabStop = true;
+            this.ViewDaylight.Text = "Daylight";
+            this.ViewDaylight.UseVisualStyleBackColor = true;
+            this.ViewDaylight.CheckedChanged += new System.EventHandler(this.Daylight_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 264);
+            this.ClientSize = new System.Drawing.Size(743, 444);
+            this.Controls.Add(this.Views);
             this.Controls.Add(this.UpdateSpeed);
             this.Controls.Add(this.Clock);
             this.Controls.Add(this.Display);
@@ -167,6 +207,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.Display)).EndInit();
             this.UpdateSpeed.ResumeLayout(false);
             this.UpdateSpeed.PerformLayout();
+            this.Views.ResumeLayout(false);
+            this.Views.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -184,6 +226,9 @@
         private System.Windows.Forms.RadioButton Speed5;
         private System.Windows.Forms.RadioButton Speed2;
         private System.Windows.Forms.RadioButton Speed1;
+        private System.Windows.Forms.GroupBox Views;
+        private System.Windows.Forms.RadioButton ViewTemp;
+        private System.Windows.Forms.RadioButton ViewDaylight;
     }
 }
 

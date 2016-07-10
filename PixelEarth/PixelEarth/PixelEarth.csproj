@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cube.cs" />
+    <Compile Include="CubeAir.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="MainWindow.cs">

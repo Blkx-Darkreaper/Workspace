@@ -54,9 +54,9 @@ namespace PixelEarth
         protected void Update(object sender, EventArgs e)
         {
             int updateInterval = timer.Interval;
-            float timeElapsed = updateInterval / 1000f * updateSpeed;
+            float hoursElapsed = updateInterval / 1000f * updateSpeed;
 
-            Program.Update(timeElapsed);
+            Program.Update(hoursElapsed);
             Clock.Text = Program.GetDateTime().ToString() + " GMT";
             Display.Refresh();
             //Display.Invalidate();
@@ -95,6 +95,16 @@ namespace PixelEarth
         private void Speed10k_CheckedChanged(object sender, EventArgs e)
         {
             updateSpeed = 10000;
+        }
+
+        private void Daylight_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.view = Program.View.Daylight;
+        }
+
+        private void Temp_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.view = Program.View.Temperature;
         }
     }
 }
