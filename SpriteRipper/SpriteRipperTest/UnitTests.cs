@@ -15,13 +15,27 @@ namespace SpriteRipperTest
         {
             // Setup
             int bitsPerColour = 8;
+            int tileSize = 16;
+            int offsetX = 0;
+            int offsetY = 0;
 
-            Bitmap image1 = new Bitmap(@"C:\Users\nicB\Documents\tile1.png");
-            Tile tile1 = new Tile(image1, bitsPerColour);
+            //Bitmap croppedImage = Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png", tileSize, offsetX, offsetY);
+
+            //int x = 0;
+            //int y = 0;
+            int index = 0;
+
+            //Bitmap image1 = Program.GetTileImage(x, y, TileSize);
+            Bitmap image1 = Program.GetTileImage(index);
+            Tile tile1 = new Tile(image1, bitsPerColour, tileSize, index);
             Console.WriteLine("Tile 1: " + tile1.ToString());
 
-            Bitmap image2 = new Bitmap(@"C:\Users\nicB\Documents\tile1a.png");
-            Tile tile2 = new Tile(image2, bitsPerColour);
+            //x = 16;
+            index = 1;
+            //Bitmap image2 = Program.GetTileImage(x, y, TileSize);
+            Bitmap image2 = Program.GetTileImage(index);
+            Tile tile2 = new Tile(image2, bitsPerColour, tileSize, 1);
             Console.WriteLine("Tile 2: " + tile2.ToString());
 
             // Execution
@@ -32,7 +46,7 @@ namespace SpriteRipperTest
             bool identical = tile1.IdenticalTo(tile2);
 
             // Assertion
-            float expectedPatternMatch = 223/255f;
+            float expectedPatternMatch = 223 / 255f;
             Assert.IsTrue(patternMatch == expectedPatternMatch, string.Format("Expected {0}, Actual {1}", expectedPatternMatch, patternMatch));
 
             Assert.IsFalse(identical);
@@ -45,19 +59,36 @@ namespace SpriteRipperTest
             int bitsPerColour = 8;
             int accuracy = 2;
             int tileCount = 32;
+            int tileSize = 16;
+            int offsetX = 0;
+            int offsetY = 0;
 
-            Bitmap image1 = new Bitmap(@"C:\Users\nicB\Documents\tile1.png");
-            Tile master = new Tile(image1, bitsPerColour);
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png", tileSize, offsetX, offsetY);
+
+            //int x = 0;
+            //int y = 0;
+            int index = 0;
+
+            //Bitmap image1 = Program.GetTileImage(x, y, TileSize);
+            Bitmap image1 = Program.GetTileImage(index);
+            Tile master = new Tile(image1, bitsPerColour, tileSize, index);
             //Console.WriteLine("Tile 1: " + tileToDraw.ToString());
 
-            Tile identicalTile = new Tile(image1, bitsPerColour);
+            Tile identicalTile = new Tile(image1, bitsPerColour, tileSize, index);
 
-            Bitmap image2 = new Bitmap(@"C:\Users\nicB\Documents\tile1a.png");
-            Tile similarTile = new Tile(image2, bitsPerColour);
+            //x = 16;
+            index = 1;
+            //Bitmap image2 = Program.GetTileImage(x, y, TileSize);
+            Bitmap image2 = Program.GetTileImage(index);
+            Tile similarTile = new Tile(image2, bitsPerColour, tileSize, index);
             //Console.WriteLine("Tile 2: " + similarTile.ToString());
 
-            Bitmap image3 = new Bitmap(@"C:\Users\nicB\Documents\tile1b.png");
-            Tile otherSimilarTile = new Tile(image3, bitsPerColour);
+            //x = 32;
+            index = 2;
+            //Bitmap image3 = Program.GetTileImage(x, y, TileSize);
+            Bitmap image3 = Program.GetTileImage(index);
+            Tile otherSimilarTile = new Tile(image3, bitsPerColour, tileSize, index);
             //Console.WriteLine("Tile 3: " + otherSimilarTile.ToString());
 
             Tuple<float, float> identicalResults = master.GetMatches(identicalTile);
@@ -93,10 +124,13 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\test2.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
+            Bitmap image = Program.Images.GetImage();
 
             // Execution
             Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
             Program.SortTiles(patternThreshold, colourThreshold);
 
             // Assertion
@@ -129,7 +163,8 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\test2.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+            Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
 
             // Execution
             Program.LoadTilesThreaded(image, bitsPerColour, tileSize, offsetX, offsetY);
@@ -165,10 +200,13 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\test2a.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", tileSize, offsetX, offsetY);
+            Bitmap image = Program.Images.GetImage();
 
             // Execution
             Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
             Program.SortTiles(patternThreshold, colourThreshold);
 
             // Assertion
@@ -204,12 +242,15 @@ namespace SpriteRipperTest
 
             int tilesWide = 5;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\test.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+            Bitmap image = Program.Images.GetImage();
 
             PixelFormat format = image.PixelFormat;
 
             // Execution
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+            Program.LoadAllTiles(image, bitsPerColour, tileSize);
+            //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
             Program.SortTiles(patternThreshold, colourThreshold);
             Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom);
             Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom);
@@ -236,7 +277,9 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\test.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+            Bitmap image = Program.Images.GetImage();
 
             long sortTimes8BitSum = 0;
             long sortTimes4BitSum = 0;
@@ -246,10 +289,11 @@ namespace SpriteRipperTest
 
             // 8Bit sorting
             Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
             for (int i = 0; i < runs; i++)
             {
                 Program.SortTiles(patternThreshold, colourThreshold);
-                long sortTime = Program.sortTime;
+                long sortTime = Program.SortTime;
                 sortTimes8BitSum += sortTime;
             }
 
@@ -258,10 +302,11 @@ namespace SpriteRipperTest
             // 4Bit sorting
             bitsPerColour = 4;
             Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
             for (int i = 0; i < runs; i++)
             {
                 Program.SortTiles(patternThreshold, colourThreshold);
-                long sortTime = Program.sortTime;
+                long sortTime = Program.SortTime;
                 sortTimes4BitSum += sortTime;
             }
 
@@ -283,19 +328,89 @@ namespace SpriteRipperTest
             int offsetY = 0;
             int zoom = 1;
 
-            Bitmap image = new Bitmap(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png");
+            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png");
+            Program.LoadImage(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png", tileSize, offsetX, offsetY);
 
-            //PixelFormat format = image.PixelFormat;
+            //PixelFormat format = loadedImage.PixelFormat;
             PixelFormat format = PixelFormat.Format24bppRgb;
 
-            // Execution
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
-            Program.SortTiles(patternThreshold, colourThreshold);
+            int totalSubImages = Program.Images.TotalSubImages;
+            for (int subImageIndex = 0; subImageIndex < totalSubImages; subImageIndex++)
+            {
+                Program.LoadSubImage(bitsPerColour, tileSize, subImageIndex);
+
+                // Execution
+                //Program.LoadAllTiles(croppedImage, BitsPerColour, TileSize, offsetX, offsetY);
+                //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
+                Program.SortTiles(patternThreshold, colourThreshold);
+            }
+
             Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom);
 
             string filename = @"C:\Users\nicB\Documents\jurassicParkTileset2.png";
             ImageFormat fileFormat = Program.GetImageFormat(filename);
             groupedTileset.Save(filename, fileFormat);
+        }
+
+        [TestMethod]
+        public void SubDivisorTest()
+        {
+            int width = 4080;
+            int height = 4048;
+            int tileSize = 16;
+
+            Size subImageSize = Program.GetSubImageSize(width, height, tileSize);
+
+            int subWidth = subImageSize.Width;
+            int expectedSubWidth = 272;
+            Assert.IsTrue(subWidth == expectedSubWidth, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubWidth, subWidth));
+
+            int subHeight = subImageSize.Height;
+            int expectedSubHeight = 176;
+            Assert.IsTrue(subHeight == expectedSubHeight, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubHeight, subHeight));
+        }
+
+        [TestMethod]
+        public void TileIndex()
+        {
+            int width = 96;
+            int height = 96;
+            int tileSize = 16;
+
+            int offsetX = 0;
+            int offsetY = 0;
+
+            ImageCollection imageGroup = new ImageCollection("", tileSize, width, height, offsetX, offsetY);
+
+            int tileIndex, subImageIndex, tileSubImageIndex;
+
+            tileIndex = 0;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(tileSubImageIndex == 0);
+
+            tileIndex = 3;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 1);
+
+            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(tileSubImageIndex == 0);
+
+            tileIndex = 8;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(tileSubImageIndex == 5);
+
+            tileIndex = 21;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 3);
+
+            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(tileSubImageIndex == 3);
         }
     }
 }

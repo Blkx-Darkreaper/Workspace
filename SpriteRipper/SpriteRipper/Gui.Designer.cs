@@ -30,7 +30,7 @@
         {
             this.Sort = new System.Windows.Forms.Button();
             this.ImageDisplay = new System.Windows.Forms.PictureBox();
-            this.Progress = new System.Windows.Forms.ProgressBar();
+            this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.Menu = new System.Windows.Forms.MenuStrip();
             this.FileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,6 +38,7 @@
             this.SaveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TileSizeBox = new System.Windows.Forms.GroupBox();
             this.Preset256 = new System.Windows.Forms.RadioButton();
             this.Preset128 = new System.Windows.Forms.RadioButton();
@@ -47,14 +48,19 @@
             this.Preset8 = new System.Windows.Forms.RadioButton();
             this.TileSize = new System.Windows.Forms.NumericUpDown();
             this.DisplayBox = new System.Windows.Forms.GroupBox();
+            this.BuildTileset = new System.Windows.Forms.Button();
             this.Update = new System.Windows.Forms.Button();
             this.BitBox = new System.Windows.Forms.GroupBox();
             this.Bits = new System.Windows.Forms.NumericUpDown();
             this.ImagePanel = new System.Windows.Forms.Panel();
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
-            this.ZoomBox = new System.Windows.Forms.GroupBox();
-            this.Zoom = new System.Windows.Forms.NumericUpDown();
+            this.ImageBox = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.SubImageSelector = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.Padding = new System.Windows.Forms.CheckBox();
+            this.ImageZoom = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -67,6 +73,8 @@
             this.OffsetY = new System.Windows.Forms.NumericUpDown();
             this.OffsetX = new System.Windows.Forms.NumericUpDown();
             this.Grouping = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.TilesetZoom = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.TilesWide = new System.Windows.Forms.NumericUpDown();
             this.Compressed = new System.Windows.Forms.RadioButton();
@@ -81,7 +89,6 @@
             this.InitTotal = new System.Windows.Forms.Label();
             this.Duplicates = new System.Windows.Forms.Label();
             this.ColourPicker = new System.Windows.Forms.ColorDialog();
-            this.AboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.ImageDisplay)).BeginInit();
             this.Menu.SuspendLayout();
             this.TileSizeBox.SuspendLayout();
@@ -92,8 +99,9 @@
             this.ImagePanel.SuspendLayout();
             this.TilesetPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TilesetDisplay)).BeginInit();
-            this.ZoomBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Zoom)).BeginInit();
+            this.ImageBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SubImageSelector)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageZoom)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ColourThreshold)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PatternThreshold)).BeginInit();
@@ -101,6 +109,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.OffsetY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OffsetX)).BeginInit();
             this.Grouping.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TilesetZoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesWide)).BeginInit();
             this.ColourBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).BeginInit();
@@ -111,7 +120,7 @@
             // 
             this.Sort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.Sort.Enabled = false;
-            this.Sort.Location = new System.Drawing.Point(67, 23);
+            this.Sort.Location = new System.Drawing.Point(71, 26);
             this.Sort.Name = "Sort";
             this.Sort.Size = new System.Drawing.Size(45, 33);
             this.Sort.TabIndex = 0;
@@ -128,14 +137,14 @@
             this.ImageDisplay.TabIndex = 2;
             this.ImageDisplay.TabStop = false;
             // 
-            // Progress
+            // ProgressBar
             // 
-            this.Progress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.Progress.Enabled = false;
-            this.Progress.Location = new System.Drawing.Point(118, 23);
-            this.Progress.Name = "Progress";
-            this.Progress.Size = new System.Drawing.Size(233, 33);
-            this.Progress.TabIndex = 3;
+            this.ProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.ProgressBar.Enabled = false;
+            this.ProgressBar.Location = new System.Drawing.Point(618, 711);
+            this.ProgressBar.Name = "ProgressBar";
+            this.ProgressBar.Size = new System.Drawing.Size(378, 33);
+            this.ProgressBar.TabIndex = 3;
             // 
             // Menu
             // 
@@ -162,7 +171,7 @@
             // OpenMenuItem
             // 
             this.OpenMenuItem.Name = "OpenMenuItem";
-            this.OpenMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.OpenMenuItem.Size = new System.Drawing.Size(114, 22);
             this.OpenMenuItem.Text = "Open";
             this.OpenMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -170,21 +179,21 @@
             // 
             this.SaveMenuItem.Enabled = false;
             this.SaveMenuItem.Name = "SaveMenuItem";
-            this.SaveMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.SaveMenuItem.Size = new System.Drawing.Size(114, 22);
             this.SaveMenuItem.Text = "Save";
             // 
             // SaveAsMenuItem
             // 
             this.SaveAsMenuItem.Enabled = false;
             this.SaveAsMenuItem.Name = "SaveAsMenuItem";
-            this.SaveAsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.SaveAsMenuItem.Size = new System.Drawing.Size(114, 22);
             this.SaveAsMenuItem.Text = "Save As";
             this.SaveAsMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // ExitMenuItem
             // 
             this.ExitMenuItem.Name = "ExitMenuItem";
-            this.ExitMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ExitMenuItem.Size = new System.Drawing.Size(114, 22);
             this.ExitMenuItem.Text = "Exit";
             this.ExitMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -195,6 +204,12 @@
             this.HelpMenuItem.Name = "HelpMenuItem";
             this.HelpMenuItem.Size = new System.Drawing.Size(44, 20);
             this.HelpMenuItem.Text = "Help";
+            // 
+            // AboutMenuItem
+            // 
+            this.AboutMenuItem.Name = "AboutMenuItem";
+            this.AboutMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.AboutMenuItem.Text = "About";
             // 
             // TileSizeBox
             // 
@@ -311,21 +326,33 @@
             // 
             // DisplayBox
             // 
+            this.DisplayBox.Controls.Add(this.BuildTileset);
             this.DisplayBox.Controls.Add(this.Update);
             this.DisplayBox.Controls.Add(this.Sort);
-            this.DisplayBox.Controls.Add(this.Progress);
             this.DisplayBox.Location = new System.Drawing.Point(12, 27);
             this.DisplayBox.Name = "DisplayBox";
-            this.DisplayBox.Size = new System.Drawing.Size(358, 75);
+            this.DisplayBox.Size = new System.Drawing.Size(206, 75);
             this.DisplayBox.TabIndex = 9;
             this.DisplayBox.TabStop = false;
             this.DisplayBox.Text = "Display";
+            // 
+            // BuildTileset
+            // 
+            this.BuildTileset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.BuildTileset.Enabled = false;
+            this.BuildTileset.Location = new System.Drawing.Point(122, 26);
+            this.BuildTileset.Name = "BuildTileset";
+            this.BuildTileset.Size = new System.Drawing.Size(72, 33);
+            this.BuildTileset.TabIndex = 5;
+            this.BuildTileset.Text = "Build Tileset";
+            this.BuildTileset.UseVisualStyleBackColor = true;
+            this.BuildTileset.Click += new System.EventHandler(this.BuildTileset_Click);
             // 
             // Update
             // 
             this.Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.Update.Enabled = false;
-            this.Update.Location = new System.Drawing.Point(6, 23);
+            this.Update.Location = new System.Drawing.Point(10, 26);
             this.Update.Name = "Update";
             this.Update.Size = new System.Drawing.Size(55, 33);
             this.Update.TabIndex = 4;
@@ -336,9 +363,9 @@
             // BitBox
             // 
             this.BitBox.Controls.Add(this.Bits);
-            this.BitBox.Location = new System.Drawing.Point(356, 108);
+            this.BitBox.Location = new System.Drawing.Point(283, 108);
             this.BitBox.Name = "BitBox";
-            this.BitBox.Size = new System.Drawing.Size(77, 75);
+            this.BitBox.Size = new System.Drawing.Size(78, 91);
             this.BitBox.TabIndex = 9;
             this.BitBox.TabStop = false;
             this.BitBox.Text = "Bits/Colour";
@@ -360,7 +387,7 @@
             0,
             0});
             this.Bits.Name = "Bits";
-            this.Bits.Size = new System.Drawing.Size(37, 20);
+            this.Bits.Size = new System.Drawing.Size(38, 20);
             this.Bits.TabIndex = 0;
             this.Bits.Value = new decimal(new int[] {
             6,
@@ -373,7 +400,7 @@
             // 
             this.ImagePanel.AutoScroll = true;
             this.ImagePanel.Controls.Add(this.ImageDisplay);
-            this.ImagePanel.Location = new System.Drawing.Point(12, 189);
+            this.ImagePanel.Location = new System.Drawing.Point(12, 205);
             this.ImagePanel.Name = "ImagePanel";
             this.ImagePanel.Size = new System.Drawing.Size(600, 500);
             this.ImagePanel.TabIndex = 11;
@@ -382,7 +409,7 @@
             // 
             this.TilesetPanel.AutoScroll = true;
             this.TilesetPanel.Controls.Add(this.TilesetDisplay);
-            this.TilesetPanel.Location = new System.Drawing.Point(618, 189);
+            this.TilesetPanel.Location = new System.Drawing.Point(618, 205);
             this.TilesetPanel.Name = "TilesetPanel";
             this.TilesetPanel.Size = new System.Drawing.Size(378, 500);
             this.TilesetPanel.TabIndex = 12;
@@ -396,41 +423,85 @@
             this.TilesetDisplay.TabIndex = 2;
             this.TilesetDisplay.TabStop = false;
             // 
-            // ZoomBox
+            // ImageBox
             // 
-            this.ZoomBox.Controls.Add(this.Zoom);
-            this.ZoomBox.Location = new System.Drawing.Point(100, 108);
-            this.ZoomBox.Name = "ZoomBox";
-            this.ZoomBox.Size = new System.Drawing.Size(77, 75);
-            this.ZoomBox.TabIndex = 10;
-            this.ZoomBox.TabStop = false;
-            this.ZoomBox.Text = "Zoom";
+            this.ImageBox.Controls.Add(this.label8);
+            this.ImageBox.Controls.Add(this.SubImageSelector);
+            this.ImageBox.Controls.Add(this.label7);
+            this.ImageBox.Controls.Add(this.Padding);
+            this.ImageBox.Controls.Add(this.ImageZoom);
+            this.ImageBox.Location = new System.Drawing.Point(100, 108);
+            this.ImageBox.Name = "ImageBox";
+            this.ImageBox.Size = new System.Drawing.Size(177, 91);
+            this.ImageBox.TabIndex = 10;
+            this.ImageBox.TabStop = false;
+            this.ImageBox.Text = "Display";
             // 
-            // Zoom
+            // label8
             // 
-            this.Zoom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(103, 21);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(58, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "Sub Image";
+            // 
+            // SubImageSelector
+            // 
+            this.SubImageSelector.Enabled = false;
+            this.SubImageSelector.Location = new System.Drawing.Point(106, 37);
+            this.SubImageSelector.Name = "SubImageSelector";
+            this.SubImageSelector.Size = new System.Drawing.Size(54, 20);
+            this.SubImageSelector.TabIndex = 8;
+            this.SubImageSelector.ValueChanged += new System.EventHandler(this.SubImageSelector_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(31, 21);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "Zoom";
+            // 
+            // Padding
+            // 
+            this.Padding.AutoSize = true;
+            this.Padding.Checked = true;
+            this.Padding.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Padding.Location = new System.Drawing.Point(53, 63);
+            this.Padding.Name = "Padding";
+            this.Padding.Size = new System.Drawing.Size(65, 17);
+            this.Padding.TabIndex = 4;
+            this.Padding.Text = "Padding";
+            this.Padding.UseVisualStyleBackColor = true;
+            this.Padding.CheckedChanged += new System.EventHandler(this.Padding_CheckedChanged);
+            // 
+            // ImageZoom
+            // 
+            this.ImageZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Zoom.Location = new System.Drawing.Point(20, 23);
-            this.Zoom.Maximum = new decimal(new int[] {
+            this.ImageZoom.Location = new System.Drawing.Point(28, 37);
+            this.ImageZoom.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.Zoom.Minimum = new decimal(new int[] {
+            this.ImageZoom.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.Zoom.Name = "Zoom";
-            this.Zoom.Size = new System.Drawing.Size(37, 20);
-            this.Zoom.TabIndex = 0;
-            this.Zoom.Value = new decimal(new int[] {
+            this.ImageZoom.Name = "ImageZoom";
+            this.ImageZoom.Size = new System.Drawing.Size(37, 20);
+            this.ImageZoom.TabIndex = 0;
+            this.ImageZoom.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.Zoom.ValueChanged += new System.EventHandler(this.Zoom_ValueChanged);
+            this.ImageZoom.ValueChanged += new System.EventHandler(this.Zoom_ValueChanged);
             // 
             // groupBox1
             // 
@@ -438,9 +509,9 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.ColourThreshold);
             this.groupBox1.Controls.Add(this.PatternThreshold);
-            this.groupBox1.Location = new System.Drawing.Point(439, 108);
+            this.groupBox1.Location = new System.Drawing.Point(367, 108);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(104, 75);
+            this.groupBox1.Size = new System.Drawing.Size(104, 91);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Thresholds";
@@ -535,7 +606,7 @@
             this.Offset.Controls.Add(this.OffsetX);
             this.Offset.Location = new System.Drawing.Point(11, 108);
             this.Offset.Name = "Offset";
-            this.Offset.Size = new System.Drawing.Size(83, 75);
+            this.Offset.Size = new System.Drawing.Size(83, 91);
             this.Offset.TabIndex = 13;
             this.Offset.TabStop = false;
             this.Offset.Text = "Offset";
@@ -586,16 +657,53 @@
             // 
             // Grouping
             // 
+            this.Grouping.Controls.Add(this.label6);
+            this.Grouping.Controls.Add(this.TilesetZoom);
             this.Grouping.Controls.Add(this.label5);
             this.Grouping.Controls.Add(this.TilesWide);
             this.Grouping.Controls.Add(this.Compressed);
             this.Grouping.Controls.Add(this.Grouped);
-            this.Grouping.Location = new System.Drawing.Point(549, 108);
+            this.Grouping.Location = new System.Drawing.Point(477, 108);
             this.Grouping.Name = "Grouping";
-            this.Grouping.Size = new System.Drawing.Size(160, 75);
+            this.Grouping.Size = new System.Drawing.Size(232, 91);
             this.Grouping.TabIndex = 14;
             this.Grouping.TabStop = false;
             this.Grouping.Text = "Tileset";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(178, 21);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(34, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Zoom";
+            // 
+            // TilesetZoom
+            // 
+            this.TilesetZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TilesetZoom.Location = new System.Drawing.Point(175, 42);
+            this.TilesetZoom.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.TilesetZoom.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.TilesetZoom.Name = "TilesetZoom";
+            this.TilesetZoom.Size = new System.Drawing.Size(37, 20);
+            this.TilesetZoom.TabIndex = 5;
+            this.TilesetZoom.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.TilesetZoom.ValueChanged += new System.EventHandler(this.TilesetZoom_ValueChanged);
             // 
             // label5
             // 
@@ -658,7 +766,7 @@
             // Status
             // 
             this.Status.AutoSize = true;
-            this.Status.Location = new System.Drawing.Point(12, 707);
+            this.Status.Location = new System.Drawing.Point(12, 723);
             this.Status.Name = "Status";
             this.Status.Size = new System.Drawing.Size(72, 13);
             this.Status.TabIndex = 15;
@@ -667,7 +775,7 @@
             // ColourBox
             // 
             this.ColourBox.Controls.Add(this.BackgroundColour);
-            this.ColourBox.Location = new System.Drawing.Point(270, 108);
+            this.ColourBox.Location = new System.Drawing.Point(224, 27);
             this.ColourBox.Name = "ColourBox";
             this.ColourBox.Size = new System.Drawing.Size(80, 75);
             this.ColourBox.TabIndex = 16;
@@ -694,7 +802,7 @@
             this.Results.Controls.Add(this.Duplicates);
             this.Results.Location = new System.Drawing.Point(715, 27);
             this.Results.Name = "Results";
-            this.Results.Size = new System.Drawing.Size(281, 156);
+            this.Results.Size = new System.Drawing.Size(281, 172);
             this.Results.TabIndex = 17;
             this.Results.TabStop = false;
             this.Results.Text = "Sorting Results";
@@ -748,24 +856,19 @@
             // 
             this.ColourPicker.Color = System.Drawing.Color.LightSeaGreen;
             // 
-            // AboutMenuItem
-            // 
-            this.AboutMenuItem.Name = "AboutMenuItem";
-            this.AboutMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.AboutMenuItem.Text = "About";
-            // 
             // Gui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 729);
+            this.ClientSize = new System.Drawing.Size(1008, 753);
             this.Controls.Add(this.Results);
             this.Controls.Add(this.ColourBox);
             this.Controls.Add(this.Status);
+            this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.Grouping);
             this.Controls.Add(this.Offset);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.ZoomBox);
+            this.Controls.Add(this.ImageBox);
             this.Controls.Add(this.TilesetPanel);
             this.Controls.Add(this.ImagePanel);
             this.Controls.Add(this.BitBox);
@@ -789,8 +892,10 @@
             this.TilesetPanel.ResumeLayout(false);
             this.TilesetPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TilesetDisplay)).EndInit();
-            this.ZoomBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Zoom)).EndInit();
+            this.ImageBox.ResumeLayout(false);
+            this.ImageBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SubImageSelector)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageZoom)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ColourThreshold)).EndInit();
@@ -801,6 +906,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.OffsetX)).EndInit();
             this.Grouping.ResumeLayout(false);
             this.Grouping.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TilesetZoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesWide)).EndInit();
             this.ColourBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).EndInit();
@@ -815,7 +921,7 @@
 
         private System.Windows.Forms.Button Sort;
         private System.Windows.Forms.PictureBox ImageDisplay;
-        private System.Windows.Forms.ProgressBar Progress;
+        private System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.MenuStrip Menu;
         private System.Windows.Forms.GroupBox TileSizeBox;
         private System.Windows.Forms.GroupBox DisplayBox;
@@ -829,8 +935,8 @@
         private System.Windows.Forms.ToolStripMenuItem HelpMenuItem;
         private System.Windows.Forms.NumericUpDown TileSize;
         private System.Windows.Forms.NumericUpDown Bits;
-        private System.Windows.Forms.GroupBox ZoomBox;
-        private System.Windows.Forms.NumericUpDown Zoom;
+        private System.Windows.Forms.GroupBox ImageBox;
+        private System.Windows.Forms.NumericUpDown ImageZoom;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.NumericUpDown ColourThreshold;
         private System.Windows.Forms.NumericUpDown PatternThreshold;
@@ -867,6 +973,13 @@
         private System.Windows.Forms.Label SortTime;
         private System.Windows.Forms.Label TimePerTile;
         private System.Windows.Forms.ToolStripMenuItem AboutMenuItem;
+        private System.Windows.Forms.CheckBox Padding;
+        private System.Windows.Forms.NumericUpDown TilesetZoom;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button BuildTileset;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown SubImageSelector;
     }
 }
 

@@ -13,39 +13,46 @@ namespace SpriteRipper
 {
     public static class Program
     {
-        //private static List<Tile> allTiles { get; set; }
-        //private static LinkedList<Tile> allTiles { get; set; }
-        private static SortedSet<Tile> allTiles { get; set; }
+        //public static Bitmap loadedImage { get; set; }
+        public static Bitmap CurrentSubImage { get; set; }
+        //public static int TotalSubImages { get; set; }
+        //public static Size SubImageSize { get; set; }
+        public static ImageCollection Images { get; set; }
+        //private static List<Tile> allSubImageTiles { get; set; }
+        //private static LinkedList<Tile> allSubImageTiles { get; set; }
+        private static SortedSet<Tile> allSubImageTiles { get; set; }
         private static ConcurrentBag<Tile> tileDepository { get; set; }
-        public static bool displayReady { get; private set; }
+        public static bool DisplayReady { get; private set; }
         private static TileSorting allSortedTiles { get; set; }
-        public static bool tilesetReady { get; private set; }
-        public static Color backgroundColour { get; set; }
+        public static bool TilesetReady { get; private set; }
+        public static Color BackgroundColour { get; set; }
         private static int ACCURACY = 2;
-        public static int tasksComplete { get; private set; }
-        public static int totalTasks { get; private set; }
-        public static int duplicates { get; private set; }
-        public static long sortTime { get; private set; }
+        public static int TasksComplete { get; private set; }
+        public static int TotalTasks { get; private set; }
+        public static int Duplicates { get; private set; }
+        public static long SortTime { get; private set; }
         private const string IMAGE_FILTER = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif)|*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif";
         private const int MAX_THREADS = 4;
-        private static int MAX_CONCURRENT_TILES = 160;
+        private const int MAX_CONCURRENT_TILES = 225;
+        private const int MAX_PIXELS = 57600;
 
         static Program()
         {
-            allTiles = null;
+            allSubImageTiles = null;
             tileDepository = null;
             allSortedTiles = null;
+            Images = null;
 
-            displayReady = false;
-            tilesetReady = false;
+            DisplayReady = false;
+            TilesetReady = false;
 
             // default colour
-            backgroundColour = Color.LightSeaGreen;
+            BackgroundColour = Color.LightSeaGreen;
 
-            tasksComplete = 0;
-            totalTasks = 0;
-            duplicates = 0;
-            sortTime = 0;
+            TasksComplete = 0;
+            TotalTasks = 0;
+            Duplicates = 0;
+            SortTime = 0;
         }
 
         /// <summary>
@@ -61,12 +68,12 @@ namespace SpriteRipper
 
         public static int GetTileCount()
         {
-            if (allTiles == null)
+            if (allSubImageTiles == null)
             {
                 return 0;
             }
 
-            return allTiles.Count;
+            return allSubImageTiles.Count;
         }
 
         public static int GetSortedTileCount()
@@ -160,28 +167,253 @@ namespace SpriteRipper
             return imageToLoad;
         }
 
-        public static Bitmap ProcessImage(Bitmap image, int bitsPerColour, int tileSize, float patternThreshold, float colourThreshold)
+        public static void LoadImage(string path, int tileSize, int offsetX, int offsetY)
         {
-            // Split the image into tiles
-            LoadAllTiles(image, bitsPerColour, tileSize);
+            Bitmap image = LoadCroppedImage(path, tileSize, offsetX, offsetY);
+            int width = image.Width;
+            int height = image.Height;
 
-            // Sort all tiles into groups based on comparison
-            SortTiles(patternThreshold, colourThreshold);
+            Images = new ImageCollection(path, tileSize, width, height, offsetX, offsetY);
 
-            // Build tileset
-            //PixelFormat format = image.PixelFormat;
-            PixelFormat format = PixelFormat.Format24bppRgb;
-            int zoom = 1;
-            Bitmap tileset = GetGroupedTileset(format, tileSize, zoom);
-            return tileset;
+            allSortedTiles = new TileSorting();
+
+            Images.SetSubImageByRefFromImage(ref image, 0);
+
+            //loadedImage = image;
+        }
+
+        public static Bitmap LoadCroppedImage(string filename, int tileSize, int offsetX, int offsetY)
+        {
+            Bitmap image = new Bitmap(filename);
+
+            int width = image.Width;
+            int height = image.Height;
+
+            int croppedWidth = tileSize * ((width - offsetX) / tileSize);
+            int croppedHeight = tileSize * ((height - offsetY) / tileSize);
+
+            if (croppedWidth != width || croppedHeight != height)
+            {
+                Rectangle rect = new Rectangle(offsetX, offsetY, croppedWidth, croppedHeight);
+                Bitmap croppedImage = image.Clone(rect, PixelFormat.Format24bppRgb);
+                image = croppedImage;
+            }
+
+            return image;
+        }
+
+        public static void LoadSubImage(int bitsPerColour, int tileSize)
+        {
+            LoadSubImage(bitsPerColour, tileSize, 0);
+        }
+
+        public static void LoadSubImage(int bitsPerColour, int tileSize, int subImageIndex)
+        {
+            if (Images == null)
+            {
+                throw new NullReferenceException("No image loaded");
+            }
+
+            //allSubImageTiles = new List<Tile>();
+            //allSubImageTiles = new LinkedList<Tile>();
+            allSubImageTiles = new SortedSet<Tile>();
+            //tileDepository = new ConcurrentBag<Tile>();   //threaded
+
+            LoadAllTilesBySubImage(bitsPerColour, tileSize, subImageIndex);
+        }
+
+        private static void LoadAllTilesBySubImage(int bitsPerColour, int tileSize, int subImageIndex)
+        {
+            if (Images == null)
+            {
+                throw new NullReferenceException("No image loaded");
+            }
+
+            DisplayReady = false;
+
+            int totalSubImageTiles = Images.GetSubImageTileCount(subImageIndex);
+            for (int i = 0; i < totalSubImageTiles; i++)
+            {
+                int index = Images.GetTileIndex(subImageIndex, i);
+
+                Tile tileToAdd;
+                try
+                {
+                    tileToAdd = GetTile(bitsPerColour, tileSize, index);
+                }
+                catch (OutOfMemoryException ex)
+                {
+                    MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                allSubImageTiles.Add(tileToAdd);
+
+                TasksComplete++;
+            }
+
+            DisplayReady = true;
+        }
+
+        //public static void GetSubImage(int BitsPerColour, int TileSize, int subImageIndex)
+        //{
+        //    if (loadedImage == null)
+        //    {
+        //        throw new NullReferenceException("No image loaded");
+        //    }
+
+        //    DisplayReady = false;
+        //    int width = loadedImage.Width;
+        //    int height = loadedImage.Height;
+        //    //int totalTiles = Program.GetTileCount(width, height, TileSize);
+
+        //    //int subWidth = width;
+        //    //int subHeight = height;
+        //    //int totalPixels = width * height;
+
+        //    //while (totalPixels > MAX_PIXELS)
+        //    ////while (totalTiles > MAX_CONCURRENT_TILES)
+        //    //{
+        //    //    int halfSubWidth = subWidth / 2;
+        //    //    int halfSubHeight = subHeight / 2;
+
+        //    //    if (halfSubWidth % TileSize != 0)
+        //    //    {
+        //    //        if (halfSubHeight % TileSize != 0)
+        //    //        {
+        //    //            break;
+        //    //        }
+        //    //    }
+
+        //    //    if (halfSubWidth % TileSize == 0)
+        //    //    {
+        //    //        subWidth = halfSubWidth;
+        //    //    }
+        //    //    if (halfSubHeight % TileSize == 0)
+        //    //    {
+        //    //        subHeight = halfSubHeight;
+        //    //    }
+
+        //    //    totalPixels = subWidth * subHeight;
+        //    //    //totalTiles = Program.GetTileCount(subWidth, subHeight, TileSize);
+        //    //}
+
+        //    if (SubImageSize == null)
+        //    {
+        //        SubImageSize = Program.GetSubImageSize(width, height, TileSize);
+        //    }
+
+        //    int subWidth = SubImageSize.Width;
+        //    int subHeight = SubImageSize.Height;
+
+        //    int subImagesWide = width / subWidth;
+        //    TotalSubImages = subImagesWide * (height / subHeight);
+
+        //    int x = (subImageIndex % subImagesWide) * subWidth;
+        //    int y = (subImageIndex / subImagesWide) * subHeight;
+        //    Rectangle rect = new Rectangle(x, y, subWidth, subHeight);
+        //    Bitmap subImage = loadedImage.Clone(rect, PixelFormat.Format24bppRgb);
+        //    CurrentSubImage = subImage;
+        //    loadedImage = null; //testing
+
+        //    //allSubImageTiles = new List<Tile>();
+        //    //allSubImageTiles = new LinkedList<Tile>();
+        //    allSubImageTiles = new SortedSet<Tile>();
+        //    //tileDepository = new ConcurrentBag<Tile>();   //threaded
+
+        //    LoadTilesByRef(ref subImage, BitsPerColour, TileSize);
+
+        //    DisplayReady = true;
+        //}
+
+        public static Size GetSubImageSize(int width, int height, int tileSize)
+        {
+            int totalPixels = width * height;
+            if (totalPixels <= MAX_PIXELS)
+            {
+                return new Size(width, height);
+            }
+
+            int widthDivisor = 1;
+            int heightDivisor = 1;
+
+            int tilesWide = width / tileSize;
+            int tilesHigh = height / tileSize;
+
+            widthDivisor = GetNextDivisor(widthDivisor, tilesWide);
+            heightDivisor = GetNextDivisor(heightDivisor, tilesHigh);
+
+            int subImageWidth = width / widthDivisor;
+            int subImageHeight = height / heightDivisor;
+
+            totalPixels = subImageWidth * subImageHeight;
+            while (totalPixels > MAX_PIXELS)
+            {
+                if (widthDivisor < heightDivisor)
+                {
+                    int nextWidthDivisor = GetNextDivisor(widthDivisor, tilesWide);
+                    if (nextWidthDivisor != -1)
+                    {
+                        widthDivisor = nextWidthDivisor;
+                    }
+                }
+                else if (widthDivisor > heightDivisor)
+                {
+                    int nextHeightDivisor = GetNextDivisor(heightDivisor, tilesHigh);
+                    if (nextHeightDivisor != -1)
+                    {
+                        heightDivisor = nextHeightDivisor;
+                    }
+                }
+                else
+                {
+                    int nextWidthDivisor = GetNextDivisor(widthDivisor, tilesWide);
+                    if (nextWidthDivisor != -1)
+                    {
+                        widthDivisor = nextWidthDivisor;
+                    }
+
+                    int nextHeightDivisor = GetNextDivisor(heightDivisor, tilesHigh);
+                    if (nextHeightDivisor != -1)
+                    {
+                        heightDivisor = nextHeightDivisor;
+                    }
+                }
+
+                subImageWidth = width / widthDivisor;
+                subImageHeight = height / heightDivisor;
+
+                totalPixels = subImageWidth * subImageHeight;
+            }
+
+            return new Size(subImageWidth, subImageHeight);
+        }
+
+        private static int GetNextDivisor(int divisor, int divided)
+        {
+            int denominator = divisor + 1;
+            while (divided % denominator != 0)
+            {
+                denominator++;
+
+                if (denominator >= divided)
+                {
+                    return -1;
+                    //throw new ArgumentOutOfRangeException("No greater divisor");
+                }
+            }
+
+            return denominator;
         }
 
         public static void ResetAll()
         {
-            //allTiles = new List<Tile>();
-            //allTiles = new LinkedList<Tile>();
-            allTiles = new SortedSet<Tile>();
-            displayReady = false;
+            //allSubImageTiles = new List<Tile>();
+            //allSubImageTiles = new LinkedList<Tile>();
+            allSubImageTiles = new SortedSet<Tile>();
+            DisplayReady = false;
+
+            Images = null;
 
             ResetTileset();
         }
@@ -189,7 +421,7 @@ namespace SpriteRipper
         public static void ResetTileset()
         {
             allSortedTiles = new TileSorting();
-            tilesetReady = false;
+            TilesetReady = false;
         }
 
         public static Bitmap GetGroupedTileset(PixelFormat format, int tileSize, int zoom)
@@ -210,17 +442,17 @@ namespace SpriteRipper
             // Fill with background colour
             SetBackgroundColour(width, height, tileset);
 
-            // Draw tile groups in tileset
+            // Draw tileToCompare groups in tileset
             for (int i = 0; i < allSortedTiles.Count; i++)
             {
                 TileGroup group = allSortedTiles[i];
                 int masterIndex = group.masterIndex;
-                //Tile master = allTiles[masterIndex];
-                Tile master = allTiles.ElementAt(masterIndex);
+                //Tile master = allSubImageTiles[masterIndex];
+                Tile master = allSubImageTiles.ElementAt(masterIndex);
                 // draw tileToDraw
                 int x = 0;
                 int y = i * (tileSize * zoom + 5);
-                DrawTileOntoImage(tileset, master, x, y, zoom);
+                DrawTileOntoImage(ref tileset, master, x, y, zoom);
 
                 List<int> similarTiles = group.GetSortedTiles();
                 // draw similar tiles
@@ -228,9 +460,9 @@ namespace SpriteRipper
                 {
                     x = tileSize * zoom + 1 + j * (tileSize * zoom + 1);
                     int tileIndex = similarTiles[j];
-                    //Tile tileToDraw = allTiles[tileIndex];
-                    Tile tileToDraw = allTiles.ElementAt(tileIndex);
-                    DrawTileOntoImage(tileset, tileToDraw, x, y, zoom);
+                    //Tile tileToDraw = allSubImageTiles[subImageTileIndex];
+                    Tile tileToDraw = allSubImageTiles.ElementAt(tileIndex);
+                    DrawTileOntoImage(ref tileset, tileToDraw, x, y, zoom);
                 }
             }
 
@@ -251,15 +483,15 @@ namespace SpriteRipper
             // Fill with background colour
             SetBackgroundColour(width, height, tileset);
 
-            // Draw tile groups in sequence
+            // Draw tileToCompare groups in sequence
             int tileNumber = 0;
             for (int i = 0; i < allSortedTiles.Count; i++)
             {
                 // draw tileToDraw
                 TileGroup group = allSortedTiles[i];
                 int masterIndex = group.masterIndex;
-                //Tile master = allTiles[masterIndex];
-                Tile master = allTiles.ElementAt(masterIndex);
+                //Tile master = allSubImageTiles[masterIndex];
+                Tile master = allSubImageTiles.ElementAt(masterIndex);
                 DrawNextTileOntoImage(tileset, master, tileSize, tilesWide, zoom, ref tileNumber);
 
                 List<int> similarTiles = group.GetSortedTiles();
@@ -267,8 +499,8 @@ namespace SpriteRipper
                 for (int j = 0; j < similarTiles.Count; j++)
                 {
                     int tileIndex = similarTiles[j];
-                    //Tile tileToDraw = allTiles[tileIndex];
-                    Tile tileToDraw = allTiles.ElementAt(tileIndex);
+                    //Tile tileToDraw = allSubImageTiles[subImageTileIndex];
+                    Tile tileToDraw = allSubImageTiles.ElementAt(tileIndex);
                     DrawNextTileOntoImage(tileset, tileToDraw, tileSize, tilesWide, zoom, ref tileNumber);
                 }
             }
@@ -279,7 +511,7 @@ namespace SpriteRipper
         private static void SetBackgroundColour(int width, int height, Bitmap tileset)
         {
             Graphics g = Graphics.FromImage(tileset);
-            SolidBrush brush = new SolidBrush(backgroundColour);
+            SolidBrush brush = new SolidBrush(BackgroundColour);
             g.FillRectangle(brush, 0, 0, width, height);
         }
 
@@ -288,11 +520,11 @@ namespace SpriteRipper
             int x = (count % tilesWide) * tileSize * zoom + (count % tilesWide);
             int y = (count / tilesWide) * tileSize * zoom + (count / tilesWide);
 
-            DrawTileOntoImage(tileset, tileToDraw, x, y, zoom);
+            DrawTileOntoImage(ref tileset, tileToDraw, x, y, zoom);
             count++;
         }
 
-        //private static Bitmap DrawGroupedTileset(PixelFormat format, int tileSize, int width, int height, int zoom)
+        //private static Bitmap DrawGroupedTileset(PixelFormat format, int TileSize, int width, int height, int zoom)
         //{
         //    if (allSortedTiles == null)
         //    {
@@ -301,54 +533,67 @@ namespace SpriteRipper
 
         //    Bitmap tileset = new Bitmap(width, height, format);
 
-        //    // Draw tile groups in tileset
+        //    // Draw tileToCompare groups in tileset
         //    for (int i = 0; i < allSortedTiles.Count; i++)
         //    {
         //        TileGroup group = allSortedTiles[i];
         //        int masterIndex = group.masterIndex;
-        //        Tile tileToDraw = allTiles[masterIndex];
+        //        Tile tileToDraw = allSubImageTiles[masterIndex];
         //        // draw tileToDraw
-        //        int x = 0;
-        //        int y = 1 + i * (tileSize * zoom + 5);
-        //        DrawTileOntoImage(tileset, tileToDraw, x, y, zoom);
+        //        int cornerX = 0;
+        //        int cornerY = 1 + i * (TileSize * zoom + 5);
+        //        DrawTileOntoImage(tileset, tileToDraw, cornerX, cornerY, zoom);
 
         //        List<int> similarTiles = group.GetSortedTiles();
         //        // draw similar tiles
         //        for (int j = 0; j < similarTiles.Count; j++)
         //        {
-        //            x = tileSize * zoom + 1 + j * (tileSize * zoom + 1);
-        //            int tileIndex = similarTiles[j];
-        //            Tile tileToDraw = allTiles[tileIndex];
-        //            DrawTileOntoImage(tileset, tileToDraw, x, y, zoom);
+        //            cornerX = TileSize * zoom + 1 + j * (TileSize * zoom + 1);
+        //            int subImageTileIndex = similarTiles[j];
+        //            Tile tileToDraw = allSubImageTiles[subImageTileIndex];
+        //            DrawTileOntoImage(tileset, tileToDraw, cornerX, cornerY, zoom);
         //        }
         //    }
 
         //    return tileset;
         //}
 
-        public static void DrawAllTilesOntoImage(Bitmap image, int tilesWide, int tileSize, int zoom)
+        public static void DrawAllTilesOntoImage(ref Bitmap image, int tilesWide, int tileSize, int zoom, bool addPadding)
         {
-            for (int i = 0; i < allTiles.Count; i++)
+            for (int i = 0; i < allSubImageTiles.Count; i++)
             {
-                //Tile tile = allTiles[i];
-                Tile tile = allTiles.ElementAt(i);
-                int x = i % tilesWide * (tileSize * zoom + 1);
-                int y = i / tilesWide * (tileSize * zoom + 1);
+                //Tile tileToCompare = allSubImageTiles[i];
+                Tile tile = allSubImageTiles.ElementAt(i);
+                int x, y;
 
-                DrawTileOntoImage(image, tile, x, y, zoom);
+                if (addPadding == true)
+                {
+                    x = i % tilesWide * (tileSize * zoom + 1);
+                    y = i / tilesWide * (tileSize * zoom + 1);
+                }
+                else
+                {
+                    x = i % tilesWide * (tileSize * zoom);
+                    y = i / tilesWide * (tileSize * zoom);
+                }
+
+                DrawTileOntoImage(ref image, tile, x, y, zoom);
             }
         }
 
-        private static void DrawTileOntoImage(Bitmap image, Tile tile, int x, int y)
+        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int x, int y)
         {
-            DrawTileOntoImage(image, tile, x, y, 1);
+            DrawTileOntoImage(ref image, tile, x, y, 1);
         }
 
-        private static void DrawTileOntoImage(Bitmap image, Tile tile, int x, int y, int zoom)
+        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int x, int y, int zoom)
         {
             using (Graphics g = Graphics.FromImage(image))
             {
-                Image tileImage = tile.image;
+                //Image tileImage = tile.GetTileImage();
+                int tileIndex = tile.Index;
+                Image tileImage = Program.GetTileImage(tileIndex);
+
                 int width = tileImage.Width * zoom;
                 int height = tileImage.Height * zoom;
 
@@ -358,76 +603,86 @@ namespace SpriteRipper
 
         public static void SortTiles(float patternThreshold, float colourThreshold)
         {
-            tilesetReady = false;
-            tasksComplete = 0;
-            totalTasks = allTiles.Count;
-            duplicates = 0;
-            sortTime = 0;
+            TilesetReady = false;
+            TasksComplete = 0;
+            TotalTasks = allSubImageTiles.Count;
+            Duplicates = 0;
+            SortTime = 0;
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            allSortedTiles = new TileSorting();
-            //while(allTiles.Count > 0)
-            for (int i = 0; i < allTiles.Count; i++)
+            if (allSortedTiles == null)
             {
-                tasksComplete = i;
+                allSortedTiles = new TileSorting();
+            }
 
-                //Tile tile = allTiles[i];
-                Tile tile = allTiles.ElementAt(i);
-                //Tile tile = allTiles.First.Value;
-                //allTiles.RemoveFirst();
+            //while(allSubImageTiles.Count > 0)
+            for (int i = 0; i < allSubImageTiles.Count; i++)
+            {
+                //Tile tileToCompare = allSubImageTiles[i];
+                Tile tile = allSubImageTiles.ElementAt(i);
+                //Tile tileToCompare = allSubImageTiles.First.Value;
+                //allSubImageTiles.RemoveFirst();
 
                 if (i == 0)
                 {
                     allSortedTiles.AddGroup(i);
+                    TasksComplete++;
                     continue;
                 }
 
-                TileGroup group = FindMatchingGroup(tile, patternThreshold, colourThreshold);
+                //TileGroup group = FindMatchingGroup(tile, patternThreshold, colourThreshold);
+                TileGroupMatchResults results = FindMatchingGroupWithResults(tile, patternThreshold, colourThreshold);
+                TileGroup group = results.group;
                 if (group == null)
                 {
                     // Add to new group
                     allSortedTiles.AddGroup(i);
+                    TasksComplete++;
                     continue;
                 }
 
                 // Convert pattern match to hashcode
-                int masterIndex = group.masterIndex;
-                //Tile master = allTiles[masterIndex];
-                Tile master = allTiles.ElementAt(masterIndex);
-                Tuple<float, float> results = master.GetMatches(tile);
-                float patternMatch = results.Item1;
-                float colourMatch = results.Item2;
+                //int masterIndex = group.masterIndex;
+                ////Tile master = allSubImageTiles[masterIndex];
+                //Tile master = allSubImageTiles.ElementAt(masterIndex);
+                //Tuple<float, float> results = master.GetMatches(tile);
+                //float patternMatch = results.Item1;
+                //float colourMatch = results.Item2;
+
+                float patternMatch = results.patternMatch;
+                float colourMatch = results.colourMatch;
 
                 bool areIdentical = Tile.IdenticalTo(patternMatch, colourMatch);
                 if (areIdentical == true)
                 {
-                    duplicates++;
+                    Duplicates++;
+                    TasksComplete++;
                     continue;
                 }
 
-                // If tilecount is saved for each group, could improve performance by reducing the hashcode size since tilecount gets smaller with time
-                int key = Tile.GetHashcode(ACCURACY, patternMatch, colourMatch, totalTasks);
-                AddSimilarTileToGroup(i, tile, group, key);
+                // If tilecount is saved for each group, could improve performance by reducing the hashcode TileSize since tilecount gets smaller with time
+                int key = Tile.GetHashcode(ACCURACY, patternMatch, colourMatch, TotalTasks);
+                AddSimilarTileToGroup(tile, group, key);
+                TasksComplete++;
             }
 
             timer.Stop();
-            sortTime = timer.ElapsedMilliseconds;
+            SortTime = timer.ElapsedMilliseconds;
 
-            tilesetReady = true;
+            TilesetReady = true;
         }
 
-        private static void AddSimilarTileToGroup(int tileIndex, Tile tile, TileGroup group, int key)
+        private static void AddSimilarTileToGroup(Tile tile, TileGroup group, int key)
         {
-
             // Check if key already exists
             bool hasKey = group.ContainsKey(key);
             while (hasKey == true)
             {
                 int otherTileIndex = group[key];
-                //Tile otherTile = allTiles[otherTileIndex];
-                Tile otherTile = allTiles.ElementAt(otherTileIndex);
+                //Tile otherTile = allSubImageTiles[otherTileIndex];
+                Tile otherTile = allSubImageTiles.ElementAt(otherTileIndex);
                 Tuple<float, float> results = otherTile.GetMatches(tile);
                 float patternMatch = results.Item1;
                 float colourMatch = results.Item2;
@@ -435,7 +690,7 @@ namespace SpriteRipper
                 bool areIdentical = Tile.IdenticalTo(patternMatch, colourMatch);
                 if (areIdentical == true)
                 {
-                    duplicates++;
+                    Duplicates++;
                     return;
                 }
 
@@ -443,17 +698,61 @@ namespace SpriteRipper
                 hasKey = group.ContainsKey(key);
             }
 
+            int tileIndex = tile.Index;
             group.AddSimilar(key, tileIndex);
         }
 
-        private static TileGroup FindMatchingGroup(Tile tile, float patternThreshold, float colourThreshold)
+        private class TileGroupMatchResults {
+            public TileGroup group { get; private set; }
+            public float patternMatch { get; private set; }
+            public float colourMatch { get; private set; }
+
+            public TileGroupMatchResults()
+            {
+                group = null;
+                patternMatch = 0f;
+                colourMatch = 0f;
+            }
+
+            public TileGroupMatchResults(TileGroup group, float patternMatch, float colourMatch)
+            {
+                this.group = group;
+                this.patternMatch = patternMatch;
+                this.colourMatch = colourMatch;
+            }
+        }
+
+        private static TileGroupMatchResults FindMatchingGroupWithResults(Tile tileToCompare, float patternThreshold, float colourThreshold)
         {
             foreach (TileGroup group in allSortedTiles)
             {
                 int masterIndex = group.masterIndex;
-                //Tile master = allTiles[masterIndex];
-                Tile master = allTiles.ElementAt(masterIndex);
-                bool areSimilar = master.SimilarTo(tile, patternThreshold, colourThreshold);
+                //Tile master = allSubImageTiles[masterIndex];
+                Tile master = allSubImageTiles.ElementAt(masterIndex);
+                Tuple<float, float> results = master.GetMatches(tileToCompare);
+                float patternMatch = results.Item1;
+                float colourMatch = results.Item2;
+
+                bool areSimilar = Tile.SimilarTo(patternMatch, patternThreshold);
+                if (areSimilar == false)
+                {
+                    continue;
+                }
+
+                return new TileGroupMatchResults(group, patternMatch, colourMatch);
+            }
+
+            return new TileGroupMatchResults();
+        }
+
+        private static TileGroup FindMatchingGroup(Tile tileToCompare, float patternThreshold, float colourThreshold)
+        {
+            foreach (TileGroup group in allSortedTiles)
+            {
+                int masterIndex = group.masterIndex;
+                //Tile master = allSubImageTiles[masterIndex];
+                Tile master = allSubImageTiles.ElementAt(masterIndex);
+                bool areSimilar = master.SimilarTo(tileToCompare, patternThreshold, colourThreshold);
                 if (areSimilar == false)
                 {
                     continue;
@@ -472,13 +771,13 @@ namespace SpriteRipper
 
         public static void LoadAllTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
         {
-            displayReady = false;
+            DisplayReady = false;
             int width = image.Width - offsetX;
             int height = image.Height - offsetY;
             int totalTiles = Program.GetTileCount(width, height, tileSize);
 
-            tasksComplete = 0;
-            totalTasks = totalTiles;
+            TasksComplete = 0;
+            TotalTasks = totalTiles;
 
             int subWidth = width;
             int subHeight = height;
@@ -491,26 +790,73 @@ namespace SpriteRipper
                 totalTiles = Program.GetTileCount(subWidth, subHeight, tileSize);
             }
 
-            int subTilesWide = subWidth / tileSize;
-            int totalSubImages = (width / subWidth) * (height / subHeight);
+            int subImagesWide = width / subWidth;
+            int totalSubImages = subImagesWide * (height / subHeight);
 
-            //allTiles = new List<Tile>();
-            //allTiles = new LinkedList<Tile>();
-            allTiles = new SortedSet<Tile>();
+            //allSubImageTiles = new List<Tile>();
+            //allSubImageTiles = new LinkedList<Tile>();
+            allSubImageTiles = new SortedSet<Tile>();
             //tileDepository = new ConcurrentBag<Tile>();   //threaded
 
             for (int i = 0; i < totalSubImages; i++)
             {
-                int x = (i % subTilesWide) * subWidth;
-                int y = (i / subTilesWide) * subHeight;
+                int x = (i % subImagesWide) * subWidth;
+                int y = (i / subImagesWide) * subHeight;
                 Rectangle rect = new Rectangle(x, y, subWidth, subHeight);
                 Bitmap subImage = image.Clone(rect, PixelFormat.Format24bppRgb);
                 LoadTiles(subImage, bitsPerColour, tileSize, offsetX, offsetY);
             }
 
-            //allTiles = new SortedSet<Tile>(tileDepository); //threaded
-            displayReady = true;
+            //allSubImageTiles = new SortedSet<Tile>(tileDepository); //threaded
+            DisplayReady = true;
         }
+
+        //public static void LoadAllTilesByRef(ref Bitmap image, int BitsPerColour, int TileSize)
+        //{
+        //    LoadAllTilesByRef(ref image, BitsPerColour, TileSize, 0, 0);
+        //}
+
+        //public static void LoadAllTilesByRef(ref Bitmap image, int BitsPerColour, int TileSize, int offsetX, int offsetY)
+        //{
+        //    DisplayReady = false;
+        //    int width = image.Width - offsetX;
+        //    int height = image.Height - offsetY;
+        //    int totalTiles = Program.GetTileCount(width, height, TileSize);
+
+        //    TasksComplete = 0;
+        //    TotalTasks = totalTiles;
+
+        //    int subWidth = width;
+        //    int subHeight = height;
+
+        //    while (totalTiles > MAX_CONCURRENT_TILES)
+        //    {
+        //        subWidth /= 2;
+        //        subHeight /= 2;
+
+        //        totalTiles = Program.GetTileCount(subWidth, subHeight, TileSize);
+        //    }
+
+        //    int subImagesWide = width / subWidth;
+        //    int TotalSubImages = subImagesWide * (height / subHeight);
+
+        //    LoadTilesByRef(ref image, BitsPerColour, TileSize);
+        //    //for (int i = 0; i < TotalSubImages; i++)
+        //    //{
+        //    //    int x = (i % subImagesWide) * subWidth;
+        //    //    int y = (i / subImagesWide) * subHeight;
+        //    //    Rectangle rect = new Rectangle(x, y, subWidth, subHeight);
+        //    //    Bitmap croppedImage = loadedImage.Clone(rect, PixelFormat.Format24bppRgb);
+
+        //    //    int subImageOffsetX;
+        //    //    int subImageOffsetY;
+
+        //    //    LoadTiles(croppedImage, BitsPerColour, TileSize, subImageOffsetX, subImageOffsetY); // Sub loadedImage messes with corner location
+        //    //}
+
+        //    //allSubImageTiles = new SortedSet<Tile>(tileDepository); //threaded
+        //    DisplayReady = true;
+        //}
 
         private static void LoadTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
         {
@@ -524,21 +870,51 @@ namespace SpriteRipper
                     Tile tileToAdd;
                     try
                     {
-                        //tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize);
-                        tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, tasksComplete);
+                        //tileToAdd = GetTile(loadedImage, BitsPerColour, cornerX, cornerY, TileSize);
+                        tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, TasksComplete);
                     }
                     catch (OutOfMemoryException ex)
                     {
                         MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    allTiles.Add(tileToAdd);
-                    //allTiles.AddLast(tileToAdd);
 
-                    tasksComplete++;
+                    allSubImageTiles.Add(tileToAdd);
+                    //allSubImageTiles.AddLast(tileToAdd);
+
+                    TasksComplete++;
                 }
             }
         }
+
+        //private static void LoadTilesByRef(ref Bitmap image, int BitsPerColour, int TileSize)
+        //{
+        //    int width = image.Width;
+        //    int height = image.Height;
+
+        //    for (int y = 0; y < height; y += TileSize)
+        //    {
+        //        for (int x = 0; x < width; x += TileSize)
+        //        {
+        //            Tile tileToAdd;
+        //            try
+        //            {
+        //                //tileToAdd = GetTile(loadedImage, BitsPerColour, cornerX, cornerY, TileSize);
+        //                tileToAdd = GetTile(image, BitsPerColour, x, y, TileSize, TasksComplete);
+        //            }
+        //            catch (OutOfMemoryException ex)
+        //            {
+        //                MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                return;
+        //            }
+
+        //            allSubImageTiles.Add(tileToAdd);
+        //            //allSubImageTiles.AddLast(tileToAdd);
+
+        //            TasksComplete++;
+        //        }
+        //    }
+        //}
 
         public static void LoadTilesThreaded(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
         {
@@ -556,7 +932,7 @@ namespace SpriteRipper
 
                 // Assign a row to a thread
                 //completedRows[i] = new ManualResetEvent(false);
-                //ThreadInfo info = new ThreadInfo(image, bitsPerColour, tileSize, offsetX, offsetY, i, completedRows[i]);
+                //ThreadInfo info = new ThreadInfo(loadedImage, BitsPerColour, TileSize, offsetX, offsetY, i, completedRows[i]);
                 //ThreadPool.QueueUserWorkItem(LoadTileRow, info);
                 Thread thread = new Thread(() => LoadTileRow(image, bitsPerColour, tileSize, offsetX, offsetY, i));
                 thread.Start();
@@ -596,9 +972,9 @@ namespace SpriteRipper
             //{
             //ThreadInfo info = parameters as ThreadInfo;
 
-            //Bitmap image = info.image;
-            //int bitsPerColour = info.bitsPerColour;
-            //int tileSize = info.tileSize;
+            //Bitmap loadedImage = info.loadedImage;
+            //int BitsPerColour = info.BitsPerColour;
+            //int TileSize = info.TileSize;
             //int offsetX = info.offsetX;
             //int offsetY = info.offsetY;
             //int rowNumber = info.rowNumber;
@@ -615,7 +991,7 @@ namespace SpriteRipper
                 Tile tileToAdd;
                 try
                 {
-                    //tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize);
+                    //tileToAdd = GetTile(loadedImage, BitsPerColour, cornerX, cornerY, TileSize);
                     tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, tileNumber);
                 }
                 catch (OutOfMemoryException ex)
@@ -627,7 +1003,7 @@ namespace SpriteRipper
             }
 
             //resetEvent.Set();
-            tasksComplete += tilesWide;
+            TasksComplete += tilesWide;
         }
 
         public static int GetTileCount(int width, int height, int tileSize)
@@ -661,20 +1037,49 @@ namespace SpriteRipper
             return GetColumnsCount(width, tileSize, 0);
         }
 
-        private static Tile GetTile(Bitmap image, int bitsPerColour, int x, int y, int size)
-        {
-            Rectangle rect = new Rectangle(x, y, size, size);
-            Bitmap subImage = image.Clone(rect, image.PixelFormat);
-            Tile tile = new Tile(subImage, bitsPerColour);
-            return tile;
-        }
+        //private static Tile GetTile(Bitmap image, int BitsPerColour, int x, int y, int size)
+        //{
+        //    Bitmap subImage = GetSubImage(image, x, y, size);
+        //    Tile tileToCompare = new Tile(subImage, BitsPerColour, x, y, size);
+        //    return tileToCompare;
+        //}
 
         private static Tile GetTile(Bitmap image, int bitsPerColour, int x, int y, int size, int index)
         {
+            Bitmap subImage = GetSubImage(image, x, y, size);
+            Tile tile = new Tile(subImage, bitsPerColour, size, index);
+            return tile;
+        }
+
+        private static Tile GetTile(int bitsPerColour, int tileSize, int tileIndex)
+        {
+            Bitmap tileImage = Images.GetTileImage(tileIndex);
+            Tile tile = new Tile(tileImage, bitsPerColour, tileSize, tileIndex);
+            return tile;
+        }
+
+        private static Bitmap GetSubImage(Bitmap image, int x, int y, int size)
+        {
             Rectangle rect = new Rectangle(x, y, size, size);
             Bitmap subImage = image.Clone(rect, image.PixelFormat);
-            Tile tile = new Tile(subImage, bitsPerColour, index);
-            return tile;
+            return subImage;
+        }
+
+        public static Bitmap GetTileImage(int x, int y, int size)
+        {
+            Bitmap tileImage = GetSubImage(CurrentSubImage, x, y, size);
+            return tileImage;
+        }
+
+        public static Bitmap GetTileImage(int tileIndex)
+        {
+            if (Images == null)
+            {
+                throw new NullReferenceException("No image loaded");
+            }
+
+            Bitmap tileImage = Images.GetTileImage(tileIndex);
+            return tileImage;
         }
     }
 }
