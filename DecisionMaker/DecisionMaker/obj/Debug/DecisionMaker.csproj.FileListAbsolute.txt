@@ -1,0 +1,8 @@
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\bin\Debug\DecisionMaker.exe.config
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\bin\Debug\DecisionMaker.exe
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\bin\Debug\DecisionMaker.pdb
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\obj\Debug\DecisionMaker.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\obj\Debug\DecisionMaker.Properties.Resources.resources
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\obj\Debug\DecisionMaker.csproj.GenerateResource.Cache
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\obj\Debug\DecisionMaker.exe
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\DecisionMaker\obj\Debug\DecisionMaker.pdb
