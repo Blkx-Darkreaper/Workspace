@@ -1,0 +1,9 @@
+C:\Users\nicB\Documents\Node\Node\bin\Debug\Node.exe.config
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.Properties.Resources.resources
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.csproj.GenerateResource.Cache
+C:\Users\nicB\Documents\Node\Node\bin\Debug\Node.exe
+C:\Users\nicB\Documents\Node\Node\bin\Debug\Node.pdb
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.MainWindow.resources
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.exe
+C:\Users\nicB\Documents\Node\Node\obj\Debug\Node.pdb

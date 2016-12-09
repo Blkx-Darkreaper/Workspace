@@ -1,0 +1,7 @@
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\obj\Debug\PathfinderTest.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\bin\Debug\PathfinderTest.dll
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\bin\Debug\PathfinderTest.pdb
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\bin\Debug\Pathfinder.exe
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\bin\Debug\Pathfinder.pdb
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\obj\Debug\PathfinderTest.dll
+C:\Users\nicB\Documents\Pathfinder\PathfinderTest\obj\Debug\PathfinderTest.pdb

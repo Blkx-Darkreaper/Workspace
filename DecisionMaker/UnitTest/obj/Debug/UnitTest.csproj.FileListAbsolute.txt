@@ -1,0 +1,7 @@
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\bin\Debug\UnitTest.dll
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\bin\Debug\UnitTest.pdb
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\bin\Debug\DecisionMaker.exe
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\bin\Debug\DecisionMaker.pdb
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\obj\Debug\UnitTest.csprojResolveAssemblyReference.cache
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\obj\Debug\UnitTest.dll
+C:\Users\nicB\Documents\GitHub\Git\DecisionMaker\UnitTest\obj\Debug\UnitTest.pdb
