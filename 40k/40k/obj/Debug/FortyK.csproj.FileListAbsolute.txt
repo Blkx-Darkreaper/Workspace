@@ -1,0 +1,5 @@
+D:\Users\Darkreaper\Git\Workspace\40k\40k\obj\Debug\FortyK.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\Workspace\40k\40k\bin\Debug\40k.dll
+D:\Users\Darkreaper\Git\Workspace\40k\40k\bin\Debug\40k.pdb
+D:\Users\Darkreaper\Git\Workspace\40k\40k\obj\Debug\40k.dll
+D:\Users\Darkreaper\Git\Workspace\40k\40k\obj\Debug\40k.pdb
