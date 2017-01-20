@@ -12,3 +12,10 @@ C:\Users\nicB\Documents\GitHub\Git\SpriteRipper\SpriteRipperTest\bin\Debug\Sprit
 C:\Users\nicB\Documents\GitHub\Git\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.csprojResolveAssemblyReference.cache
 C:\Users\nicB\Documents\GitHub\Git\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.dll
 C:\Users\nicB\Documents\GitHub\Git\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\Debug\SpriteRipperTest.dll
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\Debug\SpriteRipperTest.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\Debug\SpriteRipper.exe
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\Debug\SpriteRipper.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.dll
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\Debug\SpriteRipperTest.pdb

@@ -63,7 +63,7 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\tileTest.png", tileSize, offsetX, offsetY);
 
             //int x = 0;
@@ -124,7 +124,7 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
             Bitmap image = Program.Images.GetImage();
 
@@ -163,7 +163,7 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
             Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
 
             // Execution
@@ -200,7 +200,7 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", tileSize, offsetX, offsetY);
             Bitmap image = Program.Images.GetImage();
 
@@ -242,7 +242,7 @@ namespace SpriteRipperTest
 
             int tilesWide = 5;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
             Bitmap image = Program.Images.GetImage();
 
@@ -252,8 +252,8 @@ namespace SpriteRipperTest
             Program.LoadAllTiles(image, bitsPerColour, tileSize);
             //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
             Program.SortTiles(patternThreshold, colourThreshold);
-            Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom);
-            Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom);
+            Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
+            Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom, false);
 
             // Assertion
             int expectedWidth = tilesWide * tileSize * zoom + tilesWide - 1;
@@ -277,7 +277,7 @@ namespace SpriteRipperTest
             int offsetX = 0;
             int offsetY = 0;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
             Bitmap image = Program.Images.GetImage();
 
@@ -328,7 +328,7 @@ namespace SpriteRipperTest
             int offsetY = 0;
             int zoom = 1;
 
-            //Bitmap image = Program.LoadImage(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png");
+            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png");
             Program.LoadImage(@"C:\Users\nicB\Documents\JurassicPark-IslaNublar.png", tileSize, offsetX, offsetY);
 
             //PixelFormat format = loadedImage.PixelFormat;
@@ -345,33 +345,33 @@ namespace SpriteRipperTest
                 Program.SortTiles(patternThreshold, colourThreshold);
             }
 
-            Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom);
+            Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
 
             string filename = @"C:\Users\nicB\Documents\jurassicParkTileset2.png";
             ImageFormat fileFormat = Program.GetImageFormat(filename);
             groupedTileset.Save(filename, fileFormat);
         }
 
+        //[TestMethod]
+        //public void SubDivisorTest()
+        //{
+        //    int imageWidth = 4080;
+        //    int imageHeight = 4048;
+        //    int tileSize = 16;
+
+        //    Size subImageSize = Program.GetSubImageSize(imageWidth, imageHeight, tileSize);
+
+        //    int subImageWidth = subImageSize.Width;
+        //    int expectedSubWidth = 272;
+        //    Assert.IsTrue(subImageWidth == expectedSubWidth, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubWidth, subImageWidth));
+
+        //    int subImageHeight = subImageSize.Height;
+        //    int expectedSubHeight = 176;
+        //    Assert.IsTrue(subImageHeight == expectedSubHeight, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubHeight, subImageHeight));
+        //}
+
         [TestMethod]
-        public void SubDivisorTest()
-        {
-            int width = 4080;
-            int height = 4048;
-            int tileSize = 16;
-
-            Size subImageSize = Program.GetSubImageSize(width, height, tileSize);
-
-            int subWidth = subImageSize.Width;
-            int expectedSubWidth = 272;
-            Assert.IsTrue(subWidth == expectedSubWidth, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubWidth, subWidth));
-
-            int subHeight = subImageSize.Height;
-            int expectedSubHeight = 176;
-            Assert.IsTrue(subHeight == expectedSubHeight, string.Format("SubWidth: Expected {0}, Actual {1}", expectedSubHeight, subHeight));
-        }
-
-        [TestMethod]
-        public void TileIndex()
+        public void GetSubImageTileIndex()
         {
             int width = 96;
             int height = 96;
@@ -382,35 +382,251 @@ namespace SpriteRipperTest
 
             ImageCollection imageGroup = new ImageCollection("", tileSize, width, height, offsetX, offsetY);
 
-            int tileIndex, subImageIndex, tileSubImageIndex;
+            int tileIndex, subImageIndex, subImageTileIndex;
 
             tileIndex = 0;
             subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
             Assert.IsTrue(subImageIndex == 0);
 
-            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
-            Assert.IsTrue(tileSubImageIndex == 0);
+            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageTileIndex == 0);
 
             tileIndex = 3;
             subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
             Assert.IsTrue(subImageIndex == 1);
 
-            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
-            Assert.IsTrue(tileSubImageIndex == 0);
+            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageTileIndex == 0);
 
             tileIndex = 8;
             subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
             Assert.IsTrue(subImageIndex == 0);
 
-            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
-            Assert.IsTrue(tileSubImageIndex == 5);
+            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageTileIndex == 5);
 
             tileIndex = 21;
             subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
             Assert.IsTrue(subImageIndex == 3);
 
-            tileSubImageIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
-            Assert.IsTrue(tileSubImageIndex == 3);
+            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageTileIndex == 3);
+        }
+
+        [TestMethod]
+        public void GetSubImageIndex()
+        {
+            int width = 1440;
+            int height = 864;
+            int tileSize = 32;
+
+            int offsetX = 0;
+            int offsetY = 0;
+
+            ImageCollection imageGroup = new ImageCollection("", tileSize, width, height, offsetX, offsetY);
+
+            int tileIndex, subImageIndex;
+
+            tileIndex = 0;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileIndex = 5;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileIndex = 45;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileIndex = 275;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 0);
+
+            tileIndex = 6;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 1);
+
+            tileIndex = 11;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 1);
+
+            tileIndex = 51;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 1);
+
+            tileIndex = 281;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 1);
+
+            tileIndex = 42;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 7);
+
+            tileIndex = 44;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 7);
+
+            tileIndex = 84;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 7);
+
+            tileIndex = 314;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 7);
+
+            tileIndex = 945;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 24);
+
+            tileIndex = 950;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 24);
+
+            tileIndex = 990;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 24);
+
+            tileIndex = 1175;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 24);
+
+            tileIndex = 987;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 31);
+
+            tileIndex = 989;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 31);
+
+            tileIndex = 1032;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 31);
+
+            tileIndex = 1214;
+            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            Assert.IsTrue(subImageIndex == 31);
+        }
+
+        [TestMethod]
+        public void GetTileIndex()
+        {
+            int width = 1440;
+            int height = 864;
+            int tileSize = 32;
+
+            int offsetX = 0;
+            int offsetY = 0;
+
+            ImageCollection imageGroup = new ImageCollection("", tileSize, width, height, offsetX, offsetY);
+
+            int tileIndex, subImageIndex, subImageTileIndex;
+
+            subImageIndex = 0;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 0);
+
+            subImageTileIndex = 5;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 5);
+
+            subImageTileIndex = 6;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 45);
+
+            subImageTileIndex = 41;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 275);
+
+            subImageIndex = 1;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 6);
+
+            subImageTileIndex = 5;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 11);
+
+            subImageTileIndex = 6;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 51);
+
+            subImageTileIndex = 41;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 281);
+
+            subImageIndex = 7;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 42);
+
+            subImageTileIndex = 2;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 44);
+
+            subImageTileIndex = 3;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 87);
+
+            subImageTileIndex = 20;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 314);
+
+            subImageIndex = 8;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 315);
+
+            subImageTileIndex = 5;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 320);
+
+            subImageTileIndex = 6;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 360);
+
+            subImageTileIndex = 41;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 590);
+
+            subImageIndex = 24;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 945);
+
+            subImageTileIndex = 5;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 950);
+
+            subImageTileIndex = 6;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 990);
+
+            subImageTileIndex = 35;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 1175);
+
+            subImageIndex = 31;
+            subImageTileIndex = 0;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 987);
+
+            subImageTileIndex = 2;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 989);
+
+            subImageTileIndex = 3;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 1032);
+
+            subImageTileIndex = 15;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 1212);
+
+            subImageTileIndex = 17;
+            tileIndex = imageGroup.GetTileIndex(subImageIndex, subImageTileIndex);
+            Assert.IsTrue(tileIndex == 1214);
         }
     }
 }

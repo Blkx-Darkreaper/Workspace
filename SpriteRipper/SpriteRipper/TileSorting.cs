@@ -111,9 +111,14 @@ namespace SpriteRipper
             return maxGroupSize;
         }
 
-        public void AddGroup(int masterIndex)
+        //public void AddGroup(int masterIndex)
+        //{
+        //    TileGroup group = new TileGroup(masterIndex);
+        //    allTileGroups.Add(group);
+        //}
+        public void AddGroup(Tile master)
         {
-            TileGroup group = new TileGroup(masterIndex);
+            TileGroup group = new TileGroup(master);
             allTileGroups.Add(group);
         }
     }

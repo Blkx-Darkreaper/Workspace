@@ -9,7 +9,9 @@ namespace SpriteRipper
 {
     class TileGroup : IEnumerator<int>, IEnumerable<int>
     {
-        public int masterIndex { get; protected set; }
+        //public int MasterIndex { get; protected set; }
+        public int MasterIndex { get { return Master.Index; } }
+        public Tile Master { get; protected set; }
         protected int position = -1;
         protected SortedList<int, int> similarTiles { get; set; }
         public int Count { get { return similarTiles.Values.Count + 1; } }
@@ -22,9 +24,14 @@ namespace SpriteRipper
             set { similarTiles.Add(index, value); }
         }
 
-        public TileGroup(int masterIndex)
+        //public TileGroup(int MasterIndex)
+        //{
+        //    this.MasterIndex = MasterIndex;
+        //    similarTiles = new SortedList<int, int>();
+        //}
+        public TileGroup(Tile master)
         {
-            this.masterIndex = masterIndex;
+            this.Master = master;
             similarTiles = new SortedList<int, int>();
         }
 

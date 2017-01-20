@@ -6,3 +6,4 @@ C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\ob
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Release\SpriteRipper.csproj.GenerateResource.Cache
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Release\SpriteRipper.exe
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Release\SpriteRipper.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Release\SpriteRipper.csprojResolveAssemblyReference.cache

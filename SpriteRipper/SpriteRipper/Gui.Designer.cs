@@ -50,7 +50,6 @@
             this.DisplayBox = new System.Windows.Forms.GroupBox();
             this.BuildTileset = new System.Windows.Forms.Button();
             this.Update = new System.Windows.Forms.Button();
-            this.BitBox = new System.Windows.Forms.GroupBox();
             this.Bits = new System.Windows.Forms.NumericUpDown();
             this.ImagePanel = new System.Windows.Forms.Panel();
             this.TilesetPanel = new System.Windows.Forms.Panel();
@@ -59,9 +58,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.SubImageSelector = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
-            this.Padding = new System.Windows.Forms.CheckBox();
+            this.DisplayPadding = new System.Windows.Forms.CheckBox();
             this.ImageZoom = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.ColourThreshold = new System.Windows.Forms.NumericUpDown();
@@ -73,6 +73,9 @@
             this.OffsetY = new System.Windows.Forms.NumericUpDown();
             this.OffsetX = new System.Windows.Forms.NumericUpDown();
             this.Grouping = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.BackgroundColour = new System.Windows.Forms.PictureBox();
+            this.TilesetPadding = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.TilesetZoom = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -80,8 +83,6 @@
             this.Compressed = new System.Windows.Forms.RadioButton();
             this.Grouped = new System.Windows.Forms.RadioButton();
             this.Status = new System.Windows.Forms.Label();
-            this.ColourBox = new System.Windows.Forms.GroupBox();
-            this.BackgroundColour = new System.Windows.Forms.PictureBox();
             this.Results = new System.Windows.Forms.GroupBox();
             this.TimePerTile = new System.Windows.Forms.Label();
             this.SortTime = new System.Windows.Forms.Label();
@@ -89,12 +90,13 @@
             this.InitTotal = new System.Windows.Forms.Label();
             this.Duplicates = new System.Windows.Forms.Label();
             this.ColourPicker = new System.Windows.Forms.ColorDialog();
+            this.MiniPanel = new System.Windows.Forms.Panel();
+            this.MiniDisplay = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.ImageDisplay)).BeginInit();
             this.Menu.SuspendLayout();
             this.TileSizeBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TileSize)).BeginInit();
             this.DisplayBox.SuspendLayout();
-            this.BitBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Bits)).BeginInit();
             this.ImagePanel.SuspendLayout();
             this.TilesetPanel.SuspendLayout();
@@ -109,11 +111,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.OffsetY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OffsetX)).BeginInit();
             this.Grouping.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesetZoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesWide)).BeginInit();
-            this.ColourBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).BeginInit();
             this.Results.SuspendLayout();
+            this.MiniPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MiniDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // Sort
@@ -122,7 +125,7 @@
             this.Sort.Enabled = false;
             this.Sort.Location = new System.Drawing.Point(71, 26);
             this.Sort.Name = "Sort";
-            this.Sort.Size = new System.Drawing.Size(45, 33);
+            this.Sort.Size = new System.Drawing.Size(45, 49);
             this.Sort.TabIndex = 0;
             this.Sort.Text = "Sort";
             this.Sort.UseVisualStyleBackColor = true;
@@ -132,7 +135,7 @@
             // 
             this.ImageDisplay.Location = new System.Drawing.Point(7, 3);
             this.ImageDisplay.Name = "ImageDisplay";
-            this.ImageDisplay.Size = new System.Drawing.Size(585, 490);
+            this.ImageDisplay.Size = new System.Drawing.Size(585, 390);
             this.ImageDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.ImageDisplay.TabIndex = 2;
             this.ImageDisplay.TabStop = false;
@@ -220,7 +223,7 @@
             this.TileSizeBox.Controls.Add(this.Preset16);
             this.TileSizeBox.Controls.Add(this.Preset8);
             this.TileSizeBox.Controls.Add(this.TileSize);
-            this.TileSizeBox.Location = new System.Drawing.Point(376, 27);
+            this.TileSizeBox.Location = new System.Drawing.Point(12, 221);
             this.TileSizeBox.Name = "TileSizeBox";
             this.TileSizeBox.Size = new System.Drawing.Size(333, 75);
             this.TileSizeBox.TabIndex = 8;
@@ -331,7 +334,7 @@
             this.DisplayBox.Controls.Add(this.Sort);
             this.DisplayBox.Location = new System.Drawing.Point(12, 27);
             this.DisplayBox.Name = "DisplayBox";
-            this.DisplayBox.Size = new System.Drawing.Size(206, 75);
+            this.DisplayBox.Size = new System.Drawing.Size(206, 91);
             this.DisplayBox.TabIndex = 9;
             this.DisplayBox.TabStop = false;
             this.DisplayBox.Text = "Display";
@@ -342,7 +345,7 @@
             this.BuildTileset.Enabled = false;
             this.BuildTileset.Location = new System.Drawing.Point(122, 26);
             this.BuildTileset.Name = "BuildTileset";
-            this.BuildTileset.Size = new System.Drawing.Size(72, 33);
+            this.BuildTileset.Size = new System.Drawing.Size(72, 49);
             this.BuildTileset.TabIndex = 5;
             this.BuildTileset.Text = "Build Tileset";
             this.BuildTileset.UseVisualStyleBackColor = true;
@@ -354,28 +357,15 @@
             this.Update.Enabled = false;
             this.Update.Location = new System.Drawing.Point(10, 26);
             this.Update.Name = "Update";
-            this.Update.Size = new System.Drawing.Size(55, 33);
+            this.Update.Size = new System.Drawing.Size(55, 49);
             this.Update.TabIndex = 4;
             this.Update.Text = "Update";
             this.Update.UseVisualStyleBackColor = true;
             this.Update.Click += new System.EventHandler(this.Update_Click);
             // 
-            // BitBox
-            // 
-            this.BitBox.Controls.Add(this.Bits);
-            this.BitBox.Location = new System.Drawing.Point(283, 108);
-            this.BitBox.Name = "BitBox";
-            this.BitBox.Size = new System.Drawing.Size(78, 91);
-            this.BitBox.TabIndex = 9;
-            this.BitBox.TabStop = false;
-            this.BitBox.Text = "Bits/Colour";
-            // 
             // Bits
             // 
-            this.Bits.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Bits.Location = new System.Drawing.Point(20, 23);
+            this.Bits.Location = new System.Drawing.Point(116, 19);
             this.Bits.Maximum = new decimal(new int[] {
             8,
             0,
@@ -400,25 +390,25 @@
             // 
             this.ImagePanel.AutoScroll = true;
             this.ImagePanel.Controls.Add(this.ImageDisplay);
-            this.ImagePanel.Location = new System.Drawing.Point(12, 205);
+            this.ImagePanel.Location = new System.Drawing.Point(12, 302);
             this.ImagePanel.Name = "ImagePanel";
-            this.ImagePanel.Size = new System.Drawing.Size(600, 500);
+            this.ImagePanel.Size = new System.Drawing.Size(600, 403);
             this.ImagePanel.TabIndex = 11;
             // 
             // TilesetPanel
             // 
             this.TilesetPanel.AutoScroll = true;
             this.TilesetPanel.Controls.Add(this.TilesetDisplay);
-            this.TilesetPanel.Location = new System.Drawing.Point(618, 205);
+            this.TilesetPanel.Location = new System.Drawing.Point(708, 302);
             this.TilesetPanel.Name = "TilesetPanel";
-            this.TilesetPanel.Size = new System.Drawing.Size(378, 500);
+            this.TilesetPanel.Size = new System.Drawing.Size(288, 403);
             this.TilesetPanel.TabIndex = 12;
             // 
             // TilesetDisplay
             // 
             this.TilesetDisplay.Location = new System.Drawing.Point(7, 3);
             this.TilesetDisplay.Name = "TilesetDisplay";
-            this.TilesetDisplay.Size = new System.Drawing.Size(363, 490);
+            this.TilesetDisplay.Size = new System.Drawing.Size(256, 800);
             this.TilesetDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.TilesetDisplay.TabIndex = 2;
             this.TilesetDisplay.TabStop = false;
@@ -428,11 +418,11 @@
             this.ImageBox.Controls.Add(this.label8);
             this.ImageBox.Controls.Add(this.SubImageSelector);
             this.ImageBox.Controls.Add(this.label7);
-            this.ImageBox.Controls.Add(this.Padding);
+            this.ImageBox.Controls.Add(this.DisplayPadding);
             this.ImageBox.Controls.Add(this.ImageZoom);
-            this.ImageBox.Location = new System.Drawing.Point(100, 108);
+            this.ImageBox.Location = new System.Drawing.Point(101, 124);
             this.ImageBox.Name = "ImageBox";
-            this.ImageBox.Size = new System.Drawing.Size(177, 91);
+            this.ImageBox.Size = new System.Drawing.Size(118, 91);
             this.ImageBox.TabIndex = 10;
             this.ImageBox.TabStop = false;
             this.ImageBox.Text = "Display";
@@ -440,7 +430,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(103, 21);
+            this.label8.Location = new System.Drawing.Point(43, 19);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(58, 13);
             this.label8.TabIndex = 9;
@@ -449,7 +439,7 @@
             // SubImageSelector
             // 
             this.SubImageSelector.Enabled = false;
-            this.SubImageSelector.Location = new System.Drawing.Point(106, 37);
+            this.SubImageSelector.Location = new System.Drawing.Point(46, 35);
             this.SubImageSelector.Name = "SubImageSelector";
             this.SubImageSelector.Size = new System.Drawing.Size(54, 20);
             this.SubImageSelector.TabIndex = 8;
@@ -458,31 +448,26 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(31, 21);
+            this.label7.Location = new System.Drawing.Point(6, 19);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(34, 13);
             this.label7.TabIndex = 7;
             this.label7.Text = "Zoom";
             // 
-            // Padding
+            // DisplayPadding
             // 
-            this.Padding.AutoSize = true;
-            this.Padding.Checked = true;
-            this.Padding.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Padding.Location = new System.Drawing.Point(53, 63);
-            this.Padding.Name = "Padding";
-            this.Padding.Size = new System.Drawing.Size(65, 17);
-            this.Padding.TabIndex = 4;
-            this.Padding.Text = "Padding";
-            this.Padding.UseVisualStyleBackColor = true;
-            this.Padding.CheckedChanged += new System.EventHandler(this.Padding_CheckedChanged);
+            this.DisplayPadding.AutoSize = true;
+            this.DisplayPadding.Location = new System.Drawing.Point(9, 63);
+            this.DisplayPadding.Name = "DisplayPadding";
+            this.DisplayPadding.Size = new System.Drawing.Size(65, 17);
+            this.DisplayPadding.TabIndex = 4;
+            this.DisplayPadding.Text = "Padding";
+            this.DisplayPadding.UseVisualStyleBackColor = true;
+            this.DisplayPadding.CheckedChanged += new System.EventHandler(this.Padding_CheckedChanged);
             // 
             // ImageZoom
             // 
-            this.ImageZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImageZoom.Location = new System.Drawing.Point(28, 37);
+            this.ImageZoom.Location = new System.Drawing.Point(3, 35);
             this.ImageZoom.Maximum = new decimal(new int[] {
             10,
             0,
@@ -505,16 +490,27 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.Bits);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.ColourThreshold);
             this.groupBox1.Controls.Add(this.PatternThreshold);
-            this.groupBox1.Location = new System.Drawing.Point(367, 108);
+            this.groupBox1.Location = new System.Drawing.Point(225, 124);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(104, 91);
+            this.groupBox1.Size = new System.Drawing.Size(180, 91);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Thresholds";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(113, 42);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(59, 13);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Bits/Colour";
             // 
             // label2
             // 
@@ -604,7 +600,7 @@
             this.Offset.Controls.Add(this.label3);
             this.Offset.Controls.Add(this.OffsetY);
             this.Offset.Controls.Add(this.OffsetX);
-            this.Offset.Location = new System.Drawing.Point(11, 108);
+            this.Offset.Location = new System.Drawing.Point(12, 124);
             this.Offset.Name = "Offset";
             this.Offset.Size = new System.Drawing.Size(83, 91);
             this.Offset.TabIndex = 13;
@@ -657,23 +653,56 @@
             // 
             // Grouping
             // 
+            this.Grouping.Controls.Add(this.label9);
+            this.Grouping.Controls.Add(this.BackgroundColour);
+            this.Grouping.Controls.Add(this.TilesetPadding);
             this.Grouping.Controls.Add(this.label6);
             this.Grouping.Controls.Add(this.TilesetZoom);
             this.Grouping.Controls.Add(this.label5);
             this.Grouping.Controls.Add(this.TilesWide);
             this.Grouping.Controls.Add(this.Compressed);
             this.Grouping.Controls.Add(this.Grouped);
-            this.Grouping.Location = new System.Drawing.Point(477, 108);
+            this.Grouping.Location = new System.Drawing.Point(225, 27);
             this.Grouping.Name = "Grouping";
-            this.Grouping.Size = new System.Drawing.Size(232, 91);
+            this.Grouping.Size = new System.Drawing.Size(289, 91);
             this.Grouping.TabIndex = 14;
             this.Grouping.TabStop = false;
             this.Grouping.Text = "Tileset";
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(211, 21);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 13);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Background";
+            // 
+            // BackgroundColour
+            // 
+            this.BackgroundColour.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.BackgroundColour.Location = new System.Drawing.Point(214, 42);
+            this.BackgroundColour.Name = "BackgroundColour";
+            this.BackgroundColour.Size = new System.Drawing.Size(24, 20);
+            this.BackgroundColour.TabIndex = 0;
+            this.BackgroundColour.TabStop = false;
+            this.BackgroundColour.Click += new System.EventHandler(this.BackgroundColour_Click);
+            // 
+            // TilesetPadding
+            // 
+            this.TilesetPadding.AutoSize = true;
+            this.TilesetPadding.Location = new System.Drawing.Point(6, 65);
+            this.TilesetPadding.Name = "TilesetPadding";
+            this.TilesetPadding.Size = new System.Drawing.Size(65, 17);
+            this.TilesetPadding.TabIndex = 10;
+            this.TilesetPadding.Text = "Padding";
+            this.TilesetPadding.UseVisualStyleBackColor = true;
+            this.TilesetPadding.CheckedChanged += new System.EventHandler(this.TilesetPadding_CheckedChanged);
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(178, 21);
+            this.label6.Location = new System.Drawing.Point(161, 21);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 6;
@@ -681,10 +710,7 @@
             // 
             // TilesetZoom
             // 
-            this.TilesetZoom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TilesetZoom.Location = new System.Drawing.Point(175, 42);
+            this.TilesetZoom.Location = new System.Drawing.Point(164, 42);
             this.TilesetZoom.Maximum = new decimal(new int[] {
             10,
             0,
@@ -696,7 +722,7 @@
             0,
             0});
             this.TilesetZoom.Name = "TilesetZoom";
-            this.TilesetZoom.Size = new System.Drawing.Size(37, 20);
+            this.TilesetZoom.Size = new System.Drawing.Size(28, 20);
             this.TilesetZoom.TabIndex = 5;
             this.TilesetZoom.Value = new decimal(new int[] {
             1,
@@ -708,7 +734,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(96, 20);
+            this.label5.Location = new System.Drawing.Point(93, 21);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 3;
@@ -772,27 +798,6 @@
             this.Status.TabIndex = 15;
             this.Status.Text = "Status Output";
             // 
-            // ColourBox
-            // 
-            this.ColourBox.Controls.Add(this.BackgroundColour);
-            this.ColourBox.Location = new System.Drawing.Point(224, 27);
-            this.ColourBox.Name = "ColourBox";
-            this.ColourBox.Size = new System.Drawing.Size(80, 75);
-            this.ColourBox.TabIndex = 16;
-            this.ColourBox.TabStop = false;
-            this.ColourBox.Text = "Background";
-            // 
-            // BackgroundColour
-            // 
-            this.BackgroundColour.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.BackgroundColour.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.BackgroundColour.Location = new System.Drawing.Point(31, 23);
-            this.BackgroundColour.Name = "BackgroundColour";
-            this.BackgroundColour.Size = new System.Drawing.Size(24, 20);
-            this.BackgroundColour.TabIndex = 0;
-            this.BackgroundColour.TabStop = false;
-            this.BackgroundColour.Click += new System.EventHandler(this.BackgroundColour_Click);
-            // 
             // Results
             // 
             this.Results.Controls.Add(this.TimePerTile);
@@ -800,9 +805,9 @@
             this.Results.Controls.Add(this.FinalTotal);
             this.Results.Controls.Add(this.InitTotal);
             this.Results.Controls.Add(this.Duplicates);
-            this.Results.Location = new System.Drawing.Point(715, 27);
+            this.Results.Location = new System.Drawing.Point(411, 124);
             this.Results.Name = "Results";
-            this.Results.Size = new System.Drawing.Size(281, 172);
+            this.Results.Size = new System.Drawing.Size(181, 172);
             this.Results.TabIndex = 17;
             this.Results.TabStop = false;
             this.Results.Text = "Sorting Results";
@@ -856,13 +861,29 @@
             // 
             this.ColourPicker.Color = System.Drawing.Color.LightSeaGreen;
             // 
+            // MiniPanel
+            // 
+            this.MiniPanel.Controls.Add(this.MiniDisplay);
+            this.MiniPanel.Location = new System.Drawing.Point(598, 27);
+            this.MiniPanel.Name = "MiniPanel";
+            this.MiniPanel.Size = new System.Drawing.Size(353, 269);
+            this.MiniPanel.TabIndex = 18;
+            // 
+            // MiniDisplay
+            // 
+            this.MiniDisplay.Location = new System.Drawing.Point(3, 3);
+            this.MiniDisplay.Name = "MiniDisplay";
+            this.MiniDisplay.Size = new System.Drawing.Size(340, 255);
+            this.MiniDisplay.TabIndex = 0;
+            this.MiniDisplay.TabStop = false;
+            // 
             // Gui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1008, 753);
+            this.Controls.Add(this.MiniPanel);
             this.Controls.Add(this.Results);
-            this.Controls.Add(this.ColourBox);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.Grouping);
@@ -871,12 +892,13 @@
             this.Controls.Add(this.ImageBox);
             this.Controls.Add(this.TilesetPanel);
             this.Controls.Add(this.ImagePanel);
-            this.Controls.Add(this.BitBox);
             this.Controls.Add(this.DisplayBox);
             this.Controls.Add(this.TileSizeBox);
             this.Controls.Add(this.Menu);
             this.MainMenuStrip = this.Menu;
+            this.MaximumSize = new System.Drawing.Size(1024, 792);
             this.Name = "Gui";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Tileset Ripper";
             ((System.ComponentModel.ISupportInitialize)(this.ImageDisplay)).EndInit();
             this.Menu.ResumeLayout(false);
@@ -885,7 +907,6 @@
             this.TileSizeBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TileSize)).EndInit();
             this.DisplayBox.ResumeLayout(false);
-            this.BitBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Bits)).EndInit();
             this.ImagePanel.ResumeLayout(false);
             this.ImagePanel.PerformLayout();
@@ -906,12 +927,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.OffsetX)).EndInit();
             this.Grouping.ResumeLayout(false);
             this.Grouping.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesetZoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TilesWide)).EndInit();
-            this.ColourBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundColour)).EndInit();
             this.Results.ResumeLayout(false);
             this.Results.PerformLayout();
+            this.MiniPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.MiniDisplay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -925,7 +947,6 @@
         private System.Windows.Forms.MenuStrip Menu;
         private System.Windows.Forms.GroupBox TileSizeBox;
         private System.Windows.Forms.GroupBox DisplayBox;
-        private System.Windows.Forms.GroupBox BitBox;
         private System.Windows.Forms.Panel ImagePanel;
         private System.Windows.Forms.Panel TilesetPanel;
         private System.Windows.Forms.PictureBox TilesetDisplay;
@@ -962,7 +983,6 @@
         private System.Windows.Forms.Label Status;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown TilesWide;
-        private System.Windows.Forms.GroupBox ColourBox;
         private System.Windows.Forms.GroupBox Results;
         private System.Windows.Forms.Label InitTotal;
         private System.Windows.Forms.Label Duplicates;
@@ -973,13 +993,18 @@
         private System.Windows.Forms.Label SortTime;
         private System.Windows.Forms.Label TimePerTile;
         private System.Windows.Forms.ToolStripMenuItem AboutMenuItem;
-        private System.Windows.Forms.CheckBox Padding;
+        private System.Windows.Forms.CheckBox DisplayPadding;
         private System.Windows.Forms.NumericUpDown TilesetZoom;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button BuildTileset;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown SubImageSelector;
+        private System.Windows.Forms.CheckBox TilesetPadding;
+        private System.Windows.Forms.Panel MiniPanel;
+        private System.Windows.Forms.PictureBox MiniDisplay;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
     }
 }
 

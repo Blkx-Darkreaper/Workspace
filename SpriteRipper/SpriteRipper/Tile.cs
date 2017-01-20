@@ -23,6 +23,7 @@ namespace SpriteRipper
             this.BitsPerColour = bitsPerColour;
             this.tileSize = tileSize;
             this.pattern = GetPattern(image, bitsPerColour, tileSize);
+            image.Dispose();
             //loadedImage = null;
         }
 
@@ -31,15 +32,15 @@ namespace SpriteRipper
             this.Index = index;
         }
 
-        //public Tile(Bitmap image, int BitsPerColour, int x, int y, int TileSize)
-        //    : this(image, BitsPerColour, TileSize)
+        //public Tile(Bitmap canvas, int BitsPerColour, int x, int y, int TileSize)
+        //    : this(canvas, BitsPerColour, TileSize)
         //{
         //    this.cornerX = x;
         //    this.cornerY = y;
         //    this.TileSize = TileSize;
         //}
 
-        //public Tile(Bitmap image, int BitsPerColour, int tileIndex, int x, int y, int TileSize) : this(image, BitsPerColour, TileSize, tileIndex)
+        //public Tile(Bitmap canvas, int BitsPerColour, int tileIndex, int x, int y, int TileSize) : this(canvas, BitsPerColour, TileSize, tileIndex)
         //{
         //    this.cornerX = x;
         //    this.cornerY = y;
@@ -140,7 +141,7 @@ namespace SpriteRipper
 
         public Bitmap GetTileImage()
         {
-            //Bitmap image = Program.GetTileImage(cornerX, cornerY, TileSize);
+            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
             return image;
         }
@@ -213,14 +214,14 @@ namespace SpriteRipper
             float patternMatch = 0f;
             List<bool> patternMatches = GetPatternMatchAndMatches(otherTile, out patternMatch);
 
-            List<int?> colourMatches = GetColourMatches(otherTile, patternMatches); //debug
-            float colourMatch2 = GetColourMatch(colourMatches); //debug
+            //List<int?> colourMatches = GetColourMatches(otherTile, patternMatches); //debug
+            //float colourMatch2 = GetColourMatch(colourMatches); //debug
             float colourMatch = GetColourMatch(otherTile, patternMatches);
 
-            if (colourMatch2 != colourMatch)
-            {
-                Console.WriteLine("Failed");
-            }
+            //if (colourMatch2 != colourMatch)
+            //{
+            //    Console.WriteLine("Failed");
+            //}
 
             Tuple<float, float> results = new Tuple<float, float>(patternMatch, colourMatch);
             return results;
@@ -329,39 +330,41 @@ namespace SpriteRipper
         {
             List<int?> colourMatches = new List<int?>();
 
-            //Bitmap image = Program.GetTileImage(cornerX, cornerY, TileSize);
+            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
 
             //int otherX = otherTile.cornerX;
             //int otherY = otherTile.cornerY;
             //Bitmap otherImage = Program.GetTileImage(otherX, otherY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
-            Bitmap otherImage = Program.GetTileImage(otherTile.Index);
 
-            for (int y = 0; y < tileSize; y++)
+            using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
             {
-                for (int x = 0; x < tileSize; x++)
+                for (int y = 0; y < tileSize; y++)
                 {
-                    int matchIndex = x + tileSize * y - 1;
-
-                    if (matchIndex != -1)
+                    for (int x = 0; x < tileSize; x++)
                     {
-                        bool match = patternMatches[matchIndex];
+                        int matchIndex = x + tileSize * y - 1;
 
-                        if (match == true)
+                        if (matchIndex != -1)
                         {
-                            colourMatches.Add(null);
-                            continue;
+                            bool match = patternMatches[matchIndex];
+
+                            if (match == true)
+                            {
+                                colourMatches.Add(null);
+                                continue;
+                            }
                         }
+
+                        Color pixel = image.GetPixel(x, y);
+                        Color otherPixel = otherImage.GetPixel(x, y);
+
+                        int pixelInt = pixel.ToArgb();
+                        int otherPixelInt = otherPixel.ToArgb();
+
+                        int difference = otherPixelInt - pixelInt;
+                        colourMatches.Add(difference);
                     }
-
-                    Color pixel = image.GetPixel(x, y);
-                    Color otherPixel = otherImage.GetPixel(x, y);
-
-                    int pixelInt = pixel.ToArgb();
-                    int otherPixelInt = otherPixel.ToArgb();
-
-                    int difference = otherPixelInt - pixelInt;
-                    colourMatches.Add(difference);
                 }
             }
 
@@ -382,69 +385,70 @@ namespace SpriteRipper
 
             List<int?> colourMatches = new List<int?>();
 
-            //Bitmap image = Program.GetTileImage(cornerX, cornerY, TileSize);
+            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
 
             //int otherX = otherTile.cornerX;
             //int otherY = otherTile.cornerY;
             //Bitmap otherImage = Program.GetTileImage(otherX, otherY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
-            Bitmap otherImage = Program.GetTileImage(otherTile.Index);
-
-            for (int y = 0; y < tileSize; y++)
+            using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
             {
-                for (int x = 0; x < tileSize; x++)
+                for (int y = 0; y < tileSize; y++)
                 {
-                    int matchIndex = x + tileSize * y - 1;
-
-                    int key;
-                    bool hasKey;
-
-                    if (matchIndex != -1)
+                    for (int x = 0; x < tileSize; x++)
                     {
-                        bool match = patternMatches[matchIndex];
+                        int matchIndex = x + tileSize * y - 1;
 
-                        if (match == true)
+                        int key;
+                        bool hasKey;
+
+                        if (matchIndex != -1)
                         {
-                            colourMatches.Add(null);
-                            key = previousMatch;
+                            bool match = patternMatches[matchIndex];
 
-                            hasKey = groups.ContainsKey(key);
-                            if (hasKey == true)
+                            if (match == true)
                             {
-                                int count = groups[key];
-                                groups[key] = count + 1;
-                            }
-                            else
-                            {
-                                groups.Add(key, 1);
-                            }
+                                colourMatches.Add(null);
+                                key = previousMatch;
 
-                            continue;
+                                hasKey = groups.ContainsKey(key);
+                                if (hasKey == true)
+                                {
+                                    int count = groups[key];
+                                    groups[key] = count + 1;
+                                }
+                                else
+                                {
+                                    groups.Add(key, 1);
+                                }
+
+                                continue;
+                            }
                         }
+
+                        Color pixel = image.GetPixel(x, y);
+                        Color otherPixel = otherImage.GetPixel(x, y);
+
+                        int pixelInt = pixel.ToArgb();
+                        int otherPixelInt = otherPixel.ToArgb();
+
+                        int difference = otherPixelInt - pixelInt;
+                        colourMatches.Add(difference);
+                        key = difference;
+
+                        hasKey = groups.ContainsKey(key);
+                        if (hasKey == true)
+                        {
+                            int count = groups[key];
+                            groups[key] = count + 1;
+                        }
+                        else
+                        {
+                            groups.Add(key, 1);
+                        }
+
+                        previousMatch = key;
                     }
-
-                    Color pixel = image.GetPixel(x, y);
-                    Color otherPixel = otherImage.GetPixel(x, y);
-
-                    int pixelInt = pixel.ToArgb();
-                    int otherPixelInt = otherPixel.ToArgb();
-
-                    int difference = otherPixelInt - pixelInt;
-                    colourMatches.Add(difference);
-                    key = difference;
-
-                    hasKey = groups.ContainsKey(key);
-                    if (hasKey == true)
-                    {
-                        int count = groups[key];
-                        groups[key] = count + 1;
-                    }
-                    else
-                    {
-                        groups.Add(key, 1);
-                    }
-
-                    previousMatch = key;
                 }
             }
 
