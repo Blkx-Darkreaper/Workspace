@@ -1,0 +1,9 @@
+c:\users\nicb\documents\visual studio 2013\Projects\Bits\Bits\bin\Debug\Bits.exe
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\bin\Debug\Bits.exe.config
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.exe
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.pdb
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\bin\Debug\Bits.pdb
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.csprojResolveAssemblyReference.cache
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.MainWindow.resources
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.Properties.Resources.resources
+C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.csproj.GenerateResource.Cache

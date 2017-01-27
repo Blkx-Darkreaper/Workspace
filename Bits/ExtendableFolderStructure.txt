@@ -1,0 +1,3 @@
+If a folder consists of 1 block made up of 16 entries, then the folder can store references to 15 files and subfolders with the first entry storing the folder information.
+
+This limit can be eliminated by reserving the last entry for a folder extension entry. This extension entry would hold a reference to another folder. This secondary folder would hold the same parent folder information as the first folder. To load all files within a folder would involve traversing this linked list and loading all non-folder files found along the way

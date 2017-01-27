@@ -1,0 +1,1284 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noodp">
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/"/>
+<meta property="og:title" content="MicroFAT: A File System for Microcontrollers"/>
+<meta property="og:image" content="http://www.allaboutcircuits.com/uploads/thumbnails/Microcontroller-close-up.jpg"/>
+<meta name="thumbnail" content="http://www.allaboutcircuits.com/uploads/thumbnails/Microcontroller-close-up.jpg"/>
+<meta property="og:description" content="File systems can be great for handling data and organizing memory, but most file systems require large amounts of memory. This is where MicroFAT comes in!"/>
+<link href="https://plus.google.com/102476148263859151067/" rel="publisher"/>
+<title>MicroFAT: A File System for Microcontrollers</title>
+ 
+<link rel="icon" href="/assets/images/favicon.ico">
+ 
+<link rel="alternate" type="application/rss+xml" title="All About Circuits Articles" href="//www.allaboutcircuits.com/rss/"/>
+<link rel="alternate" type="application/rss+xml" title="All About Circuits Forum RSS Feed" href="//forum.allaboutcircuits.com/forums/-/index.rss"/>
+<link rel="alternate" type="application/rss+xml" title="All About Circuits Blog RSS Feed" href="//forum.allaboutcircuits.com/blogs/entriesRss.rss"/>
+ 
+<link href="/assets/library/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+ 
+<link href="/assets/css/combined.css" rel="stylesheet"/>
+<link href="/assets/css/main_site.css" rel="stylesheet"/>
+<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+ 
+<link href="/assets/library/highlight/styles/docco.css" rel="stylesheet">
+<link href="/assets/library/adpopup-pro/css/adpopup-pro.min.css" rel="stylesheet"/>
+ 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.1/es5-shim.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.1.1/es5-sham.js"></script>
+    
+    <script src="/assets/js/css3-mediaqueries.js"></script>
+    <link href="/assets/css/ie8.css" rel="stylesheet">
+    <![endif]-->
+ 
+<script type='text/javascript'>
+  function searchFor(obj, query) {
+    for(var key in obj) {
+      if(obj.hasOwnProperty(key) && (typeof obj[key] === "string")) {
+        if(obj[key] === query) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+  (function() {
+    var gads = document.createElement('script');
+    gads.async = true;
+    gads.type = 'text/javascript';
+    var useSSL = 'https:' == document.location.protocol;
+    gads.src = (useSSL ? 'https:' : 'http:') +
+      '//www.googletagservices.com/tag/js/gpt.js';
+    var node = document.getElementsByTagName('script')[0];
+    node.parentNode.insertBefore(gads, node);
+  })();
+</script>
+<script type='text/javascript'>
+  googletag.cmd.push(function() {
+	var mappingSidebar = googletag.sizeMapping().
+    	addSize([0,0], [300, 250]).
+        addSize([800, 600], [[300, 600], [300, 250]]).
+        build();  
+        
+    googletag.pubads().setTargeting("category",["memory","connectors","computing","embedded","embedded-software","memory","consumer-electronics"]);
+    googletag.defineSlot('/62616433/main_sidebar', [[300, 600], [300, 250]], 'div-gpt-ad-1429623690593-0').defineSizeMapping(mappingSidebar).addService(googletag.pubads());
+    googletag.pubads().enableSingleRequest();
+    googletag.pubads().collapseEmptyDivs();
+    googletag.enableServices();
+  });
+</script>
+<script type='text/javascript'>
+  googletag.cmd.push(function() {
+	var mappingLeaderboard = googletag.sizeMapping().
+    	addSize([0,0], [320, 50]).
+        addSize([800, 600], [728,90]).
+        build();  
+  
+    googletag.defineSlot('/62616433/main_leaderboard', [[728, 90], [320,50]], 'div-gpt-ad-1430160961981-0').defineSizeMapping(mappingLeaderboard).addService(googletag.pubads());
+    googletag.pubads().enableSingleRequest();
+    googletag.pubads().collapseEmptyDivs();
+    googletag.enableServices();
+  });
+</script>
+<script type='text/javascript'>
+  googletag.cmd.push(function() {
+	var mappingWelcome = googletag.sizeMapping().
+    	addSize([0,0], [300, 250]).
+        addSize([800, 600], [640, 480]).
+        build();
+  
+    googletag.defineSlot('/62616433/main_welcome', [[640, 480], [300, 250]], 'div-gpt-ad-1430160889889-0').defineSizeMapping(mappingWelcome).addService(googletag.pubads());
+  	googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+        if(event.isEmpty === false && searchFor(event.slot, "/62616433/main_welcome") === true) {$('#div-gpt-ad-1430160889889-0').trigger('adready');} 
+    });
+	googletag.pubads().enableSingleRequest();
+    googletag.pubads().collapseEmptyDivs();  
+    googletag.enableServices();
+  });
+</script>
+<script type='text/javascript'>
+  googletag.cmd.push(function() {
+    googletag.defineOutOfPageSlot('/62616433/main_wallpaper', 'div-gpt-ad-1430235245447-0').addService(googletag.pubads());
+    googletag.pubads().enableSingleRequest();
+    googletag.pubads().collapseEmptyDivs();
+    googletag.enableServices();
+  });
+</script>
+<script type='text/javascript'>
+  googletag.cmd.push(function() {
+    googletag.defineOutOfPageSlot('/62616433/main_native_ad_unit_1', 'div-gpt-ad-1441294234226-0').addService(googletag.pubads());
+    googletag.pubads().enableSingleRequest();
+    googletag.pubads().collapseEmptyDivs();
+    googletag.enableServices();
+  });
+</script>
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-1454132-1', 'auto');
+        ga('require', 'displayfeatures');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+<div id="top-box" class="hidden-xs">
+<div class="top-box-wrapper">
+<div class="container navContainer">
+<div class="row">
+<div class="social-box col-lg-3 col-md-4 col-sm-5 pull-right" itemscope itemtype="http://schema.org/Organization">
+<div class="hidden-print"><span class="hidden-xs">Connect with us</span>
+<link itemprop="url" href="//www.allaboutcircuits.com">
+<a href="https://www.facebook.com/allaboutcircuits" itemprop="sameAs" rel="me" target="_blank" class="socialpop" data-content='<iframe src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fallaboutcircuits&width=90&layout=button_count&action=like&show_faces=false&share=false&height=20&appId=421950967965311" width="90" height="20" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'><i class="fa fa-facebook"></i></a>
+<a href="https://twitter.com/AllAboutCircuit" itemprop="sameAs" rel="me" target="_blank" class="socialpop" data-content='<iframe src="https://platform.twitter.com/widgets/follow_button.html?screen_name=allaboutcircuit&show_screen_name=false&show_count=true&size=s" title="Follow All About Circuits on Twitter" width="148" height="25" style="border: 0; overflow: hidden;"></iframe>'><i class="fa fa-twitter"></i></a>
+<a href="https://www.youtube.com/c/AllAboutCircuitsVideo" itemprop="sameAs" rel="me" target="_blank" class="socialpop" data-content='<iframe src="//sub.allaboutcircuits.com/youtube.html" height="25" width="120" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'><i class="fa fa-youtube-play"></i></a>
+<a href="https://www.linkedin.com/company/allaboutcircuits" itemprop="sameAs" rel="me" target="_blank" class="socialpop" data-content='<iframe src="//sub.allaboutcircuits.com/linkedin.html" height="20" width="115" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'><i class="fa fa-linkedin"></i></a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="clearfix"></div>
+<header id="headerProxy">
+<nav id="main-nav" class="navbar yamm" role="navigation">
+<div class="container navContainer">
+<div class="row">
+<div class="navbar-header">
+<div class="search-active visible-xs pull-right" itemscope itemtype="http://schema.org/WebSite">
+<meta itemprop="url" content="http://www.allaboutcircuits.com/"/>
+<form action="/search" method="GET" class="navbar-form navbar-right" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+<a href="#" class="close">×</a>
+<i class="search-icon aaccon-search"></i>
+<a href="/"><div class="navbar-brand"></div></a>
+<meta itemprop="target" content="http://www.allaboutcircuits.com/search?q={q}"/>
+<input type="text" name="q" value="" class="form-control" placeholder="Search" value="" itemprop="query-input"/>
+</form>
+</div>
+<div class="resp-menu-box pull-right movefront">
+<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+ 
+<img src="/assets/images/mobile-menu-v2.png" class="mobile-menu-icon"/>
+</button>
+<div class="clearfix"></div>
+</div>
+<div class="user-menu-box pull-right movefront">
+<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#usernavbar" aria-expanded="false" aria-controls="navbar">
+<i class="fa fa-eetech-user"></i>
+</button>
+<div class="clearfix"></div>
+</div>
+<a class="navbar-brand" href="/">
+<img class="navLogo visible-xs visible-md visible-lg" alt="All About Circuits" src="/assets/images/aac_logo.png"/>
+<img class="navLogo visible-sm" alt="All About Circuits" src="/assets/images/aac_logo_icon.png"/>
+</a>
+<div class="clearfix"></div>
+</div>
+<div id="navbar" class=" navbar-collapse collapse">
+<ul id="primary-menu" class="nav navbar-nav navbar-right pull-right ">
+<li id="articles_menu" class="dropdown yamm-fw">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">ARTICLES <i class="fa fa-chevron-down"></i></a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-2 col-md-3 col-sm-3 category-box match-dp-menu">
+<ul id="articles_list" class="category-menu-filter list-unstyled" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+<li id="articles_latest" itemprop="name"><a href="/latest/" itemprop="url">LATEST</a></li>
+<li id="articles_news" itemprop="name"><a href="/news/" itemprop="url">NEWS</a></li>
+<li id="articles_projects" itemprop="name"><a href="/projects/" itemprop="url">PROJECTS</a></li>
+<li id="articles_technical_articles" itemprop="name"><a href="/technical-articles/" itemprop="url">TECHNICAL ARTICLES</a></li>
+<li id="articles_industry_articles" itemprop="name"><a href="/industry-articles/" class="text-uppercase" itemprop="url">INDUSTRY ARTICLES</a></li>
+</ul>
+</div>
+<div class="menu-articles col-sm-9 col-md-9 col-lg-10 match-dp-menu hidden-xs" id="articles_main">
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="forums_menu" class="dropdown yamm-fw">
+<a class="dropdown-toggle dblclick" data-toggle="dropdown" href="//forum.allaboutcircuits.com/" role="button" aria-expanded="false">Forum <i class="fa fa-chevron-down"></i></a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-2 col-md-3 col-sm-3 category-box match-dp-menu">
+<ul id="forums_list" class="category-menu-filter list-unstyled" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+<li id="forums_all" itemprop="name"><a href="//forum.allaboutcircuits.com/find-new/posts" itemprop="url">LATEST</a></li>
+<li id="forums_general" itemprop="name"><a href="//forum.allaboutcircuits.com/#electronics.3" itemprop="url">GENERAL ELECTRONICS</a></li>
+<li id="forums_circuits_projects" itemprop="name"><a href="//forum.allaboutcircuits.com/#circuits-and-projects.31" itemprop="url">CIRCUITS & PROJECTS</a></li>
+<li id="forums_embedded_software" itemprop="name"><a href="//forum.allaboutcircuits.com/#software-microcomputing.16" itemprop="url">EMBEDDED & MICRO</a></li>
+<li id="forums_math_science" itemprop="name"><a href="//forum.allaboutcircuits.com/#math-science.19" itemprop="url">MATH & SCIENCE</a></li>
+</ul>
+</div>
+<div class="menu-articles col-sm-9 col-md-9 col-lg-10 match-dp-menu hidden-xs" id="forums_main">
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="education_menu" class="dropdown yamm-fw">
+<a class="dropdown-toggle dblclick" data-toggle="dropdown" href="http://www.allaboutcircuits.com/education" role="button" aria-expanded="false">
+Education <i class="fa fa-chevron-down"></i>
+</a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-2 col-md-3 col-sm-3 category-box match-dp-menu">
+<ul id="education_list" class="category-menu-filter list-unstyled" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+<li id="education_textbook" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/textbook/" itemprop="url">Textbooks</a></li>
+<li id="education_video_lectures" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/video-lectures/" itemprop="url">Video Lectures</a></li>
+<li id="education_worksheets" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/worksheets/" itemprop="url">Worksheets</a></li>
+<li id="education_webinars" itemprop="name"><a class="text-uppercase" href="/industry-webinars/" itemprop="url">Industry Webinars</a></li>
+<li id="education_categories" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/education/" itemprop="url">By Category</a></li>
+</ul>
+</div>
+<div id="education_main" class="menu-articles col-sm-9 col-md-9 col-lg-10 match-dp-menu hidden-xs"></div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="more_menu" class="dropdown yamm-fw">
+<a class="dropdown-toggle dblclick" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+More <i class="fa fa-chevron-down"></i>
+</a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-2 col-md-3 col-sm-3 category-box match-dp-menu">
+<ul id="more_list" class="category-menu-filter list-unstyled" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+<li id="more_tools" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/tools/" itemprop="url">Tools</a></li>
+<li id="more_giveaways" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/giveaways/" itemprop="url">Giveaways</a></li>
+<li id="more_code" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/code/" itemprop="url">Code Library</a></li>
+<li id="more_community" itemprop="name"><a class="text-uppercase" href="//forum.allaboutcircuits.com/#community.20" itemprop="url">Community</a></li>
+<li id="more_connect" itemprop="name"><a class="text-uppercase" href="http://www.allaboutcircuits.com/contact-us/" itemprop="url">Connect With Us</a></li>
+</ul>
+</div>
+<div id="more_main" class="menu-articles col-sm-9 col-md-9 col-lg-10 match-dp-menu hidden-xs"></div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="topics_iot_menu" class="cat-menu-item hidden-sm dropdown yamm-fw">
+<a href="http://www.allaboutcircuits.com/latest/iot" class="dropdown-toggle dblclick nodropdown" data-toggle="dropdown" role="button" aria-expanded="false">IoT</a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div id="topics_iot_main" class="menu-articles match-dp-menu hidden-xs">
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="topics_arduino_menu" class="cat-menu-item hidden-sm dropdown yamm-fw">
+<a href="/latest/arduino/" class="dropdown-toggle dblclick nodropdown" data-toggle="dropdown" role="button" aria-expanded="false">Arduino</a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div id="topics_arduino_main" class="menu-articles match-dp-menu hidden-xs">
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li id="topics_giveaways_menu" class="cat-menu-item dropdown yamm-fw hidden-sm hidden-md">
+<a href="/giveaways/" class="dropdown-toggle dblclick nodropdown" data-toggle="dropdown" role="button" aria-expanded="false">Giveaways</a>
+<ul class="dropdown-menu" role="menu">
+<div class="dropdown-content">
+<div class="container-fluid">
+<div class="row">
+<div id="topics_giveaways_main" class="menu-articles match-dp-menu hidden-xs">
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li class="login-menu-item dropdown hidden-xs">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">LOG IN / JOIN</a>
+<ul class="dropdown-menu" role="menu">
+<li><a href="/login/" title="Login to your existing account">Log In</a></li>
+<li><a href="//forum.allaboutcircuits.com/register" title="Create an account">Join AAC</a></li>
+<li><a href="/login/" title="Sign in with your Facebook, Linkedin or Google account">Sign in with <i class="fa fa-facebook"></i> <i class="fa fa-linkedin"></i><i class="fa fa-google-plus"></i></a></li>
+<li><a href="//forum.allaboutcircuits.com/register">Member Benefits</a></li>
+</ul>
+</li>
+</ul>
+<div class="search-active">
+<form action="/search" method="GET" id="topsearchform" class="navbar-form navbar-right hidden-xs open open-default">
+<a href='#' onclick="document.getElementById('topsearchform').submit();"><i class="search-icon aaccon-search"></i></a>
+<input name="q" type="text" class="form-control" placeholder="Search" value="">
+</form>
+</div>
+</div>
+<div id="usernavbar" class="navbar-collapse collapse">
+<ul id="primary-menu" class="nav navbar-nav visible-xs navbar-right pull-right">
+<li><a href="/login/">Log In</a></li>
+<li><a href="//forum.allaboutcircuits.com/register">Join AAC</a></li>
+<li><a href="/login/">Sign in with &nbsp;<i class="fa fa-facebook"></i>&nbsp;<i class="fa fa-linkedin"></i>&nbsp;<i class="fa fa-google-plus"></i></a></li>
+</li>
+<li><a href="//forum.allaboutcircuits.com/register">Member Benefits</a></li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<div class="clearfix"></div>
+</header>
+<main class="row-offcanvas row-offcanvas-right">
+<section class="single-post">
+<div class="container">
+<div class="row rowtable">
+<div class="col-lg-9 col-md-8 col-sm-12 main-content block-1" data-mh="block-1">
+<div class="breadcrumb-wrap hidden-xs">
+<ol class="breadcrumb">
+<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/" itemprop="url"><span itemprop="title"><i class="fa fa-home"></i> Home</span></a></li>
+<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/technical-articles/" itemprop="url"><span itemprop="title">Technical Articles</span></a></li>
+<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="active"><meta itemprop="url" content="http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/"/><span itemprop="title">MicroFAT: A File System for Microcontrollers</span></li>
+</ol>
+</div>  
+<article itemscope="itemscope" itemtype="https://schema.org/TechArticle">
+<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/"/>
+<meta itemprop="description" content="File systems can be great for handling data and organizing memory, but most file systems require large amounts of memory. This is where MicroFAT comes in!"/>
+<div class="hidden" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+<meta itemprop="url" content="http://www.allaboutcircuits.com/uploads/thumbnails/Microcontroller-close-up.jpg"/>
+<meta itemprop="width" content="700">
+<meta itemprop="height" content="350">
+</div>
+<div class="hidden" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+<div itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+<meta itemprop="url" content="http://www.allaboutcircuits.com/assets/images/og_default.png">
+<meta itemprop="width" content="960">
+<meta itemprop="height" content="960">
+</div>
+<meta itemprop="name" content="All About Circuits">
+</div>
+<div class="hidden-lg hidden-md col-xs-12 sidebar-link text-right no-padding sidebarDrawer hidden-print">
+<a href="#" data-toggle="offcanvas">Trending Articles &nbsp; <i class="fa fa-chevron-right"></i></a>
+<div class="clearfix"></div>
+</div>
+<div class="page-header">
+<h1 id="133" itemprop="headline">MicroFAT: A File System for Microcontrollers</h1>
+<p class="meta"><span itemprop="datePublished">May 27, 2016</span>
+<span>by</span>
+<span itemprop="author" itemscope="" itemtype="https://schema.org/Person">
+<span itemprop="name"><a class="author" href="/author/robin-mitchell" itemprop="url">Robin Mitchell</a></span>
+</span>
+ 
+</div>
+<hr>
+ 
+ 
+<div id='div-gpt-ad-1430160961981-0' class="leaderboard_ad">
+<script type='text/javascript'>
+		googletag.cmd.push(function() {googletag.display('div-gpt-ad-1430160961981-0');});
+	</script>
+</div>
+<div itemprop="articleBody">
+<div class="sp-content-block">
+<div class="lead" itemprop="headline">File systems can be great for handling data and organizing memory, but most file systems require large amounts of memory. This is where MicroFAT comes in!</div><h3>The Problem with Standard File Systems</h3><p>Microcontrollers are becoming the core of many electronic projects for hobbyists and the norm in electronic design overall. With the complexity of projects increasing and the introduction of the&nbsp;IoT,&nbsp;it will not be long before micro users will need to also increase the capabilities of microcontrollers.&nbsp;</p>
+<p>A common use for microcontrollers is to log data from sensors such as temperature, humidity, and other stimuli. This data can be streamed to an I2C EEPROM and then read back when this data is to be sent to an external server (via the IoT). If the user wishes to store separate instances of data (for example, different times of the day), then the memory needs to contain information regarding the time the data was sent and how the memory is organised.</p>
+<p>While the user could design a system to cope with such matters, it would be easier to implement a file system such as FAT. However, many micros are not capable of using the FAT file system because of the memory requirements.</p>
+<p>For example, to use FAT32 on the PIC range requires up to 12KB of program memory, 2KB of data memory. FAT16 and FAT32 are also not ideal for 8-bit systems and contain a lot of unnecessary metadata (file creation date, permissions, etc.).</p>
+<p>Because the file system is for private use between the microcontroller and serial memory, the system does not need to be compatible with PC standards. If files are to be transferred between a microcontroller and PC, then a simple application made in either Visual C#, C++, or BASIC could stream the bytes in and then save&nbsp;to a file.</p>
+<p>MicroFAT is a standard currently in development for use in 8-bit designs which has emphasis on low memory usage, smaller block sizes, and an easier interface. For example, the MicroFAT standard is designed to be used with serial memory so there is no need for a RAM copy of the current working directory (which would otherwise need an additional 256 bytes). This is because serial memory holds its own internal address and therefore any file operations need only to set the memory address to the directory location and stream in data byte by byte.</p><p>&nbsp;</p><h3>Generic Layout</h3><p>Two memory models are possible with the MicroFAT system: absolute address and block address. As all addresses in the file system are encoded with a 16-bit number, the maximum number of locations is 65,535. Therefore, this allows for either 64KB (when the address points to individual bytes)&nbsp;or 16MB (with 256 byte block sizes).</p>
+<p>Absolute addressing has the advantage of storing file sizes to the byte value (such as 10 bytes), whereas the block address model can only store file sizes as blocks (not ideal for file streaming). The larger memory model also requires the current address pointer to be stored for individual bytes in the current block but the advantage is the significantly larger amount of memory.</p>
+<p><em>For the sake of implementation, this article considers the absolute addressing mode for MicroFAT as I2C serial memory to typically range from 1KB to 64KB.&nbsp;</em></p>
+<p>All 16-bit values are in little endian form which means that the lower portion of the 16-bit number is stored in memory first with the upper portion stored afterwards. An example is given below:</p>
+<p>The number 0x5ADA is stored in memory location 0x0010. This means that memory location 0x0010 has the number 0xDA and the memory location 0x0011 has the number 0x5A.</p><p>&nbsp;</p><h3>Memory Blocks</h3><p>Memory is split into blocks of 256 bytes, which makes addressing very easy. As most FAT operations are concerned with blocks and 64KB is split into 256 blocks, only an 8-bit counter is needed to point to blocks in the system.&nbsp;</p>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/Memory_Model.jpg" style="width: 850px; height: 360px; border: solid 1px #CDCDCD;"/></p>
+<p>&nbsp;</p>
+<p>The very first block in memory is the root directory and is used to store information regarding the bitmap location and device size. It can also be used to indicate boot options and other configuration data regarding the file system.</p><p>&nbsp;</p><h3>Bitmap Block</h3><p>When an operation requires a block in memory, it must not use a block that is in use. One block is devoted at the very end of the memory which keeps a record of the state of each individual block: This block is referred to as the bitmap block. Its purpose is to keep track of a block&#39;s state, such as if it&#39;s currently in use or damaged (unusable). As each block is represented by 1 byte&nbsp;additional information can&nbsp;be encoded into the bitmap system by the user (e.g. reserved / system / boot).</p>
+<p>The location of the bitmap needs to be at the very end of the memory and its location must be stored in entry 0 of the root directory.</p>
+<p>Since MicroFAT has two memory models (absolute and block), the bitmap is encoded as shown below.</p>
+<ul>
+<li><em><strong>Absolute Addressing:</strong></em> Each block is represented by one byte
+<ul>
+<li>Bit 0 &ndash; Block is in use</li>
+<li>Bit 1 &ndash; Block is damaged</li>
+<li>Bit 2:7 &ndash; Unused (Free for user)</li>
+</ul>
+</li>
+<li><em><strong>Block Addressing:</strong></em> Each bitmap byte represents 8 blocks. Each of the bits indicated if that block is in use or not. Damaged memory cannot be encoded.</li>
+</ul>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/Bitmap.jpg" style="width: 800px; height: 269px; border: solid 1px #CDCDCD;"/></p><p>&nbsp;</p><h3>Directories</h3><p>Directories are 256 bytes in length (1 block) and can hold up to 16 entries. The first entry (FAT INFO) stores information about the current directory, which includes the block location of the parent directory (useful when going up a directory) and the current directory block location. The root directory contains an additional 4 bytes in its FAT INFO: the device size and the bitmap location.&nbsp;</p>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/Directory.jpg" style="width: 850px; height: 439px; border: solid 1px #CDCDCD;"/></p><p>&nbsp;</p><h3>File and Directory Entries</h3><p>All entries, both directories and files, are 16 bytes in length (unlike the 32 bytes needed in FAT). Each directory holds up to 15 files/folders&nbsp;with the first 16 bytes being devoted to directory information.</p>
+<p>&nbsp;</p>
+<p><strong>Entry Type Byte (0xn0)</strong></p>
+<div class="table-responsive">
+<table class="table table-bordered">
+<tbody>
+<tr>
+<td><strong>Bit 0</strong></td>
+<td><strong>Bit 1</strong></td>
+<td><strong>Bit 2</strong></td>
+<td><strong>&nbsp;Bit 3</strong></td>
+<td><strong>Bit 4</strong></td>
+<td><strong>Bit 5</strong></td>
+<td><strong>Bit 6</strong></td>
+<td><strong>Bit 7</strong></td>
+</tr>
+<tr>
+<td>In Use</td>
+<td>File / Folder</td>
+<td>Read Only</td>
+<td>System File</td>
+<td>Invisible</td>
+<td>Not used</td>
+<td>Not Used</td>
+<td>Not Used</td>
+</tr>
+<tr>
+<td>1 - Yes</td>
+<td>1 - File</td>
+<td>1 - Read Only</td>
+<td>1 - Sys File</td>
+<td>1 - Invisible</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>0 - No</td>
+<td>0 - Folder</td>
+<td>0 - RW</td>
+<td>0 - User File</td>
+<td>0 - Visible</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/Entry.jpg" style="width: 200px; height: 463px; border: solid 1px #CDCDCD;"/></p>
+<p>&nbsp;</p>
+<p>As each entry is only 16 bytes in length, it is easy to get to specific entries with the upper four bits of the address. Adding 0x10 and then performing a logical and with 0xF0 will get to either the next entry or the first entry (if the number overflows). Below is an example of getting to the next file in Z80 assembler:</p><p>&nbsp;</p><pre>
+                    <code class="hljs">nextEntry:	ld a, (fileCounter)
+		add 0x10
+		and 0xF0
+		ld (fileCounter), a
+</code>
+                  </pre><br/><p>Here is an example of a test root directory that shows the bitmap location, device size, and a few entries:</p>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/FAT.jpg" style="width: 807px; height: 313px; border: solid 1px #CDCDCD;"/></p><p>&nbsp;</p><h3>File Storing - Linked List</h3><p>Files use the linked list system where the last two bytes of a block point to the next block to load. If the block pointer is 0x0000 then the end of the file has been reached as block 0x0000 refers to the root directory which is a reserved block. This means that the usable data in a block is actually 254 bytes. The benefit of this is that a table of file block ownership is not needed and significantly reduces the amount of memory needed.</p>
+<p>&nbsp;</p>
+<p><img alt="" src="/uploads/articles/File_Load3.jpg" style="width: 850px; height: 325px; border: 1px solid rgb(205, 205, 205);"/></p>
+<p>&nbsp;</p>
+<p>The location of the first block is defined in the file entry bytes 0x01 and 0x02. The bytes are stored in little endian (like all data in the MicroFAT system), so if for example the file block was located at 0x1000, the entry bytes would be seen as 0x0001.</p>
+<p>When deleting files, it is important that the file is scanned through the entire list to find which blocks are in use so that the bitmap can free the old blocks. It is also important that the last two bytes of every block are replaced with 0x0000 when freed so that the system does not mistake the end of the file as a load next block.</p>
+<p><em><strong>Infinite loop issue</strong></em></p>
+<p>The link system can get stuck in an infinite loop if the end-of-file pointer points to a previous block in the chain. It would be easy to create a search function that checks for such loops by keeping a record of all blocks loaded and comparing the next block load with the table. Once the file is loaded, the table can be discarded and the memory freed. If the small memory model is used, then a single 256-byte entry in memory could store the table comparison values and it would be large enough for any file (remember how blocks can be pointed to with a single 8-bit number).&nbsp;</p><p>&nbsp;</p><h3>Implementation</h3><p>Currently, no implementation in C exists but a preliminary can be downloaded for Z80 assembler. In the future, a generic C header + source will be developed that only expects the user to create the writing and reading functions for MicroFAT. A typical example is given below:</p><p>&nbsp;</p><pre>
+                    <code class="hljs">unsigned char memoryRead(unsigned short address)
+&#123;
+	// User writes custom memory access code here
+&#125;
+
+void memoryWrite(unsigned short address)
+&#123;
+	// User writes custom memory access code here
+&#125;</code>
+                  </pre><br/><p>This enables the user to create his or her own code for accessing any type of serial memory, whether it is SPI, I2C, or even external microcontrollers. The Z80 assembler is still in progress, but functions that work are those with (d) next to their function name in the comments. The rst instructions are designed to work with a custom BIOS but below is a basic set of the I2C memory rst calls that the MicroFAT calls:</p>
+<p>&nbsp;</p>
+<div class="table-responsive">
+<table class="table table-bordered">
+<thead>
+<tr>
+<th colspan="4" scope="col">I2C External Memory Routines (RST 0x18) : Z80 BIOS Calls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Register A</td>
+<td>Function</td>
+<td>Registers</td>
+<td>Description</td>
+</tr>
+<tr>
+<td>0x00</td>
+<td>Device Probe</td>
+<td>&nbsp;</td>
+<td>Probes I2C Bus for selected device. Returns 1 upon detection</td>
+</tr>
+<tr>
+<td>0x01</td>
+<td>Device ID</td>
+<td>B</td>
+<td>Sets current I2C device to register B</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>Read Byte</td>
+<td>&nbsp;</td>
+<td>Reads a byte from I2C and returns result in register A</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>Write Byte</td>
+<td>B</td>
+<td>Writes a byte to I2C found in register B</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td>Read Block</td>
+<td>HL</td>
+<td>Reads a block of 256 bytes from I2C memory into address pointed by HL</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td>Write Block</td>
+<td>HL</td>
+<td>Writes a block of 256 bytes to I2C memory found at address pointed by HL</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td>Set Address</td>
+<td>BC</td>
+<td>Sets the current memory address of the current device to BC</td>
+</tr>
+</tbody>
+</table>
+</div><p>&nbsp;</p><p id="file" class="text-center">
+<a href="/login/?redirect=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/" data-entry-id="36456" rel="nofollow" class="btn btn-theme btn-assets "><i class="fa fa-download"></i> &nbsp; Download Code</a> &nbsp;
+</p><br/><p>It should be noted that the Z80 assembler code provided makes a copy of the bitmap and current directory directly into RAM for the&nbsp;sake of speed. This, in turn, uses an additional 512 bytes but low memory implementation would not need more than 32 bytes of RAM. If the current directory name was needed, then an additional 32 bytes of RAM would be needed to store the name. However, this is only required where the user can access the file system with a keyboard and display.&nbsp;</p><p>&nbsp;</p>
+</div>
+<div class="meta-tags hidden-print">
+<h4 class="pull-left"><b>Tags:</b></h4>
+<div class="tags pull-left" itemprop="keywords">
+<a data-href="/search?q=microfat" rel="nofollow" class="jslink tag">microfat</a>
+<a data-href="/search?q=file system" rel="nofollow" class="jslink tag">file system</a>
+<a data-href="/search?q=file system for microcontrollers" rel="nofollow" class="jslink tag">file system for microcontrollers</a>
+<a data-href="/search?q=pic" rel="nofollow" class="jslink tag">pic</a>
+<a data-href="/search?q=avr" rel="nofollow" class="jslink tag">avr</a>
+<a data-href="/search?q=robin mitchell" rel="nofollow" class="jslink tag">robin mitchell</a>
+</div>
+<div class="clearfix">&nbsp;</div>
+</div>
+</div>
+<div class="social-media-shares hidden-print">
+<div class="item">
+<div class="facebook">
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" target="_blank" title="Share on Facebook">
+<i class="fa fa-facebook"></i><span class="counter hidden-sm hidden-xs">Share</span>
+</a>
+</div>
+</div>
+<div class="item">
+<div class="twitter">
+<a href="https://twitter.com/share?url=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/&via=allaboutcircuit" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" target="_blank" title="Share on Twitter">
+<i class="fa fa-twitter"></i><span class="counter hidden-sm hidden-xs">Share</span>
+</a>
+</div>
+</div>
+<div class="item">
+<div class="google-plus">
+<a href="https://plus.google.com/share?url=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=350,width=480');return false;" target="_blank" title="Share on Google+">
+<i class="fa fa-google-plus"></i><span class="counter hidden-sm hidden-xs">Share</span>
+</a>
+</div>
+</div>
+<div class="item">
+<div class="linkedin">
+<a href="https://www.linkedin.com/shareArticle?mini=true&url=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" target="_blank" title="Share on Linkedin">
+<i class="fa fa-linkedin"></i><span class="counter hidden-sm hidden-xs">Share</span>
+</a>
+</div>
+</div>
+<div class="item">
+<div class="reddit">
+<a href="https://www.reddit.com/submit?url=&url=http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers/&title=MicroFAT: A File System for Microcontrollers" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes');return false;" target="_blank" title="Share on Reddit">
+<i class="fa fa-reddit-alien"></i><span class="counter hidden-sm hidden-xs">Share</span>
+</a>
+</div>
+</div>
+</div>
+<div class="container-fluid other-articles hidden-print">
+<div id="relatedarticles" class="row">
+<h3><strong>You May Also Like:</strong></h3>
+</div>
+<div class="main-recommended-articles">
+<div class="row article-item" id="recommended_1">
+<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+<div class="col-md-2 col-sm-2 col-xs-2 darken">
+<a href="http://www.allaboutcircuits.com/projects/how-to-use-a-dht11-with-a-pic16f628-and-lcd/" title="How to Use a DHT11 with a PIC16F628A and LCD" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');"><img src="/uploads/thumbnails/_80_80/pic16F628DHT11LCD.JPG" alt="" class="" align="left"/></a>
+</div>
+<div class="col-lg-10 col-md-9 col-sm-9 col-xs-8 no-padding truncated">
+<a href="http://www.allaboutcircuits.com/projects/how-to-use-a-dht11-with-a-pic16f628-and-lcd/" title="How to Use a DHT11 with a PIC16F628A and LCD" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');">
+<h4 class="article-title">How to Use a DHT11 with a PIC16F628A and LCD</h4>
+<div class="excerpt hidden-xs">How to read humidity and temperature from a DHT11 and display it on a LCD with a PIC microcontroller. In this example we're going to use a...</div>
+</a>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 hidden-xs article-meta-info">
+<div class="col-lg-12 meta-article-author" data-article-author="Jens Christoffersen"><h4><a href="/author/jens-christoffersen">Jens Christoffersen</a></h4></div>
+<div class="col-lg-12 meta-article-date" data-article-published=""></div>
+</div>
+</div>
+<div class="row article-item" id="recommended_2">
+<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+<div class="col-md-2 col-sm-2 col-xs-2 darken">
+<a href="http://www.allaboutcircuits.com/news/brexit-how-will-the-electronics-industry-be-affected/" title="How Brexit Could Affect the Electronics Industry" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');"><img src="/uploads/thumbnails/_80_80/Brexit.jpg" alt="" class="" align="left"/></a>
+</div>
+<div class="col-lg-10 col-md-9 col-sm-9 col-xs-8 no-padding truncated">
+<a href="http://www.allaboutcircuits.com/news/brexit-how-will-the-electronics-industry-be-affected/" title="How Brexit Could Affect the Electronics Industry" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');">
+<h4 class="article-title">How Brexit Could Affect the Electronics Industry</h4>
+<div class="excerpt hidden-xs">Britain's exit, or "Brexit", from the European Union has been a shock to the economy of the whole world. What will it do to electronics?</div>
+</a>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 hidden-xs article-meta-info">
+<div class="col-lg-12 meta-article-author" data-article-author="Robin Mitchell"><h4><a href="/author/robin-mitchell">Robin Mitchell</a></h4></div>
+<div class="col-lg-12 meta-article-date" data-article-published=""></div>
+</div>
+</div>
+<div class="row article-item" id="recommended_3">
+<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+<div class="col-md-2 col-sm-2 col-xs-2 darken">
+<a href="/technical-articles/mesh-analysis-and-dependent-sources/" title="Mesh Analysis and Dependent Sources" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');"><img src="/uploads/thumbnails/_80_80/Mesh-Analysis1.png" alt="" class="" align="left"/></a>
+</div>
+<div class="col-lg-10 col-md-9 col-sm-9 col-xs-8 no-padding truncated">
+<a href="/technical-articles/mesh-analysis-and-dependent-sources/" title="Mesh Analysis and Dependent Sources" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');">
+<h4 class="article-title">Mesh Analysis and Dependent Sources</h4>
+<div class="excerpt hidden-xs">This article describes the technical aspects of Performing Mesh analysis with Dependent Sources.</div>
+</a>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 hidden-xs article-meta-info">
+<div class="col-lg-12 meta-article-author" data-article-author="Tristan Cornell"><h4><a href="/author/tristan-cornell">Tristan Cornell</a></h4></div>
+<div class="col-lg-12 meta-article-date" data-article-published=""></div>
+</div>
+</div>
+<div class="row article-item" id="recommended_4">
+<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+<div class="col-md-2 col-sm-2 col-xs-2 darken">
+<a href="/technical-articles/pcb-layout-style-mistakes-that-make-assembly-and-debugging-difficult/" title="PCB Layout Style Mistakes That Can Ruin Your Design" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');"><img src="/uploads/thumbnails/_80_80/eagle_pcb_layout.png" alt="" class="" align="left"/></a>
+</div>
+<div class="col-lg-10 col-md-9 col-sm-9 col-xs-8 no-padding truncated">
+<a href="/technical-articles/pcb-layout-style-mistakes-that-make-assembly-and-debugging-difficult/" title="PCB Layout Style Mistakes That Can Ruin Your Design" onclick="ga('send','event','recommended article click','main site', 'http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers');">
+<h4 class="article-title">PCB Layout Style Mistakes That Can Ruin Your Design</h4>
+<div class="excerpt hidden-xs">This article discusses style mistakes in PCB layout that can make assembly and debugging PCBs difficult. This is vital for designers!</div>
+</a>
+</div>
+</div>
+<div class="col-lg-3 col-md-3 col-sm-3 hidden-xs article-meta-info">
+<div class="col-lg-12 meta-article-author" data-article-author="David Knight"><h4><a href="/author/david-knight">David Knight</a></h4></div>
+<div class="col-lg-12 meta-article-date" data-article-published=""></div>
+</div>
+</div>
+</div>
+<br/>
+<p class="text-center"><strong><a href="/latest/" onclick="ga('send','event','recommended article click','main site', 'load more');"><i class="fa fa-arrow-down"></i> Load More</a></strong></p>
+</div>
+<h3 id="comments-control" class="hidden-print"><a href="#"><b>Comments</b><i class="fa fa-chevron-up"></i></a></h3>
+<div id="comments-wrap" class="disqus-theme comments-box collapse in hidden-print">
+<h4><span><b itemprop="commentCount">
+10 Comments</b></span><a href="/login/" class="pull-right login"><i class="fa fa-comment"></i>Login</a></h4>
+<hr/>
+<div class="row">
+<div id="comments" class="col-sm-12">
+<form id="main-form" method="post" action="http://www.allaboutcircuits.com/">
+<div class='hiddenFields'>
+<input type="hidden" name="ACT" value="25"/>
+<input type="hidden" name="RET" value="http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers"/>
+<input type="hidden" name="URI" value="technical-articles/microfat-a-file-system-for-micro-controllers"/>
+<input type="hidden" name="entry_id" value="36456"/>
+<input type="hidden" name="parent_id" value="0"/>
+<input type="hidden" name="site_id" value="1"/>
+<input type="hidden" name="csrf_token" value="1c7c041dcfde53b71b532f02716d0473a645c204"/>
+</div>
+<div class="form-group clearfix">
+<textarea style="resize:none;" placeholder="Please login before you can comment." readonly name="comment" rows="4" class="form-control comment-comment"></textarea>
+<input type="button" disabled="true"id="submitComment" value="Submit" class="commentButton btn btn-theme pull-right" style="margin-top:5px;">
+          </div></form>
+
+    <ul class="threads" itemscope itemtype="http://schema.org/UserComments">
+        
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/agaelema.193623/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=agaelema&size=s"  height="40px" width="40px" alt="agaelema's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/agaelema.193623/" class="name"><b itemprop="name">agaelema</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-05-27</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Excellent article.</p>
+
+<p>In the &#8220;file storing - linked list&#8221;, the figure is correct? I ask this because the block and address in the last two blocks are the same, but the &#8220;next&#8221; in the second block point to 0x0600.</p>
+
+<p>&#8220;...so if for example the file block was located at 0x1000, the entry bytes would be seen as 0x0001.&#8221;, the value in little endian is not 0x0010?</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1146">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          <ul class="media-list replies">
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/Robin-Mitchell.64207/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=Robin Mitchell&size=s"  height="40px" width="40px" alt="Robin Mitchell's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/Robin Mitchell.64207/" class="name"><b itemprop="name">Robin Mitchell</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-05-29</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Hi there,</p>
+
+<p>Good spot! The address of the third block should be 0x0600. The diagram has now been changed.</p>
+
+<p>Regards,<br />
+Robin</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1170">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          </ul>
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/wincrazy.313683/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=wincrazy&size=s"  height="40px" width="40px" alt="wincrazy's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/wincrazy.313683/" class="name"><b itemprop="name">wincrazy</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-04</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>&#8220;Because the file system is for private use between the microcontroller and serial memory, the system does not need to be compatible with PC standards.&#8221;</p>
+
+<p>What nonsense ! The entire point of having a standard file system is so it can be read by any Linux, Windows or Apple file system to have the data analyzed !</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1214">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/wincrazy.313683/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=wincrazy&size=s"  height="40px" width="40px" alt="wincrazy's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/wincrazy.313683/" class="name"><b itemprop="name">wincrazy</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-04</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Having the code written in assembly limits its use to a single family of micros. A somewhat optimized C implementation would be a thousand times more compatible with all micro families that now exists or will be. The hit for code inefficiency is insignificant and the design would be far more maintainable and easier to modify.</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1215">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          <ul class="media-list replies">
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/Robin-Mitchell.64207/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=Robin Mitchell&size=s"  height="40px" width="40px" alt="Robin Mitchell's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/Robin Mitchell.64207/" class="name"><b itemprop="name">Robin Mitchell</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-04</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Interface between micro and memory :<br />
+It is not nonsense because this file system spec is for micros and small memory models. What would be nonsense is using FAT32 or NTFS on a 8KB EEPROM. The purpose of MicroFAT is to provide a basic form of memory and data management in small projects and low profile devices. Because the data is only being transferred between a PIC and memory chip that is built in there is no need for a PC or Mac to read the data directly. But if there was such a need then an interface should be used between the PIC and computer via USB or serial. Then the computer can just stream a requested file via a custom application. </p>
+
+<p>The code give is in assembler as it just shows an example. There is a C version currently in the works that ONLY uses generic C. This way, most compilers can compile the C on any device. The only code the user has to write are memory stream operations such as IN and OUT because they are device/application specific.</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1216">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          </ul>
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/mjaa.148839/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=mjaa&size=s"  height="40px" width="40px" alt="mjaa's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/mjaa.148839/" class="name"><b itemprop="name">mjaa</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-05</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Thank you for an excellent and well written article Robin. At last the bones of an efficient file system for serial mass storage on micros. Great for solid state data logging. Keep it up!<br />
+Mark</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1224">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          <ul class="media-list replies">
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/Robin-Mitchell.64207/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=Robin Mitchell&size=s"  height="40px" width="40px" alt="Robin Mitchell's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/Robin Mitchell.64207/" class="name"><b itemprop="name">Robin Mitchell</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-05</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Hi Mark,</p>
+
+<p>Thanks for the kind comments! The system is still incomplete and a standard C library is still in the works but maybe one day micros can use file systems too (even the PIC12 range can use it).</p>
+
+<p>Robin</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1225">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          </ul>
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/JerryMac.355918/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=JerryMac&size=s"  height="40px" width="40px" alt="JerryMac's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/JerryMac.355918/" class="name"><b itemprop="name">JerryMac</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-16</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Robin,<br />
+This is right up my alley! But I cant use it. Please release under the GPL. Per the license I will send you all my updates, modifications, etc.</p>
+
+<p>Jerry</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1298">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          <ul class="media-list replies">
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/Robin-Mitchell.64207/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=Robin Mitchell&size=s"  height="40px" width="40px" alt="Robin Mitchell's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/Robin Mitchell.64207/" class="name"><b itemprop="name">Robin Mitchell</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-06-28</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Hi Jerry,</p>
+
+<p>If you cannot use it for a legal reason then please let me know why. I want this to be totally free for any use in any form <img src="http://www.allaboutcircuits.com/images/smileys/smile.gif" width="19" height="19" alt="smile" style="border:0;" /></p>
+
+<p>All the best,<br />
+Robin</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1402">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          </ul>
+
+            <li class="media">
+            <div class="pull-left commentAvatar">
+                <a href="//forum.allaboutcircuits.com/members/Denald.363185/">
+                    <img src="//forum.allaboutcircuits.com/avatar.php?username=Denald&size=s"  height="40px" width="40px" alt="Denald's avatar" />
+                </a>
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <a href="//forum.allaboutcircuits.com/members/Denald.363185/" class="name"><b itemprop="name">Denald</b></a>
+                
+                <span class="date" itemprop="commentTime">2016-07-22</span>
+              </div>
+              <div class="article-comment" itemprop="commentText"><p>Beautiful job Robin.<br />
+do you have  C version of this code ?</p></div>
+              
+                <div class="meta">
+                  
+                  <a href="#" class="reply" rel="1518">Reply</a>
+                </div>
+              
+            </div>
+          </li>
+          
+    </ul>
+
+    <form id="reply-form" class="hidden well" method="post" action="http://www.allaboutcircuits.com/"  >
+<div class='hiddenFields'>
+<input type="hidden" name="ACT" value="25" />
+<input type="hidden" name="RET" value="http://www.allaboutcircuits.com/technical-articles/microfat-a-file-system-for-micro-controllers" />
+<input type="hidden" name="URI" value="technical-articles/microfat-a-file-system-for-micro-controllers" />
+<input type="hidden" name="entry_id" value="36456" />
+<input type="hidden" name="parent_id" value="0" />
+<input type="hidden" name="site_id" value="1" />
+<input type="hidden" name="csrf_token" value="1c7c041dcfde53b71b532f02716d0473a645c204" />
+</div>
+
+<div class="form-group clearfix">
+              <textarea style="resize:none;" placeholder="Please login before you can reply to this comment." readonly name="comment" rows="2" class="form-control comment-comment" ></textarea>
+              <input type="button" disabled="true"id="submitComment" value="Submit" class="commentButton btn btn-theme pull-right" style="margin-top:5px;">
+          </div></form>
+  </div>
+  <div class="clearfix">&nbsp;</div>
+  </div>
+
+
+</div>
+                    </article>
+
+                    <div class="clearfix">&nbsp;</div>
+                </div><!-- main-content -->
+                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6 right-sidebar sidebar-offcanvas block-1" data-mh="block-1">
+                    <div class="widget forum-threads hidden-print">
+
+    <div class="hidden-lg hidden-md hidden-sm col-xs-12 sidebar-link">
+        <br />
+        <a href="#" data-toggle="offcanvas" ><i class="fa fa-chevron-left"></i> Close</a>
+        <div class="clearfix"></div>
+    </div>
+
+     
+    <h3>Trending Articles</h3>
+    <ul class="sidebar-articles">
+        <li class="forum-item">
+            <a href="/projects/update-the-firmware-in-your-esp8266-wi-fi-module/"><div class="forum-link-container"><h5 class="forum-title">Update the Firmware in Your ESP8266 Wi-Fi Module</h5>
+            <span class="meta">Project</span>
+            </div></a>
+        </li><li class="forum-item">
+            <a href="/projects/control-a-motor-with-an-arduino/"><div class="forum-link-container"><h5 class="forum-title">Control a DC Motor with an Arduino</h5>
+            <span class="meta">Project</span>
+            </div></a>
+        </li><li class="forum-item">
+            <a href="/projects/how-to-make-an-interactive-tcp-server-nodemcu-on-the-esp8266/"><div class="forum-link-container"><h5 class="forum-title">How to Make an Interactive TCP Server with NodeMCU on the ESP8266</h5>
+            <span class="meta">Project</span>
+            </div></a>
+        </li><li class="forum-item">
+            <a href="/news/the-best-laptops-for-engineering-and-computer-science-students/"><div class="forum-link-container"><h5 class="forum-title">The Best Laptops for Engineering and Computer Science Students</h5>
+            <span class="meta">News</span>
+            </div></a>
+        </li><li class="forum-item">
+            <a href="/projects/create-a-2-channel-remote-control-with-the-nrf24l01/"><div class="forum-link-container"><h5 class="forum-title">Create a Two-Channel Remote Control with the nRF24L01+</h5>
+            <span class="meta">Project</span>
+            </div></a>
+        </li>
+        <li class="forum-item"><a href="/technical-articles/"><div class="forum-link-container">&larr; Articles Index</div></a></li>
+    </ul>
+    
+</div>
+                    
+                    <div id="stick_column">
+<div class="widget ads sidepin leaderboard_ad">
+	<!-- /62616433/main_sidebar -->
+	<div id='div-gpt-ad-1429623690593-0'>
+		<script type='text/javascript'>
+			googletag.cmd.push(function() {googletag.display('div-gpt-ad-1429623690593-0');});
+		</script>
+	</div>
+  
+</div>
+<div class="widget recommended-articles">
+    <div class="sidebar-recommended-articles">
+		<div class="clearfix"></div>
+	</div>
+	<div class="clearfix"></div>	
+</div>
+</div>
+
+<!-- /62616433/main_native_ad_unit_1 -->
+<div id='div-gpt-ad-1441294234226-0'>
+<script type='text/javascript'>
+googletag.cmd.push(function() {googletag.display('div-gpt-ad-1441294234226-0');});
+</script>
+</div>
+
+
+
+                </div>
+            </div> <!-- row -->
+        </div> <!-- container -->
+    </section>
+</main>
+  
+
+<footer class="hidden-print">
+    <div class="widgets-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-4  col-xs-12 widget-item">
+                    <h4>WHO WE ARE</h4>
+                    <p>
+                        <a class="logo-link" href="/"><img class="navLogo" alt="All About Circuits" src="/assets/images/aac_logo.png"/>
+                        </a>
+                    </p>
+                    <div class="description"> <a href="/contact-us/" class="see-more">More about us <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-2 col-xs-6 widget-item">
+                    <h4>Content</h4>
+                    <div class="col-md-6 col-sm-12 footer-links">
+                        <ul class="list-unstyled">
+                            <li><a href="/news/">News</a>
+                            </li>
+                            <li><a href="/projects/">Projects</a>
+                            </li>
+                            <li><a href="/technical-articles/">Technical Articles</a>
+                            </li>
+                            <li><a href="/textbook/">Textbook</a>
+                            </li>
+                            <li><a href="/industry-articles/">Industry Articles</a></li>
+                            <li><a href="/industry-webinars/">Industry Webinars</a></li>
+
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-12 footer-links">
+                        <ul class="list-unstyled">
+                            <li><a href="/code/">Code Library</a>
+                            </li>
+                            <li><a href="/video-lectures/">Video Lectures</a>
+                            </li>
+                            <li><a href="/worksheets/">Worksheets</a>
+                            </li>
+                            <li><a href="//forum.allaboutcircuits.com/">Forum</a>
+                            </li>
+                            <li><a href="/tools/">Tools</a></li>
+                            <li><a href="/giveaways/">Giveaways</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-2 col-xs-6 widget-item">
+                    <h4>Categories</h4>
+                    <div class="col-md-6 col-sm-12 footer-links">
+                        <ul class="list-unstyled">
+                            <li><a href="/latest/">Latest</a></li>
+                            <li><a href="/latest/analog/">Analog</a></li>
+                            <li><a href="/latest/arduino/">Arduino</a></li>
+                            <li><a href="/latest/connectors/">Connectors</a></li>
+                            <li><a href="/latest/digital-ics/">Digital ICs</a>
+                            <li><a href="/latest/embedded/">Embedded</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-12 footer-links">
+                        <ul class="list-unstyled">
+                            <li><a href="/latest/iot/">IoT</a></li>
+                            <li><a href="/latest/power/">Power</a></li>
+                            <li><a href="/latest/sensors/">Sensors</a></li>
+                            <li><a href="/latest/test-and-measurement/">Test & Measurement</a></li>
+                            <li><a href="/latest/wearables/">Wearables</a></li>
+                            <li><a href="/latest/wireless-rf/">Wireless RF</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-xs-12 widget-item social-widget-box">
+                    <div class="row">
+                        <h4>Connect with Us</h4>
+                        <div class="col-md-6 col-sm-6 col-xs-6 footer-links">
+                            <ul class="list-unstyled">
+                                <li><a href="https://www.facebook.com/allaboutcircuits" target="_blank">Facebook</a>
+                                </li>
+                                <li><a href="https://twitter.com/AllAboutCircuit" target="_blank">Twitter</a>
+                                </li>
+                                <li><a href="/contact-us/">Contact Us</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 footer-links">
+                            <ul class="list-unstyled">
+                                <li><a href="https://www.youtube.com/c/AllAboutCircuitsVideo" target="_blank">YouTube</a>
+                                </li>
+                                <li><a href="https://www.linkedin.com/company/allaboutcircuits" target="_blank">LinkedIn</a>
+                                </li>
+                                <li><a href="/write-for-us/">Write For Us</a></li>
+                                <li><a href="//www.eetech.com/" target="_blank">Advertise</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix visible-sm visible-xs">&nbsp;</div>
+                    
+                    <div class="row">
+                        <h4>Sign Up</h4>
+                        <div class="newsletter-box">
+                            <form class="form-inline" role="form">
+                                <div class="input-group">
+
+                                    <input type="text" id="signupemail" class="form-control" placeholder="Enter your email address">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn" onclick="window.location.href='//forum.allaboutcircuits.com/register?email='+$('#signupemail').val();">Register</button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <p>© <a href="http://eetech.com/" target="_blank">EETech Media, LLC</a>. All rights reserved</p>
+                </div>
+                <div class="col-md-6 col-sm-6 hidden-xs">
+                    <a href="/privacy-policy/">Privacy Policy</a> · <a href="//forum.allaboutcircuits.com/help/terms">Terms of Service</a> · <a href="/user-agreement/">User Agreement</a>
+                    <div class="back-to-top pull-right sm-hidden"><img src="/assets/images/btn-scrollUp.png" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script src="/assets/js/jquery.mobile.custom.min.js"></script>
+<script src="/assets/library/bootstrap/js/bootstrap.min.js"></script>
+<script src="/assets/js/modernizr.js"></script>
+<script src="/assets/library/sticky-kit.min.js"></script>
+<script src="/assets/library/jquery.matchHeight/jquery.matchHeight.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.8.1/jquery.hoverIntent.min.js"></script>
+
+<script src="/assets/library/adpopup-pro/js/adpopup-pro.modified.min.js"></script>
+<script src="/assets/library/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/menu.js"></script>
+<script src="/assets/library/highlight/highlight.pack.js"></script>
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+	<script type="text/javascript" src="/assets/library/jquery.dotdotdot/jquery.dotdotdot.js"></script>
+	<script type="text/javascript" src="/assets/js/articles.js"></script>
+
+
+
+<!-- /62616433/main_wallpaper -->
+<div id='div-gpt-ad-1430235245447-0' class="wallpaperadpixel">
+	<script type='text/javascript'>
+		googletag.cmd.push(function() {googletag.display('div-gpt-ad-1430235245447-0');});
+	</script>
+</div>
+
+
+<div id='div-gpt-ad-1430160889889-0'><script type='text/javascript'>googletag.cmd.push(function() {googletag.display('div-gpt-ad-1430160889889-0');});</script></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+      var ads = {
+        'ad_1': {
+          'type': 'jquery',
+          'elem': '#div-gpt-ad-1430160889889-0'
+        }
+      };
+
+      $('body').adPopupPro({
+        ads: ads,
+        width: 640,
+        height: 480,
+        popup_color: 'dark',
+        overlay_close: false,
+        overlay_color: 'dark',
+        auto_close_after: 15000,
+        escape_close: false,
+        show_type: 'day',
+        cookie_id: 'aac_welcome'
+      });
+});
+
+$('#div-gpt-ad-1430160889889-0').bind('adready',function() {
+	$('.adpopup-overlay').show();
+	$('.adpopup').show();
+});
+</script>
+
+
+
+
+
+</body>
+
+</html>
