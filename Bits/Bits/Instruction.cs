@@ -9,17 +9,26 @@ namespace Bits
     public class Instruction : IComparable<Instruction>
     {
         public int Value { get; protected set; }
+        public string HexValue { get { return Program.ConvertDecimalToHexadecimal(Value); } }
+        public string Label { get; protected set; }
         public string Opcode { get; protected set; }
-        public string Expression { get; protected set; }
+        public string[] Operands { get; protected set; }
         public string Comment { get; protected set; }
         public static int nextValue = 1;
 
-        public Instruction(string opcode, string expression, string comment)
+        public Instruction(string opcode) : this(string.Empty, opcode, new string[] { }, string.Empty) { }
+
+        public Instruction(string opcode, string[] operands) : this(string.Empty, opcode, operands, string.Empty) { }
+
+        public Instruction(string opcode, string[] operands, string comment) : this(string.Empty, opcode, operands, comment) { }
+
+        public Instruction(string label, string opcode, string[] operands, string comment)
         {
             this.Value = nextValue;
             nextValue++;
+            this.Label = label;
             this.Opcode = opcode;
-            this.Expression = expression;
+            this.Operands = operands;
             this.Comment = comment;
         }
 

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -15,7 +12,7 @@ namespace Bits
         // X, Y, Z, D, and M can be either values or registers
 
         // this set assumes port mapped I/O
-        private static string fiveBitSet =
+        private static string fiveBitMappedIOSet =
             "mov X, Y // Move data from X to Y"
             + "lod D, M, X // Load address D offset by M and put in X"
             + "sto D, M, X // Store value X in address D offset by M"
@@ -30,7 +27,7 @@ namespace Bits
             + "bno // Branch if overflow flag off"
             + "bnz // Branch if zero flag off"
             + "be // Branch if equal flag on"
-            + "bge // Brnach if greater than or equal flags on"
+            + "bge // Branch if greater than or equal flags on"
             + "ble // Branch if less than or equal flags on"
             + "bg // Branch if greater than flag on"
             + "bl // Branch if less than flag on"
@@ -49,47 +46,161 @@ namespace Bits
             + "out D, M, X // Send X to device D offset by M"
             + "end // Ends the program";
 
-        public static string Parse(string input)
+        private static string sixBitSet =
+            "nop // No operation"
+            + "mov X, Y // Move data from Y to X"
+            + "mov X, M, Y // Move data from Y to X offset by M"
+            + "lod X, D // Load address D and put in X"
+            + "lod X, D, M // Load address D offset by M and put in X"
+            + "sto D, X // Store value X in address D"
+            + "sto D, M, X // Store value X in address D offset by M"
+            + "inc X // Increment value X and put the result in X"
+            + "inc Y, X // Increment value X and put the result in Y"
+            + "dec X // Decrement value X and put the result in X"
+            + "dec Y, X // Decrement value X and put the result in X"
+            + "add X, Y // Adds X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "add Z, X, Y // Adds X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "sub X, Y // Subtracts X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "sub Z, X, Y // Subtracts X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "br L // Branch to label L"
+            + "br L, M // Branch to label L offset by M"
+            + "cmp X, Y // Compare X and Y and set flags"
+            + "bc // Branch if carry flag on"
+            + "bo // Branch if overflow flag on"
+            + "bp // Branch if parity flag on (even)"
+            + "bs // Branch if sign flag on (negative)"
+            + "bz // Branch if zero flag on"
+            + "bnc // Branch if carry flag off"
+            + "bno // Branch if overflow flag off"
+            + "bnp // Branch if parity flag off(odd)"
+            + "bns // Branch if sign flag off(positive)"
+            + "bnz // Branch if zero flag off"
+            + "be // Branch if equal flag on"
+            + "bne // Branch if equal flag is off"
+            + "bge // Branch if greater than or equal flags on"
+            + "ble // Branch if less than or equal flags on"
+            + "bg // Branch if greater than flag on"
+            + "bl // Branch if less than flag on"
+            + "and X, Y // Ands X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "and Z, X, Y // Ands X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "or X, Y // Ors X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "or Z, X, Y // Ors X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "xor X, Y // Exclusive ors X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "xor Z, X, Y // Exclusive ors X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "not X // Inverts the value of X; Sets the carry, overflow, parity, sign and zero flags"
+            + "not Y, X // Inverts the value of X and puts the result in Y; Sets the carry, overflow, parity, sign and zero flags"
+            + "tst X, Y // Ands X and Y but does not change either value; Sets the carry, overflow, parity, sign and zero flags"
+            + "psh X // Pushes X onto the stack"
+            + "pop X // Pops the stack and puts the value into X"
+            + "cll L // Call procedure at label L"
+            + "ret // Return from current procedure"
+            + "shl X, Y // Shift left by adding Y zeroes to X and put the result in X"
+            + "shl Z, X, Y // Shift left by adding Y zeroes to X and put the result in Z"
+            + "shr X, Y // Shift right by removing Y bits from X and put the result in X"
+            + "shr Z, X, Y // Shift right by removing Y bits from X and put the result in Z"
+            + "rol X, Y // Rotate left by moving Y bits of X to right end and put the result in X"
+            + "rol Z, X, Y // Rotate left by moving Y bits of X to right end and put the result in Z"
+            + "ror X, Y // Rotate right by moving Y bits of X to left end and put the result in X"
+            + "ror Z, X, Y // Rotate right by moving Y bits of X to left end and put the result in Z"
+            + "end // Ends the program";
+
+        private static string x86 =
+            "nop // No operation"
+            + "mov X, Y // Move data from Y to X"
+            + "mov X, M, Y // Move data from Y to X offset by M"
+            + "lod X, D // Load address D and put in X"
+            + "lod X, D, M // Load address D offset by M and put in X"
+            + "sto D, X // Store value X in address D"
+            + "sto D, M, X // Store value X in address D offset by M"
+            + "inc X // Increment value X and put the result in X"
+            + "inc Y, X // Increment value X and put the result in Y"
+            + "dec X // Decrement value X and put the result in X"
+            + "dec Y, X // Decrement value X and put the result in X"
+            + "add X, Y // Adds X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "add Z, X, Y // Adds X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "sub X, Y // Subtracts X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "sub Z, X, Y // Subtracts X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "br L // Branch to label L"
+            + "br L, M // Branch to label L offset by M"
+            + "cmp X, Y // Compare X and Y and set flags"
+            + "bc // Branch if carry flag on"
+            + "bo // Branch if overflow flag on"
+            + "bp // Branch if parity flag on (even)"
+            + "bs // Branch if sign flag on (negative)"
+            + "bz // Branch if zero flag on"
+            + "bnc // Branch if carry flag off"
+            + "bno // Branch if overflow flag off"
+            + "bnp // Branch if parity flag off(odd)"
+            + "bns // Branch if sign flag off(positive)"
+            + "bnz // Branch if zero flag off"
+            + "be // Branch if equal flag on"
+            + "bne // Branch if equal flag is off"
+            + "bge // Branch if greater than or equal flags on"
+            + "ble // Branch if less than or equal flags on"
+            + "bg // Branch if greater than flag on"
+            + "bl // Branch if less than flag on"
+            + "and X, Y // Ands X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "and Z, X, Y // Ands X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "or X, Y // Ors X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "or Z, X, Y // Ors X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "xor X, Y // Exclusive ors X and Y and puts the result in X; Sets the carry, overflow, parity, sign and zero flags"
+            + "xor Z, X, Y // Exclusive ors X and Y and puts the result in Z; Sets the carry, overflow, parity, sign and zero flags"
+            + "not X // Inverts the value of X; Sets the carry, overflow, parity, sign and zero flags"
+            + "not Y, X // Inverts the value of X and puts the result in Y; Sets the carry, overflow, parity, sign and zero flags"
+            + "tst X, Y // Ands X and Y but does not change either value; Sets the carry, overflow, parity, sign and zero flags"
+            + "psh X // Pushes X onto the stack"
+            + "pop X // Pops the stack and puts the value into X"
+            + "cll L // Call procedure at label L"
+            + "ret // Return from current procedure"
+            + "shl X, Y // Shift left by adding Y zeroes to X and put the result in X"
+            + "shl Z, X, Y // Shift left by adding Y zeroes to X and put the result in Z"
+            + "shr X, Y // Shift right by removing Y bits from X and put the result in X"
+            + "shr Z, X, Y // Shift right by removing Y bits from X and put the result in Z"
+            + "rol X, Y // Rotate left by moving Y bits of X to right end and put the result in X"
+            + "rol Z, X, Y // Rotate left by moving Y bits of X to right end and put the result in Z"
+            + "ror X, Y // Rotate right by moving Y bits of X to left end and put the result in X"
+            + "ror Z, X, Y // Rotate right by moving Y bits of X to left end and put the result in Z"
+            + "end // Ends the program";
+
+        public static void BuildInstructionSet5Bit()
         {
-            string message = string.Empty;
-
-            if (InstructionSet.Count == 0)
-            {
-                message += "Error! No instruction set loaded";
-                return message;
-            }
-
-            StringReader reader = new StringReader(input);
-
-            string nextLine = reader.ReadLine();
-            while (nextLine != null)
-            {
-                message += nextLine;
-
-                string opcode = GetOpcode(nextLine);
-                string[] parameters = GetParameters(nextLine);
-
-                bool validInstruction = InstructionSet.ContainsKey(opcode);
-                if (validInstruction == false)
-                {
-                    message += "\nInstruction not recognized";
-                    nextLine = reader.ReadLine();
-                    continue;
-                }
-
-                Instruction instruction = InstructionSet[opcode];
-
-                nextLine = reader.ReadLine();
-            }
-
-            return message;
+            BuildInstructionSet5Bit(false);
         }
 
-        public static void BuildInstructionSet()
+        public static void BuildInstructionSet5Bit(bool memoryMappedIO)
+        {
+            if (memoryMappedIO == true)
+            {
+                BuildInstructionSet(fiveBitMappedIOSet);
+            }
+            else
+            {
+                
+            }
+        }
+
+        public static void BuildInstructionSet6Bit()
+        {
+            BuildInstructionSet6Bit(false);
+        }
+
+        public static void BuildInstructionSet6Bit(bool memoryMappedIO)
+        {
+            if (memoryMappedIO == true)
+            {
+
+            }
+            else
+            {
+                BuildInstructionSet(sixBitSet);
+            }
+        }
+
+        private static void BuildInstructionSet(string instructions)
         {
             InstructionSet = new SortedDictionary<string, Instruction>();
 
-            StringReader reader = new StringReader(fiveBitSet);
+            StringReader reader = new StringReader(instructions);
 
             string nextLine = reader.ReadLine();
             while (nextLine != null)
@@ -111,24 +222,146 @@ namespace Bits
                     continue;
                 }
 
-                int totalParams = expression.Split(',').Length;
+                string[] operands = GetOperands(expression);
+                int totalParams = operands.Length;
 
-                Instruction nextInstruction = new Instruction(opcode, expression, comment);
-                InstructionSet.Add(opcode, nextInstruction);
+                string instructionTemplate = GetInstructionTemplate(opcode, totalParams);
+
+                Instruction nextInstruction = new Instruction(string.Empty, opcode, operands, comment);
+                InstructionSet.Add(instructionTemplate, nextInstruction);
 
                 nextLine = reader.ReadLine();
             }
         }
 
+        public static string Parse(string input)
+        {
+            string message = string.Empty;
+
+            if (InstructionSet.Count == 0)
+            {
+                message += "Error! No instruction set loaded";
+                return message;
+            }
+
+            StringReader reader = new StringReader(input);
+
+            int lineNumber = 1;
+            string nextLine = reader.ReadLine();
+            while (nextLine != null)
+            {
+                string opcode, label, comment;
+                string[] operands;
+
+                GetInstructionDetails(nextLine, out label, out opcode, out operands, out comment);
+
+                //string label = GetLabel(nextLine);
+                //string opcode = GetOpcode(nextLine);
+                //string[] operands = GetOperands(nextLine);
+                //string comment = GetComment(nextLine);
+
+                string instructionTemplate = GetInstructionTemplate(opcode, operands.Length);
+
+                message += lineNumber + " " + nextLine;
+
+                bool validInstruction = InstructionSet.ContainsKey(instructionTemplate);
+                if (validInstruction == false)
+                {
+                    message += "\tError: Instruction not recognized";
+                    nextLine = reader.ReadLine();
+                    continue;
+                }
+
+                Instruction instruction = new Instruction(label, opcode, operands, comment);
+                // TODO
+
+                nextLine = reader.ReadLine();
+                lineNumber++;
+            }
+
+            return message;
+        }
+
+        private static string GetInstructionTemplate(string opcode, int totalParams)
+        {
+            string instructionTemplate = opcode;
+            char nextOperand = 'A';
+            for (int i = 0; i < totalParams; i++)
+            {
+                if (i > 0)
+                {
+                    instructionTemplate += ", ";
+                }
+
+                instructionTemplate += " " + nextOperand.ToString();
+                nextOperand = (Char)(Convert.ToUInt16(nextOperand) + 1);    // Increment Operand
+            }
+
+            return instructionTemplate;
+        }
+
+        private static void GetInstructionDetails(string expression, out string label, out string opcode, out string[] operands, out string comment)
+        {
+            label = string.Empty;
+            int labelIndex = expression.IndexOf(':');
+            if(labelIndex > 0)
+            {
+
+                label = expression.Substring(0, labelIndex).Trim();
+                expression = expression.Substring(labelIndex + 1).Trim();
+            }
+
+            comment = string.Empty;
+            int commentIndex = expression.IndexOf(';');
+            if(commentIndex > 0)
+            {
+                comment = expression.Substring(commentIndex + 1).Trim();
+                expression = expression.Substring(0, commentIndex).Trim();
+            }
+
+            int operandIndex = expression.IndexOf(' ');
+            opcode = expression.Substring(0, operandIndex).Trim();
+            expression = expression.Substring(operandIndex + 1);
+
+            expression.Replace(" ", "");
+            operands = expression.Split(',');
+        }
+
+        private static string GetLabel(string expression)
+        {
+            int index = expression.IndexOf(':');
+            if(index < 0)
+            {
+                return string.Empty;
+            }
+
+            string label = expression.Substring(0, index - 1);
+            return label;
+        }
+
         private static string GetOpcode(string expression)
         {
+            // Remove label if present
+            int index = expression.IndexOf(":");
+            if(index > 0)
+            {
+                expression = expression.Substring(index + 1);
+            }
+
             string[] operands = expression.Split(' ');
             string opcode = operands[0].Trim().ToLower();
             return opcode;
         }
 
-        private static string[] GetParameters(string expression)
+        private static string[] GetOperands(string expression)
         {
+            // Remove label if present
+            int index = expression.IndexOf(":");
+            if (index > 0)
+            {
+                expression = expression.Substring(index + 1);
+            }
+
             string[] operands = expression.Split(' ');
             int totalOperands = operands.Length;
             int totalParams = totalOperands - 1;
@@ -145,6 +378,18 @@ namespace Bits
             }
 
             return parameters;
+        }
+
+        private static string GetComment(string expression)
+        {
+            int index = expression.IndexOf(';');
+            if (index < 0)
+            {
+                return string.Empty;
+            }
+
+            string comment = expression.Substring(index + 1);
+            return comment;
         }
     }
 }

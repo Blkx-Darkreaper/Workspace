@@ -7,3 +7,12 @@ C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.csp
 C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.MainWindow.resources
 C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.Properties.Resources.resources
 C:\Users\NicB\documents\visual studio 2013\Projects\Bits\Bits\obj\Debug\Bits.csproj.GenerateResource.Cache
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\bin\Debug\Bits.exe.config
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.exe
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.pdb
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\bin\Debug\Bits.exe
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\bin\Debug\Bits.pdb
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.MainWindow.resources
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.Properties.Resources.resources
+C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.csproj.GenerateResource.Cache

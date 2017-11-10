@@ -211,7 +211,7 @@ namespace Bits
             Graphics graphics = e.Graphics;
 
             // Advanced
-            // Date lines
+            // Data lines
             Program.DrawLine(graphics, colour, new Point(20, 0), new Point(20, display.Height));
             Program.DrawLine(graphics, colour, new Point(25, 0), new Point(25, display.Height));
 

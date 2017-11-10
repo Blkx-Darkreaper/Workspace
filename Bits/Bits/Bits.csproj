@@ -48,6 +48,7 @@
     <Compile Include="Assembler.cs" />
     <Compile Include="BIOS.cs" />
     <Compile Include="Block.cs" />
+    <Compile Include="Compiler.cs" />
     <Compile Include="ControlLine.cs" />
     <Compile Include="DataBit.cs" />
     <Compile Include="DataCapacitor.cs" />
