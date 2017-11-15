@@ -51,7 +51,7 @@ namespace Bits
 
             totalTime = 0;
 
-            Assembler.BuildInstructionSet();
+            Assembler.BuildInstructionSet6Bit();
 
             //debugMode = true; //debug
 

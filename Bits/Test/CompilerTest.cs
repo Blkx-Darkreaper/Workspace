@@ -14,7 +14,7 @@ namespace Test
         {
             Assembler.BuildInstructionSet6Bit();
 
-            Compiler compiler = new Compiler();
+            this.compiler = new Compiler();
         }
 
         /* Registers:
@@ -30,6 +30,17 @@ namespace Test
          * eip - Instruction pointer
          * |-       32 bits         -|
          */
+
+        [TestMethod]
+        public void CompileVoidFunctionDef()
+        {
+            string code = @"function void Nothing(int a, int b) {"
+                + "\tint c = a + b;"
+                + "\t return;"
+                + "}";
+
+            List<Instruction> allInstructions = compiler.Compile(code);
+        }
 
         [TestMethod]
         public void CompileFunctionDef()
@@ -50,6 +61,62 @@ namespace Test
              * pop ebp ; restore base pointer
              * ret
              */
+
+            Assert.IsTrue(allInstructions.Count == 8);
+
+            Instruction first = allInstructions[0];
+            Instruction testFirst = Assembler.InstructionSet["psh A"];
+            Assert.IsTrue(first.Opcode.Equals(testFirst.Opcode));
+            Assert.IsTrue(first.Label.Equals("Add"));
+            Assert.IsTrue(first.Operands.Length == 1);
+            Assert.IsTrue(first.Operands[0].Equals("ebp"));
+
+            Instruction second = allInstructions[1];
+            Instruction testSecond = Assembler.InstructionSet["mov A, B"];
+            Assert.IsTrue(second.Opcode.Equals(testSecond.Opcode));
+            Assert.IsTrue(second.Operands.Length == 2);
+            Assert.IsTrue(second.Operands[0].Equals("ebp"));
+            Assert.IsTrue(second.Operands[1].Equals("esp"));
+
+            Instruction third = allInstructions[2];
+            Instruction testThird = Assembler.InstructionSet["sub A, B"];
+            Assert.IsTrue(third.Opcode.Equals(testThird.Opcode));
+            Assert.IsTrue(third.Operands.Length == 2);
+            Assert.IsTrue(second.Operands[0].Equals("esp"));
+            Assert.IsTrue(second.Operands[1].Equals("4"));
+
+            Instruction fourth = allInstructions[3];
+            Instruction testFourth = Assembler.InstructionSet["add A, B, C"];
+            Assert.IsTrue(fourth.Opcode.Equals(testFourth.Opcode));
+            Assert.IsTrue(fourth.Operands.Length == 3);
+            //Assert.IsTrue(fourth.Operands[0].Equals("R1"));
+            //Assert.IsTrue(fourth.Operands[1].Equals("R1"));
+            //Assert.IsTrue(fourth.Operands[2].Equals("R1"));
+
+            Instruction fifth = allInstructions[4];
+            Instruction testFifth = Assembler.InstructionSet["mov A, B"];
+            Assert.IsTrue(fifth.Opcode.Equals(testFifth.Opcode));
+            Assert.IsTrue(fifth.Operands.Length == 2);
+            Assert.IsTrue(fifth.Operands[0].Equals("eax"));
+            //Assert.IsTrue(fifth.Operands[1].Equals(""));
+
+            Instruction sixth = allInstructions[5];
+            Instruction testSixth = Assembler.InstructionSet["mov A, B"];
+            Assert.IsTrue(sixth.Opcode.Equals(testSixth.Opcode));
+            Assert.IsTrue(sixth.Operands.Length == 2);
+            Assert.IsTrue(sixth.Operands[0].Equals("esp"));
+            Assert.IsTrue(sixth.Operands[1].Equals("ebp"));
+
+            Instruction seventh = allInstructions[6];
+            Instruction testSeventh = Assembler.InstructionSet["pop A"];
+            Assert.IsTrue(seventh.Opcode.Equals(testSeventh.Opcode));
+            Assert.IsTrue(seventh.Operands.Length == 1);
+            Assert.IsTrue(seventh.Operands[0].Equals("ebp"));
+
+            Instruction eighth = allInstructions[7];
+            Instruction testEighth = Assembler.InstructionSet["ret"];
+            Assert.IsTrue(eighth.Opcode.Equals(testEighth.Opcode));
+            Assert.IsTrue(eighth.Operands.Length == 0);
         }
 
         [TestMethod]
