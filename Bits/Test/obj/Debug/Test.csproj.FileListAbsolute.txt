@@ -1,9 +1,9 @@
+C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Test.dll
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Test.pdb
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Bits.exe
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Bits.pdb
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
-C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.dll
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.pdb

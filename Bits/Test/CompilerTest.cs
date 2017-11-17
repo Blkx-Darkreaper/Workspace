@@ -8,6 +8,8 @@ namespace Test
     public class CompilerTest
     {
         protected Compiler compiler;
+        protected string errors;
+        protected List<Instruction> allInstructions;
 
         [TestInitialize]
         public void TestInitialize()
@@ -15,6 +17,16 @@ namespace Test
             Assembler.BuildInstructionSet6Bit();
 
             this.compiler = new Compiler();
+            this.errors = string.Empty;
+            this.allInstructions = new List<Instruction>();
+        }
+
+        [TestMethod]
+        public void PerformBedmas()
+        {
+            string equation = "(2+(4-1))-2";
+
+            compiler.PerformBedmas(ref allInstructions, equation);
         }
 
         /* Registers:
@@ -39,7 +51,7 @@ namespace Test
                 + "\t return;"
                 + "}";
 
-            List<Instruction> allInstructions = compiler.Compile(code);
+            List<Instruction> allInstructions = compiler.Compile(code, out errors);
         }
 
         [TestMethod]
@@ -50,7 +62,7 @@ namespace Test
                 + "\treturn c;"
                 + "}";
 
-            List<Instruction> allInstructions = compiler.Compile(code);
+            List<Instruction> allInstructions = compiler.Compile(code, out errors);
 
             /* Add: psh ebp ; save the value of base pointer
              * mov ebp, esp ; base pointer now points to top of stack
@@ -126,7 +138,7 @@ namespace Test
                 + "int b = 3;"
                 + "int c = Add(a + b);";
 
-            List<Instruction> allInstructions = compiler.Compile(code);
+            List<Instruction> allInstructions = compiler.Compile(code, out errors);
 
             /* sub esp, 12 ; adjust stack pointer to allocate space for var a, b, c 4 * 3
              * mov [ebp - 4], 2 ; set var a = 2
@@ -148,7 +160,7 @@ namespace Test
                 + "// Loop body"
                 + "}";
 
-            List<Instruction> allInstructions = compiler.Compile(code);
+            List<Instruction> allInstructions = compiler.Compile(code, out errors);
 
             /* mov 0, R1
              * L1:
