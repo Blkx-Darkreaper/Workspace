@@ -383,13 +383,26 @@ namespace Bits
             }
 
             string lineEnd = line.Substring(line.IndexOf(";"));
-            string comment = lineEnd.Substring(lineEnd.IndexOf("//"));
+            string comment = GetComment(line);
 
             throw new NotImplementedException();
 
             string operation = opMatch.Groups[0].Value;
             string remainder = line.Substring(operation.Length + lineEnd.Length);
             return remainder;
+        }
+
+        protected string GetComment(string line)
+        {
+            string comment = string.Empty;
+            int commentIndex = line.IndexOf("//");
+            if (commentIndex < 0)
+            {
+                return comment;
+            }
+
+            comment = line.Substring(commentIndex);
+            return comment;
         }
 
         protected string CompileUnaryOperation(ref List<Instruction> allInstructions, string line)
@@ -402,7 +415,7 @@ namespace Bits
             }
 
             string lineEnd = line.Substring(line.IndexOf(";"));
-            string comment = lineEnd.Substring(lineEnd.IndexOf("//"));
+            string comment = GetComment(line);
 
             throw new NotImplementedException();
 
@@ -424,14 +437,14 @@ namespace Bits
             //string commentPattern = @";\s*([\/]{2}.*)?$";
             //Match commentMatch = Regex.Match(line, commentPattern);
             string lineEnd = line.Substring(line.IndexOf(";"));
-            string comment = lineEnd.Substring(lineEnd.IndexOf("//"));
+            string comment = GetComment(line);
 
             // int c = a + b;   // Add a and b and put the result in c
 
             // add [ebp - 4], [ebp + 8], [ebp + 12] ; Add a and b and put the result in c
 
             string solution, equalityOperator, equation;
-            string result, firstOperand, secondOperand, mathOperator, resultType = string.Empty;
+            string result, resultType = string.Empty;
 
             solution = opMatch.Groups[1].Value.Trim();
             equalityOperator = opMatch.Groups[2].Value;
@@ -459,74 +472,19 @@ namespace Bits
                 result = resultVar.memoryAddress.ToString();
             }
 
-            //string operandPattern = @"(-?\w*)\s*([+\-*\/%&|^])\s*(-?\w*)";    // Does not handle parentheses
-            string operandPattern = @"([(]*)\s*(-?\w*)\s*([+\-*\/%&|^])\s*(-?\w*)\s*([)]*)";    // Handles parentheses
-            foreach (Match operandMatch in Regex.Matches(equation, operandPattern))
-            {
-                firstOperand = operandMatch.Groups[1].Value;
-                mathOperator = operandMatch.Groups[2].Value;
-                secondOperand = operandMatch.Groups[3].Value;
-
-                if (!firstOperand.Equals(string.Empty) && IsVariableName(firstOperand) == true)
-                {
-                    Variable firstVar = GetVariable(firstOperand);
-                    firstOperand = firstVar.memoryAddress.ToString();
-                }
-
-                if (!secondOperand.Equals(string.Empty) && IsVariableName(secondOperand) == true)
-                {
-                    Variable secondVar = GetVariable(secondOperand);
-                    secondOperand = secondVar.memoryAddress.ToString();
-                }
-
-                if (firstOperand.Equals(string.Empty))
-                {
-                    firstOperand = result;
-                }
-
-                switch (mathOperator)
-                {
-                    case "+":
-                        allInstructions.Add(new Instruction(opcodes["Add"], new string[] { result, firstOperand, secondOperand }, comment));
-                        break;
-
-                    case "-":
-                        allInstructions.Add(new Instruction(opcodes["Subtrack"], new string[] { result, firstOperand, secondOperand }, comment));
-                        break;
-
-                    case "*":
-                        throw new NotImplementedException("This functionality is not yet supported");
-                    //break;
-
-                    case "/":
-                        throw new NotImplementedException("This functionality is not yet supported");
-                    //break;
-
-                    case "%":
-                        throw new NotImplementedException("This functionality is not yet supported");
-                    //break;
-
-                    case "&":
-                        throw new NotImplementedException("This functionality is not yet supported");
-
-                    case "^":
-                        throw new NotImplementedException("This functionality is not yet supported");
-
-                    case "|":
-                        throw new NotImplementedException("This functionality is not yet supported");
-                }
-            }
+            BinaryTree<string> allOperations = OrderOperations(equation);
+            PerformBEDMAS(ref allInstructions, allOperations, result);
 
             string operation = opMatch.Groups[0].Value;
             string remainder = line.Substring(operation.Length + lineEnd.Length);
             return remainder;
         }
 
-        public void PerformBedmas(ref List<Instruction> allInstructions, string equation)
+        public BinaryTree<string> OrderOperations(string equation)
         {
             string firstOperand, mathOperator, secondOperand, leftParens, rightParens;
-            BinaryTree<string> ordereredOperations = new BinaryTree<string>();
-            BinaryTreeNode<string> currentNode = ordereredOperations.Root;
+            BinaryTree<string> allOperations = new BinaryTree<string>();
+            BinaryTreeNode<string> currentNode = allOperations.Root;
 
             // Strip out all white space
             equation = equation.Replace(" ", "");
@@ -560,37 +518,110 @@ namespace Bits
 
                 currentNode.SetValue(mathOperator, true);
 
-                if(secondOperand.Length > 0)
-                {
-                    currentNode.AddRightBranch(secondOperand, false);
-                } else
+                if(secondOperand.Length == 0)
                 {
                     currentNode.AddRightBranch();
+                    currentNode = currentNode.Right;
+                    continue;
                 }
 
-                currentNode = currentNode.Right;
+                currentNode.AddRightBranch(secondOperand, false);
+
+                for(int i = 0; i < rightParens.Length; i++)
+                {
+                    currentNode = currentNode.Parent;
+                }
+            }
+
+            return allOperations;
+        }
+
+        protected void PerformBEDMAS(ref List<Instruction> allInstructions, BinaryTree<string> allOperations, string result)
+        {
+            BinaryTreeNode<string> currentNode = allOperations.Root;
+            BinaryTreeNode<string> leftNode = currentNode.Left;
+            BinaryTreeNode<string> rightNode = currentNode.Right;
+
+            while(leftNode.IsOperator && rightNode.IsOperator)
+            {
+                currentNode = leftNode;
+                leftNode = currentNode.Left;
+                rightNode = currentNode.Right;
+            }
+
+            string firstOperand = leftNode.Value;
+            string secondOperand = rightNode.Value;
+            string mathOperator = currentNode.Value;
+
+            if (!firstOperand.Equals(string.Empty) && IsVariableName(firstOperand) == true)
+            {
+                Variable firstVar = GetVariable(firstOperand);
+                firstOperand = firstVar.memoryAddress.ToString();
+            }
+
+            if (!secondOperand.Equals(string.Empty) && IsVariableName(secondOperand) == true)
+            {
+                Variable secondVar = GetVariable(secondOperand);
+                secondOperand = secondVar.memoryAddress.ToString();
+            }
+
+            if (firstOperand.Equals(string.Empty))
+            {
+                firstOperand = result;
+            }
+
+            switch (mathOperator)
+            {
+                case "+":
+                    allInstructions.Add(new Instruction(opcodes["Add"], new string[] { result, firstOperand, secondOperand }, comment));
+                    break;
+
+                case "-":
+                    allInstructions.Add(new Instruction(opcodes["Subtrack"], new string[] { result, firstOperand, secondOperand }, comment));
+                    break;
+
+                case "*":
+                    throw new NotImplementedException("This functionality is not yet supported");
+                //break;
+
+                case "/":
+                    throw new NotImplementedException("This functionality is not yet supported");
+                //break;
+
+                case "%":
+                    throw new NotImplementedException("This functionality is not yet supported");
+                //break;
+
+                case "&":
+                    throw new NotImplementedException("This functionality is not yet supported");
+
+                case "^":
+                    throw new NotImplementedException("This functionality is not yet supported");
+
+                case "|":
+                    throw new NotImplementedException("This functionality is not yet supported");
             }
         }
 
         protected string CompileOpenBrace(string line)
         {
-            string pattern = @"{";
-            Match match = Regex.Match(line, pattern);
-            if (match.Success == false)
+            int index = line.IndexOf("{");
+            if (index < 0)
             {
                 return line;
             }
 
-            string remainder = line.Substring(1);
+            string lineEnd = line.Substring(index);
+            string comment = GetComment(line);
+
+            string remainder = line.Substring(1 + lineEnd.Length);
             return remainder;
         }
 
         protected string CompileEndBlock(ref List<Instruction> allInstructions, string line)
         {
-            string pattern = @"}";
-
-            Match match = Regex.Match(line, pattern);
-            if (match.Success == false)
+            int index = line.IndexOf("}");
+            if (index < 0)
             {
                 return line;
             }
@@ -598,13 +629,16 @@ namespace Bits
             CompileFunctionDefEnd(ref allInstructions);
             CompileLoopEnd(ref allInstructions);
 
-            string remainder = line.Substring(1);
+            string lineEnd = line.Substring(index);
+            string comment = GetComment(line);
+
+            string remainder = line.Substring(1 + comment.Length);
             return remainder;
         }
 
         protected string CompileFunctionDef(ref List<Instruction> allInstructions, string line)
         {
-            string functionPattern = @"function\s+(\w+)\s+(\w+)[(]?([^)]*)[)]\s*{?";
+            string functionPattern = @"\s*function\s+(\w+)\s+(\w+)[(]?([^)]*)[)]\s*{?";
 
             Match functionMatch = Regex.Match(line, functionPattern);
             if (functionMatch.Success == false)
@@ -643,9 +677,12 @@ namespace Bits
 
             // Consume function signature
             string signature = functionMatch.Groups[0].Value;
-            OpenBlock(signature);
+            OpenBlock(signature.Trim());
 
-            string remainder = line.Substring(signature.Length);
+            string lineEnd = line.Substring(signature.Length);
+            string comment = GetComment(line);
+
+            string remainder = line.Substring(signature.Length + lineEnd.Length);
             return remainder;
         }
 

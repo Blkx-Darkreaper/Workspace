@@ -26,7 +26,7 @@ namespace Test
         {
             string equation = "(2+(4-1))-2";
 
-            compiler.PerformBedmas(ref allInstructions, equation);
+            compiler.OrderOperations(ref allInstructions, equation);
         }
 
         /* Registers:

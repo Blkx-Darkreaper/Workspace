@@ -7,3 +7,12 @@ C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Bits.pdb
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.dll
 C:\Users\NicB\Documents\Git\Workspace\Bits\Test\obj\Debug\Test.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Test.dll
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Test.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Bits.exe
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Bits.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\obj\Debug\Test.dll
+D:\Users\Darkreaper\Git\Workspace\Bits\Test\obj\Debug\Test.pdb

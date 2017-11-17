@@ -16,3 +16,12 @@ C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.Properties.Resour
 C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.csproj.GenerateResource.Cache
 C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.exe
 C:\Users\NicB\Documents\Git\Workspace\Bits\Bits\obj\Debug\Bits.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\bin\Debug\Bits.exe.config
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.exe
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\bin\Debug\Bits.exe
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\bin\Debug\Bits.pdb
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.MainWindow.resources
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.Properties.Resources.resources
+D:\Users\Darkreaper\Git\Workspace\Bits\Bits\obj\Debug\Bits.csproj.GenerateResource.Cache
