@@ -16,13 +16,15 @@ namespace Bits
         public string Comment { get; protected set; }
         public static int nextValue = 1;
 
-        public Instruction(string opcode) : this(string.Empty, opcode, new string[] { }, string.Empty) { }
+        public Instruction() : this(string.Empty) { }
 
-        public Instruction(string opcode, string[] operands) : this(string.Empty, opcode, operands, string.Empty) { }
+        public Instruction(string opcode) : this(opcode, new string[] { }, string.Empty, string.Empty) { }
 
-        public Instruction(string opcode, string[] operands, string comment) : this(string.Empty, opcode, operands, comment) { }
+        public Instruction(string opcode, string[] operands) : this(opcode, operands, string.Empty, string.Empty) { }
 
-        public Instruction(string label, string opcode, string[] operands, string comment)
+        public Instruction(string opcode, string label = "", string comment = "") :this(opcode, new string[] { }, label, comment) { }
+
+        public Instruction(string opcode, string[] operands, string label = "", string comment = "")
         {
             this.Value = nextValue;
             nextValue++;

@@ -22,11 +22,48 @@ namespace Test
         }
 
         [TestMethod]
-        public void PerformBedmas()
+        public void HandleBrackets()
         {
-            string equation = "(2+(4-1))-2";
+            string equation = "(2+(4-1))-3";
 
-            compiler.OrderOperations(ref allInstructions, equation);
+            compiler.AddGlobalVariable("Result", "int", 0);
+            compiler.PerformAllOperations(ref allInstructions, equation, "Result", string.Empty);
+
+            Assert.IsTrue(allInstructions.Count == 3);
+
+            Instruction first = allInstructions[0];
+            Instruction testFirst = Assembler.InstructionSet["sub A, B, C"];
+            Assert.IsTrue(first.Opcode.Equals(testFirst.Opcode));
+            Assert.IsTrue(first.Operands.Length == 3);
+            Assert.IsTrue(first.Operands[0].Equals("Result"));
+            Assert.IsTrue(first.Operands[1].Equals("4"));
+            Assert.IsTrue(first.Operands[2].Equals("1"));
+
+            Instruction second = allInstructions[1];
+            Instruction testSecond = Assembler.InstructionSet["add A, B, C"];
+            Assert.IsTrue(second.Opcode.Equals(testSecond.Opcode));
+            Assert.IsTrue(second.Operands.Length == 3);
+            Assert.IsTrue(second.Operands[0].Equals("Result"));
+            Assert.IsTrue(second.Operands[1].Equals("2"));
+            Assert.IsTrue(second.Operands[2].Equals("Result"));
+
+            Instruction third = allInstructions[2];
+            Instruction testThird = Assembler.InstructionSet["sub A, B, C"];
+            Assert.IsTrue(third.Opcode.Equals(testThird.Opcode));
+            Assert.IsTrue(third.Operands.Length == 3);
+            Assert.IsTrue(third.Operands[0].Equals("Result"));
+            Assert.IsTrue(third.Operands[1].Equals("Result"));
+            Assert.IsTrue(third.Operands[2].Equals("3"));
+        }
+
+        [TestMethod]
+        public void HandleArithmeticOrder()
+        {
+            string equation = "3+1*5-4/2";
+
+            compiler.AddGlobalVariable("Result", "int", 0);
+
+            BinaryTree<string> allOperations = compiler.OrderOperations(equation);
         }
 
         /* Registers:

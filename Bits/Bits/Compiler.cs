@@ -20,7 +20,7 @@ namespace Bits
             allOpcodes.Add("pop", "pop");
             allOpcodes.Add("add", "add");
             allOpcodes.Add("sub", "sub");
-            allOpcodes.Add("subtrack", "sub");
+            allOpcodes.Add("subtract", "sub");
             allOpcodes.Add("return", "ret");
         }
     }
@@ -45,14 +45,18 @@ namespace Bits
             this.Parent = parent;
         }
 
+        public BinaryTreeNode(BinaryTreeNode<T> parent, BinaryTreeNode<T> left, BinaryTreeNode<T> right) : this(parent)
+        {
+            this.Left = left;
+            this.Right = right;
+        }
+
         public BinaryTreeNode(T value, bool isOperator, BinaryTreeNode<T> parent) : this(value, isOperator, parent, null, null) { }
 
-        public BinaryTreeNode(T value, bool isOperator, BinaryTreeNode<T> parent, BinaryTreeNode<T> left, BinaryTreeNode<T> right) : this(parent)
+        public BinaryTreeNode(T value, bool isOperator, BinaryTreeNode<T> parent, BinaryTreeNode<T> left, BinaryTreeNode<T> right) : this(parent, left, right)
         {
             this.Value = value;
             this.IsOperator = isOperator;
-            this.Left = left;
-            this.Right = right;
         }
 
         public void SetValue(T value, bool isOperator)
@@ -100,6 +104,19 @@ namespace Bits
 
             this.Right = new BinaryTreeNode<T>(value, isOperator, this);
         }
+
+        public void SplitLeft()
+        {
+            BinaryTreeNode<T> parent = this.Parent;
+            BinaryTreeNode<T> nodeToInsert = new BinaryTreeNode<T>(parent, this, null);
+            this.Parent = nodeToInsert;
+            if(parent == null)
+            {
+                return;
+            }
+
+            parent.Right = nodeToInsert;
+        }
     }
 
     public class BinaryTree<T>
@@ -119,6 +136,14 @@ namespace Bits
         public BinaryTree(T value)
         {
             this.Root = new BinaryTreeNode<T>(value, true, null);
+        }
+
+        public void UpdateRoot()
+        {
+            while(Root.Parent != null)
+            {
+                this.Root = Root.Parent;
+            }
         }
     }
 
@@ -176,6 +201,77 @@ namespace Bits
     {
         protected OpcodeSet opcodes = new OpcodeSet();
         protected List<CodeBlock> allBlocks = new List<CodeBlock>();
+        public Dictionary<string, int> allOperators = new Dictionary<string, int>();
+
+        public Compiler()
+        {
+            allBlocks.Add(new CodeBlock());
+
+            // Expression
+            allOperators.Add("[]", 1);
+            allOperators.Add("()", 1);
+            allOperators.Add(".", 1);
+            allOperators.Add("->", 1);
+            allOperators.Add(" ++", 1); // postfix
+            allOperators.Add(" --", 1); // postfix
+            // Unary: Right to Left
+            allOperators.Add("++ ", 1); // prefix
+            allOperators.Add("-- ", 1); // prefix
+            allOperators.Add("~", 1);
+            allOperators.Add("!", 1);
+            // Unary typecasts: Right to left
+            // Multiplicative
+            allOperators.Add("*", 4);
+            allOperators.Add("/", 4);
+            allOperators.Add("%", 4);
+            // Additive
+            allOperators.Add("+", 5);
+            allOperators.Add("-", 5);
+            // Bitwise shift
+            allOperators.Add("<<", 6);
+            allOperators.Add(">>", 6);
+            // Relational
+            allOperators.Add(">", 7);
+            allOperators.Add("<", 7);
+            allOperators.Add(">=", 7);
+            allOperators.Add("<=", 7);
+            // Equality
+            allOperators.Add("==", 8);
+            allOperators.Add("!=", 8);
+            // Bitwise-AND
+            allOperators.Add("&", 9);
+            // Bitwise-exclusive-OR
+            allOperators.Add("^", 10);
+            // Bitwise-inclusive-OR
+            allOperators.Add("|", 11);
+            // Logical-AND
+            allOperators.Add("&&", 12);
+            // Logical-OR
+            allOperators.Add("||", 13);
+            // Conditional-expression: Right to left
+            // Simple and compound assignment: Right to left
+            allOperators.Add("=", 15);
+            allOperators.Add("*=", 15);
+            allOperators.Add("/=", 15);
+            allOperators.Add("%=", 15);
+            allOperators.Add("+=", 15);
+            allOperators.Add("-=", 15);
+            allOperators.Add("<<=", 15);
+            allOperators.Add(">>=", 15);
+            allOperators.Add("&=", 15);
+            allOperators.Add("^=", 15);
+            allOperators.Add("|=", 15);
+            // Sequential evaluation
+            allOperators.Add(",", 16);
+        }
+
+        public int CompareOperators(string op, string otherOp)
+        {
+            int opValue = allOperators[op];
+            int otherOpValue = allOperators[otherOp];
+
+            return otherOpValue - opValue;
+        }
 
         public int Get32BitTypeSize(string type)
         {
@@ -292,7 +388,7 @@ namespace Bits
 
         public Variable GetVariable(string name)
         {
-            for (int i = allBlocks.Count; i >= 0; i--)
+            for (int i = allBlocks.Count - 1; i >= 0; i--)
             {
                 CodeBlock block = allBlocks[i];
                 bool hasVar = block.allLocalVariables.ContainsKey(name);
@@ -307,7 +403,7 @@ namespace Bits
             throw new CompilerException(String.Format("The name '{0}' does not exist in the current context"));
         }
 
-        public bool IsVariableName(string name)
+        public bool IsValidVariableName(string name)
         {
             // Variable names must start with _ or alphabetical character
             // Variable names cannot contain any non-alphanumeric characters, except for _'s
@@ -473,7 +569,7 @@ namespace Bits
             }
 
             BinaryTree<string> allOperations = OrderOperations(equation);
-            PerformBEDMAS(ref allInstructions, allOperations, result);
+            PerformAllOperations(ref allInstructions, allOperations, result, comment);
 
             string operation = opMatch.Groups[0].Value;
             string remainder = line.Substring(operation.Length + lineEnd.Length);
@@ -482,7 +578,7 @@ namespace Bits
 
         public BinaryTree<string> OrderOperations(string equation)
         {
-            string firstOperand, mathOperator, secondOperand, leftParens, rightParens;
+            string firstOperand, arithOperator, secondOperand, leftParens, rightParens;
             BinaryTree<string> allOperations = new BinaryTree<string>();
             BinaryTreeNode<string> currentNode = allOperations.Root;
 
@@ -490,15 +586,16 @@ namespace Bits
             equation = equation.Replace(" ", "");
 
             //string operandPattern = @"(-?\w*)\s*([+\-*\/%&|^])\s*(-?\w*)";    // Does not handle parentheses
-            string operandPattern = @"([(]*)(-?\w*)([+\-*\/%&|^])(-?\w*)([)]*)";    // Handles parentheses
+            string operandPattern = @"([(]*)(-?\w*)?([+\-*\/%&|^]|<<|>>)(-?\w*)([)]*)";    // Handles parentheses
             foreach (Match match in Regex.Matches(equation, operandPattern))
             {
                 leftParens = match.Groups[1].Value;
                 firstOperand = match.Groups[2].Value;
-                mathOperator = match.Groups[3].Value;
+                arithOperator = match.Groups[3].Value;
                 secondOperand = match.Groups[4].Value;
                 rightParens = match.Groups[5].Value;
 
+                // Handle parentheses
                 int leftBranches = leftParens.Length - rightParens.Length;
                 if(leftBranches < 0)
                 {
@@ -511,13 +608,41 @@ namespace Bits
                     currentNode = currentNode.Left;
                 }
 
+                // Set left operand
                 if(firstOperand.Length > 0)
                 {
                     currentNode.AddLeftBranch(firstOperand, false);
                 }
 
-                currentNode.SetValue(mathOperator, true);
+                // Split branch in accordance to order of operations
+                if(currentNode.Value != null)
+                {
+                    string previousOperator = currentNode.Value;
 
+                    int comparison = CompareOperators(arithOperator, previousOperator);
+                    while (comparison < 0)
+                    {
+                        currentNode = currentNode.Parent;   // Retrace up the tree
+
+                        previousOperator = currentNode.Value;
+                        comparison = CompareOperators(arithOperator, previousOperator);
+                    }
+
+                    // New operator has higher precedence
+                    if (comparison > 0)
+                    {
+                        currentNode = currentNode.Right;
+                    }
+
+                    currentNode.SplitLeft();
+                    currentNode = currentNode.Parent;
+                    allOperations.UpdateRoot();
+                }
+
+                // Set operator
+                currentNode.SetValue(arithOperator, true);
+
+                // Next match contains left parentheses
                 if(secondOperand.Length == 0)
                 {
                     currentNode.AddRightBranch();
@@ -525,8 +650,10 @@ namespace Bits
                     continue;
                 }
 
+                // Set right operand
                 currentNode.AddRightBranch(secondOperand, false);
 
+                // Retrace up the tree
                 for(int i = 0; i < rightParens.Length; i++)
                 {
                     currentNode = currentNode.Parent;
@@ -536,48 +663,51 @@ namespace Bits
             return allOperations;
         }
 
-        protected void PerformBEDMAS(ref List<Instruction> allInstructions, BinaryTree<string> allOperations, string result)
+        public void PerformAllOperations(ref List<Instruction> allInstructions, string equation, string result, string comment)
         {
-            BinaryTreeNode<string> currentNode = allOperations.Root;
-            BinaryTreeNode<string> leftNode = currentNode.Left;
-            BinaryTreeNode<string> rightNode = currentNode.Right;
+            BinaryTree<string> allOperations = OrderOperations(equation);
+            PerformAllOperations(ref allInstructions, allOperations, result, comment);
+        }
 
-            while(leftNode.IsOperator && rightNode.IsOperator)
+        protected void PerformAllOperations(ref List<Instruction> allInstructions, BinaryTree<string> allOperations, string result, string comment)
+        {
+            if (comment.Length > 0)
             {
-                currentNode = leftNode;
-                leftNode = currentNode.Left;
-                rightNode = currentNode.Right;
+                allInstructions.Add(new Instruction(string.Empty, comment: comment));
             }
 
-            string firstOperand = leftNode.Value;
-            string secondOperand = rightNode.Value;
-            string mathOperator = currentNode.Value;
+            BinaryTreeNode<string> root = allOperations.Root;
+            PerformOperation(ref allInstructions, root, result);
+        }
 
-            if (!firstOperand.Equals(string.Empty) && IsVariableName(firstOperand) == true)
-            {
-                Variable firstVar = GetVariable(firstOperand);
-                firstOperand = firstVar.memoryAddress.ToString();
-            }
+        protected string PerformOperation(ref List<Instruction> allInstructions, BinaryTreeNode<string> operation, string result)
+        {
+            string firstOperand = GetOperand(ref allInstructions, operation.Left, result);
+            string arithOperator = operation.Value;
+            string secondOperand = GetOperand(ref allInstructions, operation.Right, result);
 
-            if (!secondOperand.Equals(string.Empty) && IsVariableName(secondOperand) == true)
-            {
-                Variable secondVar = GetVariable(secondOperand);
-                secondOperand = secondVar.memoryAddress.ToString();
-            }
+            //bool isVar = IsValidVariableName(firstOperand);
+            //if (isVar == true)
+            //{
+            //    Variable firstVar = GetVariable(firstOperand);
+            //    firstOperand = firstVar.memoryAddress.ToString();
+            //}
 
-            if (firstOperand.Equals(string.Empty))
-            {
-                firstOperand = result;
-            }
+            //isVar = IsValidVariableName(secondOperand);
+            //if (isVar == true)
+            //{
+            //    Variable secondVar = GetVariable(secondOperand);
+            //    secondOperand = secondVar.memoryAddress.ToString();
+            //}
 
-            switch (mathOperator)
+            switch (arithOperator)
             {
                 case "+":
-                    allInstructions.Add(new Instruction(opcodes["Add"], new string[] { result, firstOperand, secondOperand }, comment));
+                    allInstructions.Add(new Instruction(opcodes["Add"], new string[] { result, firstOperand, secondOperand }));
                     break;
 
                 case "-":
-                    allInstructions.Add(new Instruction(opcodes["Subtrack"], new string[] { result, firstOperand, secondOperand }, comment));
+                    allInstructions.Add(new Instruction(opcodes["Subtract"], new string[] { result, firstOperand, secondOperand }));
                     break;
 
                 case "*":
@@ -601,6 +731,18 @@ namespace Bits
                 case "|":
                     throw new NotImplementedException("This functionality is not yet supported");
             }
+
+            return result;
+        }
+
+        protected string GetOperand(ref List<Instruction> allInstructions, BinaryTreeNode<string> node, string result)
+        {
+            if(node.IsOperator == true)
+            {
+                return PerformOperation(ref allInstructions, node, result);
+            }
+
+            return node.Value;
         }
 
         protected string CompileOpenBrace(string line)
@@ -667,12 +809,12 @@ namespace Bits
 
             string functionName = functionMatch.Groups[2].Value;
 
-            allInstructions.Add(new Instruction(functionName, opcodes["Push"], new string[] { "ebp" }, "save the value of base pointer"));
-            allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "ebp", "esp" }, "base pointer now points to top of stack"));
+            allInstructions.Add(new Instruction(opcodes["Push"], new string[] { "ebp" }, functionName, "save the value of base pointer"));
+            allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "ebp", "esp" }, comment: "base pointer now points to top of stack"));
 
             if (returnTypeSize > 0)
             {
-                allInstructions.Add(new Instruction(opcodes["Sub"], new string[] { "esp", returnTypeSize.ToString() }, "adjust stack pointer to allocate space for var c 4 * 1"));
+                allInstructions.Add(new Instruction(opcodes["Sub"], new string[] { "esp", returnTypeSize.ToString() }, comment: "adjust stack pointer to allocate space for var c 4 * 1"));
             }
 
             // Consume function signature
@@ -717,11 +859,11 @@ namespace Bits
             int returnTypeSize = GetTypeSize(returnType);
             if (returnTypeSize > 0)
             {
-                allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "eax", string.Format("[ebp - {0}]", returnTypeSize) }, "save return value to EAX register"));
+                allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "eax", string.Format("[ebp - {0}]", returnTypeSize) }, comment: "save return value to EAX register"));
             }
 
-            allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "esp", "ebp" }, "epilog: restore stack pointer"));
-            allInstructions.Add(new Instruction(opcodes["Pop"], new string[] { "ebp" }, "restore base pointer"));
+            allInstructions.Add(new Instruction(opcodes["Move"], new string[] { "esp", "ebp" }, comment: "epilog: restore stack pointer"));
+            allInstructions.Add(new Instruction(opcodes["Pop"], new string[] { "ebp" }, comment: "restore base pointer"));
             allInstructions.Add(new Instruction(opcodes["Return"]));
         }
 
