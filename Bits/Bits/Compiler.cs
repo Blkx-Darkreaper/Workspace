@@ -97,7 +97,7 @@ namespace Bits
 
         public void AddRightBranch(T value, bool isOperator)
         {
-            if(Right != null)
+            if (Right != null)
             {
                 return;
             }
@@ -110,7 +110,7 @@ namespace Bits
             BinaryTreeNode<T> parent = this.Parent;
             BinaryTreeNode<T> nodeToInsert = new BinaryTreeNode<T>(parent, this, null);
             this.Parent = nodeToInsert;
-            if(parent == null)
+            if (parent == null)
             {
                 return;
             }
@@ -140,7 +140,7 @@ namespace Bits
 
         public void UpdateRoot()
         {
-            while(Root.Parent != null)
+            while (Root.Parent != null)
             {
                 this.Root = Root.Parent;
             }
@@ -586,18 +586,25 @@ namespace Bits
             equation = equation.Replace(" ", "");
 
             //string operandPattern = @"(-?\w*)\s*([+\-*\/%&|^])\s*(-?\w*)";    // Does not handle parentheses
-            string operandPattern = @"([(]*)(-?\w*)?([+\-*\/%&|^]|<<|>>)(-?\w*)([)]*)";    // Handles parentheses
+            string operandPattern = @"([(]*)(-?\w*)([+\-*\/%&|^]|<<|>>)?([)]*)";    // Handles parentheses
             foreach (Match match in Regex.Matches(equation, operandPattern))
             {
                 leftParens = match.Groups[1].Value;
-                firstOperand = match.Groups[2].Value;
-                arithOperator = match.Groups[3].Value;
-                secondOperand = match.Groups[4].Value;
-                rightParens = match.Groups[5].Value;
+                rightParens = match.Groups[match.Groups.Count - 1].Value;
+
+                if (match.Groups[3].Value.Length > 0)
+                {
+                    firstOperand = match.Groups[2].Value;
+                    arithOperator = match.Groups[3].Value;
+                }
+                else
+                {
+                    secondOperand = match.Groups[2].Value;
+                }
 
                 // Handle parentheses
                 int leftBranches = leftParens.Length - rightParens.Length;
-                if(leftBranches < 0)
+                if (leftBranches < 0)
                 {
                     leftBranches = 0;
                 }
@@ -609,13 +616,13 @@ namespace Bits
                 }
 
                 // Set left operand
-                if(firstOperand.Length > 0)
+                if (firstOperand.Length > 0)
                 {
                     currentNode.AddLeftBranch(firstOperand, false);
                 }
 
                 // Split branch in accordance to order of operations
-                if(currentNode.Value != null)
+                if (currentNode.Value != null)
                 {
                     string previousOperator = currentNode.Value;
 
@@ -643,7 +650,7 @@ namespace Bits
                 currentNode.SetValue(arithOperator, true);
 
                 // Next match contains left parentheses
-                if(secondOperand.Length == 0)
+                if (secondOperand.Length == 0)
                 {
                     currentNode.AddRightBranch();
                     currentNode = currentNode.Right;
@@ -654,7 +661,7 @@ namespace Bits
                 currentNode.AddRightBranch(secondOperand, false);
 
                 // Retrace up the tree
-                for(int i = 0; i < rightParens.Length; i++)
+                for (int i = 0; i < rightParens.Length; i++)
                 {
                     currentNode = currentNode.Parent;
                 }
@@ -737,7 +744,7 @@ namespace Bits
 
         protected string GetOperand(ref List<Instruction> allInstructions, BinaryTreeNode<string> node, string result)
         {
-            if(node.IsOperator == true)
+            if (node.IsOperator == true)
             {
                 return PerformOperation(ref allInstructions, node, result);
             }
