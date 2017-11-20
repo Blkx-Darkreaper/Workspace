@@ -592,6 +592,10 @@ namespace Bits
                 leftParens = match.Groups[1].Value;
                 rightParens = match.Groups[match.Groups.Count - 1].Value;
 
+                firstOperand = string.Empty;
+                arithOperator = string.Empty;
+                secondOperand = string.Empty;
+
                 if (match.Groups[3].Value.Length > 0)
                 {
                     firstOperand = match.Groups[2].Value;
@@ -615,19 +619,28 @@ namespace Bits
                     currentNode = currentNode.Left;
                 }
 
-                // Set left operand
-                if (firstOperand.Length > 0)
-                {
-                    currentNode.AddLeftBranch(firstOperand, false);
-                }
-
-                // Split branch in accordance to order of operations
-                if (currentNode.Value != null)
+                // Split branch in accordance with order of operations
+                if (currentNode.Value != null && arithOperator.Length > 0)
                 {
                     string previousOperator = currentNode.Value;
 
                     int comparison = CompareOperators(arithOperator, previousOperator);
-                    while (comparison < 0)
+                    // New operator has higher precedence
+                    if (comparison > 0)
+                    {
+                        currentNode.AddRightBranch();
+                        currentNode = currentNode.Right;
+                    }
+                    else
+                    {
+                        // Set right operand
+                        if (firstOperand.Length > 0)
+                        {
+                            currentNode.AddRightBranch(firstOperand, false);
+                            firstOperand = string.Empty;
+                        }
+
+                        while (comparison < 0)
                     {
                         currentNode = currentNode.Parent;   // Retrace up the tree
 
@@ -635,25 +648,27 @@ namespace Bits
                         comparison = CompareOperators(arithOperator, previousOperator);
                     }
 
-                    // New operator has higher precedence
-                    if (comparison > 0)
-                    {
-                        currentNode = currentNode.Right;
+                        currentNode.SplitLeft();
+                        currentNode = currentNode.Parent;
+                        allOperations.UpdateRoot();
                     }
+                }
 
-                    currentNode.SplitLeft();
-                    currentNode = currentNode.Parent;
-                    allOperations.UpdateRoot();
+                // Set left operand
+                if (firstOperand.Length > 0)
+                {
+                    currentNode.AddLeftBranch(firstOperand, false);
                 }
 
                 // Set operator
-                currentNode.SetValue(arithOperator, true);
+                if (arithOperator.Length > 0)
+                {
+                    currentNode.SetValue(arithOperator, true);
+                }
 
                 // Next match contains left parentheses
                 if (secondOperand.Length == 0)
                 {
-                    currentNode.AddRightBranch();
-                    currentNode = currentNode.Right;
                     continue;
                 }
 
