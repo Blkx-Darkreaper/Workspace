@@ -22,41 +22,6 @@ namespace Test
         }
 
         [TestMethod]
-        public void HandleBrackets()
-        {
-            string equation = "(2+(4-1))-3";
-
-            compiler.AddGlobalVariable("Result", "int", 0);
-            compiler.PerformAllOperations(ref allInstructions, equation, "Result", string.Empty);
-
-            Assert.IsTrue(allInstructions.Count == 3);
-
-            Instruction first = allInstructions[0];
-            Instruction testFirst = Assembler.InstructionSet["sub A, B, C"];
-            Assert.IsTrue(first.Opcode.Equals(testFirst.Opcode));
-            Assert.IsTrue(first.Operands.Length == 3);
-            Assert.IsTrue(first.Operands[0].Equals("Result"));
-            Assert.IsTrue(first.Operands[1].Equals("4"));
-            Assert.IsTrue(first.Operands[2].Equals("1"));
-
-            Instruction second = allInstructions[1];
-            Instruction testSecond = Assembler.InstructionSet["add A, B, C"];
-            Assert.IsTrue(second.Opcode.Equals(testSecond.Opcode));
-            Assert.IsTrue(second.Operands.Length == 3);
-            Assert.IsTrue(second.Operands[0].Equals("Result"));
-            Assert.IsTrue(second.Operands[1].Equals("2"));
-            Assert.IsTrue(second.Operands[2].Equals("Result"));
-
-            Instruction third = allInstructions[2];
-            Instruction testThird = Assembler.InstructionSet["sub A, B, C"];
-            Assert.IsTrue(third.Opcode.Equals(testThird.Opcode));
-            Assert.IsTrue(third.Operands.Length == 3);
-            Assert.IsTrue(third.Operands[0].Equals("Result"));
-            Assert.IsTrue(third.Operands[1].Equals("Result"));
-            Assert.IsTrue(third.Operands[2].Equals("3"));
-        }
-
-        [TestMethod]
         public void HandleArithmeticOrderSimple()
         {
             string equation = "3+1-2";
@@ -99,12 +64,11 @@ namespace Test
             Assert.IsTrue(allInstructions.Count == 4);
 
             Instruction first = allInstructions[0];
-            Instruction testFirst = Assembler.InstructionSet["mul A, B, C"];
+            Instruction testFirst = Assembler.InstructionSet["add A, B"];
             Assert.IsTrue(first.Opcode.Equals(testFirst.Opcode));
-            Assert.IsTrue(first.Operands.Length == 3);
+            Assert.IsTrue(first.Operands.Length == 2);
             Assert.IsTrue(first.Operands[0].Equals("Result"));
-            Assert.IsTrue(first.Operands[1].Equals("1"));
-            Assert.IsTrue(first.Operands[2].Equals("5"));
+            Assert.IsTrue(first.Operands[1].Equals("5"));
 
             Instruction second = allInstructions[1];
             Instruction testSecond = Assembler.InstructionSet["add A, B, C"];
@@ -115,10 +79,10 @@ namespace Test
             Assert.IsTrue(second.Operands[2].Equals("Result"));
 
             Instruction third = allInstructions[2];
-            Instruction testThird = Assembler.InstructionSet["div A, B, C"];
+            Instruction testThird = Assembler.InstructionSet["sub A, B, C"];
             Assert.IsTrue(third.Opcode.Equals(testThird.Opcode));
             Assert.IsTrue(third.Operands.Length == 3);
-            Assert.IsTrue(third.Operands[0].Equals("Temp"));
+            Assert.IsTrue(third.Operands[0].Equals("Quotient"));
             Assert.IsTrue(third.Operands[1].Equals("4"));
             Assert.IsTrue(third.Operands[2].Equals("2"));
 
@@ -126,9 +90,67 @@ namespace Test
             Instruction testFourth = Assembler.InstructionSet["sub A, B, C"];
             Assert.IsTrue(fourth.Opcode.Equals(testFourth.Opcode));
             Assert.IsTrue(fourth.Operands.Length == 3);
-            Assert.IsTrue(fourth.Operands[0].Equals("Result"));
-            Assert.IsTrue(fourth.Operands[1].Equals("Result"));
-            Assert.IsTrue(fourth.Operands[2].Equals("Temp"));
+            Assert.IsTrue(fourth.Operands[0].Equals("Quotient"));
+            Assert.IsTrue(fourth.Operands[1].Equals("Quotient"));
+            Assert.IsTrue(fourth.Operands[2].Equals("2"));
+
+            Instruction fifth = allInstructions[4];
+            Instruction testFifth = Assembler.InstructionSet["sub A, B, C"];
+            Assert.IsTrue(fifth.Opcode.Equals(testFifth.Opcode));
+            Assert.IsTrue(fifth.Operands.Length == 3);
+            Assert.IsTrue(fifth.Operands[0].Equals("Result"));
+            Assert.IsTrue(fifth.Operands[1].Equals("Result"));
+            Assert.IsTrue(fifth.Operands[2].Equals("Temp"));
+        }
+
+        [TestMethod]
+        public void HandleArithmeticOrderParens()
+        {
+            string equation = "(2+(4-1))-3";
+
+            compiler.AddGlobalVariable("Result", "int", 0);
+
+            BinaryTree<string> allOperations = compiler.OrderOperations(equation);
+            compiler.PerformAllOperations(ref allInstructions, equation, "Result", string.Empty);
+
+            Assert.IsTrue(allInstructions.Count == 3);
+
+            Instruction first = allInstructions[0];
+            Instruction testFirst = Assembler.InstructionSet["sub A, B, C"];
+            Assert.IsTrue(first.Opcode.Equals(testFirst.Opcode));
+            Assert.IsTrue(first.Operands.Length == 3);
+            Assert.IsTrue(first.Operands[0].Equals("Result"));
+            Assert.IsTrue(first.Operands[1].Equals("4"));
+            Assert.IsTrue(first.Operands[2].Equals("1"));
+
+            Instruction second = allInstructions[1];
+            Instruction testSecond = Assembler.InstructionSet["add A, B, C"];
+            Assert.IsTrue(second.Opcode.Equals(testSecond.Opcode));
+            Assert.IsTrue(second.Operands.Length == 3);
+            Assert.IsTrue(second.Operands[0].Equals("Result"));
+            Assert.IsTrue(second.Operands[1].Equals("2"));
+            Assert.IsTrue(second.Operands[2].Equals("Result"));
+
+            Instruction third = allInstructions[2];
+            Instruction testThird = Assembler.InstructionSet["sub A, B, C"];
+            Assert.IsTrue(third.Opcode.Equals(testThird.Opcode));
+            Assert.IsTrue(third.Operands.Length == 3);
+            Assert.IsTrue(third.Operands[0].Equals("Result"));
+            Assert.IsTrue(third.Operands[1].Equals("Result"));
+            Assert.IsTrue(third.Operands[2].Equals("3"));
+        }
+
+        [TestMethod]
+        public void HandleArithmeticOrderComplex()
+        {
+            string equation = "(3+1)*5-(4/-2)";
+
+            compiler.AddGlobalVariable("Result", "int", 0);
+
+            BinaryTree<string> allOperations = compiler.OrderOperations(equation);
+            compiler.PerformAllOperations(ref allInstructions, equation, "Result", string.Empty);
+
+            Assert.IsTrue(allInstructions.Count == 8);
         }
 
         /* Registers:
