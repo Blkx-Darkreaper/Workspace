@@ -1,0 +1,10 @@
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\bin\Debug\Pressure Puzzle Maker.exe.config
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\bin\Debug\Pressure Puzzle Maker.exe
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\bin\Debug\Pressure Puzzle Maker.pdb
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure Puzzle Maker.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure_Puzzle_Maker.Form1.resources
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure_Puzzle_Maker.Properties.Resources.resources
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure Puzzle Maker.csproj.GenerateResource.Cache
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure Puzzle Maker.csproj.CoreCompileInputs.cache
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure Puzzle Maker.exe
+D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\obj\Debug\Pressure Puzzle Maker.pdb
