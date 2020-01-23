@@ -20,18 +20,20 @@ namespace Pressure_Puzzle_Maker
         public static Image offLimitsImage = Image.FromFile(
             @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\OffLimits.png");
 
-        private static int perfectPathLength = 14;
-        private static int maxPathLength = perfectPathLength + 2;
-        private static int minPathLength = perfectPathLength - 2;
-        private static int shortPathLength = 6;
-        private static int longPathLength = 18;
+        private static int perfectPathLength = 12;
+        private static int maxOffset = 1;
+        private static int longPathLength = perfectPathLength + maxOffset;
+        private static int shortPathLength = perfectPathLength - maxOffset;
+        private static int veryShortPathLength = perfectPathLength - maxOffset * 2;
+        private static int veryLongPathLength = perfectPathLength + maxOffset * 2;
 
-        private static Color veryLongPathColour = Color.Red;
-        private static Color longPathColour = Color.Orange;
-        private static Color idealPathColour = Color.YellowGreen;
-        private static Color perfectPathColour = Color.Green;
-        private static Color shortPathColour = Color.Blue;
-        private static Color veryShortPathColour = Color.Indigo;
+        private static Color tooLongColour = Color.DarkViolet;
+        private static Color veryLongPathColour = Color.Violet;
+        private static Color longPathColour = Color.Blue;
+        private static Color perfectPathColour = Color.YellowGreen;
+        private static Color shortPathColour = Color.Orange;
+        private static Color veryShortPathColour = Color.Red;
+        private static Color tooShortColour = Color.DarkRed;
 
         private static Color[] allPathColours = {Color.PaleVioletRed, Color.MediumVioletRed, Color.Red,
             Color.OrangeRed, Color.Orange, Color.Yellow, Color.YellowGreen, Color.GreenYellow, Color.Green,
@@ -118,69 +120,15 @@ namespace Pressure_Puzzle_Maker
                     int endY = endTile.position.Y;
 
                     //int colourIndex = 0;
+                    int maxX = allTiles.GetLength(0) - 1;
+                    int maxY = allTiles.GetLength(1) - 1;
 
-                    List<List<Point>> allPaths = GetPaths(startX, startY, endX, endY);
+                    List<Point[]> allPaths = GetPaths(graphics, startX, startY, endX, endY, maxX, maxY);
                     allPaths.Sort(CompareByCountClosestToPerfect);
 
-                    foreach (List<Point> path in allPaths)
+                    foreach (Point[] path in allPaths)
                     {
-                        int pathLength = path.Count;
-                        if(pathLength > longPathLength + shortPathLength)
-                        {
-                            continue;
-                        }
-
-                        Color penColour = perfectPathColour;
-
-                        if(pathLength > maxPathLength)
-                        {
-                            penColour = longPathColour;
-                        }
-                        if(pathLength > longPathLength)
-                        {
-                            penColour = veryLongPathColour;
-                        }
-
-                        if(pathLength < minPathLength)
-                        {
-                            penColour = shortPathColour;
-                        }
-                        if(pathLength < shortPathLength)
-                        {
-                            penColour = veryShortPathColour;
-                        }
-
-                        if(pathLength != perfectPathLength)
-                        {
-                            penColour = idealPathColour;
-                        }
-
-                        //if (path.Count > pathLength)
-                        //if (path.Count != maxPathLength)
-                        //{
-                        //    continue;
-                        //}
-
-                        //Color penColour = allPathColours[colourIndex];
-                        //Color penColour = allPathColours[path.Count - 1];
-                        Pen pen = new Pen(penColour, 4f);
-
-                        //colourIndex = (colourIndex + 1) % allPathColours.Length;
-
-                        Point currentPoint = path[0];
-                        for (int j = 1; j < path.Count; j++)
-                        {
-                            int currentX = currentPoint.X * blankImage.Width + blankImage.Width / 2;
-                            int currentY = currentPoint.Y * blankImage.Height + blankImage.Height / 2;
-
-                            Point nextPoint = path[j];
-                            int nextX = nextPoint.X * blankImage.Width + blankImage.Width / 2;
-                            int nextY = nextPoint.Y * blankImage.Height + blankImage.Height / 2;
-
-                            graphics.DrawLine(pen, currentX, currentY, nextX, nextY);
-
-                            currentPoint = nextPoint;
-                        }
+                        DrawPath(graphics, path);
                     }
                 }
             }
@@ -188,271 +136,414 @@ namespace Pressure_Puzzle_Maker
             imageOutdated = false;
         }
 
-        private static int CompareByCountLongestToShortest(List<Point> a, List<Point> b)
+        private static int CompareByCountLongestToShortest(Point[] a, Point[] b)
         {
-            return b.Count - a.Count;
+            return b.Length - a.Length;
         }
 
-        private static int CompareByCountClosestToPerfect(List<Point> a, List<Point> b)
+        private static int CompareByCountClosestToPerfect(Point[] a, Point[] b)
         {
-            return (int)Math.Abs(perfectPathLength - b.Count) - (int)Math.Abs(perfectPathLength - a.Count);
+            return (int)Math.Abs(perfectPathLength - b.Length) - (int)Math.Abs(perfectPathLength - a.Length);
         }
 
-        private static List<List<Point>> GetPaths(int startX, int startY, int endX, int endY)
+        private static void DrawPath(Graphics graphics, Point[] path)
+        {
+            int pathLength = path.Length;
+            if (pathLength < 2)
+            {
+                return;
+            }
+
+            if(pathLength > 2 * perfectPathLength)
+            {
+                return;
+            }
+
+            //if (pathLength > veryLongPathLength)
+            //{
+            //    return;
+            //}
+            //if(pathLength < veryShortPathLength)
+            //{
+            //    return;
+            //}
+
+            Color penColour = perfectPathColour;
+
+            if (pathLength > perfectPathLength)
+            {
+                penColour = longPathColour;
+            }
+            if (pathLength > longPathLength)
+            {
+                penColour = veryLongPathColour;
+            }
+            if(pathLength > veryLongPathLength)
+            {
+                penColour = tooLongColour;
+            }
+
+            if (pathLength < perfectPathLength)
+            {
+                penColour = shortPathColour;
+            }
+            if (pathLength < shortPathLength)
+            {
+                penColour = veryShortPathColour;
+            }
+            if(pathLength < veryShortPathLength)
+            {
+                penColour = tooShortColour;
+            }
+
+            Pen pen = new Pen(penColour, 4f);
+
+            Point currentPoint = path[0];
+            for (int j = 1; j < pathLength; j++)
+            {
+                int currentX = currentPoint.X * blankImage.Width + blankImage.Width / 2;
+                int currentY = currentPoint.Y * blankImage.Height + blankImage.Height / 2;
+
+                Point nextPoint = path[j];
+                int nextX = nextPoint.X * blankImage.Width + blankImage.Width / 2;
+                int nextY = nextPoint.Y * blankImage.Height + blankImage.Height / 2;
+
+                graphics.DrawLine(pen, currentX, currentY, nextX, nextY);
+
+                currentPoint = nextPoint;
+            }
+        }
+
+        private static List<Point[]> GetPaths(Graphics graphics, int startX, int startY, int endX, int endY, int maxX, int maxY)
         {
             List<List<Point>> allPaths = new List<List<Point>>();
+            List<Point[]> allCompletePaths = new List<Point[]>();
 
-            int pathWidth = allTiles.GetLength(0);
-            int pathHeight = 2 * allTiles.GetLength(1) - 1;
-            bool[,] allTakenPaths = new bool[pathWidth, pathHeight];
-
-            int pathsComplete = 0;
-            int currentX = startX, currentY = startY;
-            Point startPoint = new Point(currentX, currentY);
-            allTakenPaths[currentX, currentY] = true;
-
-            int maxY = allTiles.GetLength(1) - 1;
-
-            if (currentX != endY)
-            {
-                List<Point> verticalPath = new List<Point> { startPoint };
-                allPaths.Add(verticalPath);
-            }
-
-            if (currentY != endY)
-            {
-                List<Point> horizontalPath = new List<Point> { startPoint };
-                allPaths.Add(horizontalPath);
-            }
+            Point[] allEndingPoints = PreparePaths(allPaths, startX, startY, endX, endY, maxX, maxY);
 
             do
             {
-                foreach (List<Point> currentPath in allPaths.ToArray())
+                FollowPaths(ref allPaths, ref allCompletePaths, ref allEndingPoints, graphics, endX, endY);
+            } while (allPaths.Count > 0);
+
+            return allCompletePaths;
+        }
+
+        private static Point[] PreparePaths(List<List<Point>> allPaths, int startX, int startY, int endX, int endY, int maxX, int maxY)
+        {
+            int currentX = startX, currentY = startY;
+
+            // Determine which edge we're starting on and move out one space
+            // Left edge
+            if (startX == 0)
+            {
+                currentX++;
+            }
+
+            // Top edge
+            if (startY == 0)
+            {
+                currentY++;
+            }
+
+            // Right edge
+            if (startX == maxX)
+            {
+                currentX--;
+            }
+
+            // Bottom edge
+            if (startY == maxY)
+            {
+                currentY--;
+            }
+
+            Point startPoint = new Point(currentX, currentY);
+
+            // Prepare starting paths
+            allPaths.Add(new List<Point> { startPoint });   // Middle path
+
+            // Branch vertically
+            if (startX == 0 || startX == maxX)
+            {
+                List<Point> upPath = new List<Point> { startPoint };
+                bool upPathBlocked = false;
+
+                List<Point> downPath = new List<Point> { startPoint };
+                bool downPathBlocked = false;
+
+                int maxOffset = Math.Max(currentY, maxY - currentY);
+                for (int i = 1; i <= maxOffset; i++)
                 {
-                    //if (currentPath.Count > maxPathLength)
-                    //{
-                    //    allPaths.Remove(currentPath);
-                    //    continue;
-                    //}
-
-                    Point currentPoint = currentPath[currentPath.Count - 1];
-                    currentX = currentPoint.X;
-                    currentY = currentPoint.Y;
-
-                    if (currentX == endX && currentY == endY)
+                    if (upPathBlocked == false)
                     {
-                        pathsComplete++;
-                        if (pathsComplete == allPaths.Count)
+                        int nextUpY = currentY - i;
+                        if (nextUpY >= 0)
                         {
-                            break;
-                        }
+                            Tile nextUpTile = allTiles[currentX, nextUpY];
+                            if (nextUpTile.isBlocked == false && nextUpTile.isValid == true)
+                            {
+                                Point nextUpPoint = new Point(currentX, nextUpY);
+                                upPath.Add(nextUpPoint);
 
-                        continue;
-                    }
-
-                    // Try to move horizontally first
-                    int nextX = currentX;
-                    if (currentX < endX)
-                    {
-                        nextX++;
-                    }
-                    if (currentX > endX)
-                    {
-                        nextX--;
-                    }
-
-                    List<Point> allNextPoints = new List<Point>();
-
-                    // Check if next tile is valid
-                    Tile nextTile = allTiles[nextX, currentY];
-                    bool pathTaken = IsPathTaken(ref allTakenPaths, currentX, currentY, nextX, currentY);
-
-                    if (nextTile.isBlocked == false && nextTile.isValid == true && nextX != currentX)
-                    //if (nextTile.isBlocked == false && nextTile.isValid == true && nextX != currentX
-                    //    && pathTaken == false)
-                    {
-                        allNextPoints.Add(new Point(nextX, currentY));
-                    }
-
-                    Point lastPoint = currentPoint;
-                    if (currentPath.Count > 1)
-                    {
-                        lastPoint = currentPath[currentPath.Count - 2];
-                    }
-
-                    int deltaX = currentX - lastPoint.X;
-                    int deltaY = currentY - lastPoint.Y;
-
-                    int upY = currentY - 1;
-                    int downY = currentY + 1;
-
-                    bool success;
-
-                    if (downY - endY <= endY - upY)
-                    {
-                        // Move Down
-                        //if ((deltaX != 0 || deltaY > 0) && downY <= maxY)
-                        //{
-                        //    nextTile = allTiles[currentX, downY];
-                        //    if (nextTile.isBlocked == false)
-                        //    {
-                        //        allNextPoints.Add(new Point(currentX, downY));
-                        //    }
-                        //}
-                        if (deltaX != 0 || deltaY > 0)
-                        {
-                            success = AddPointIfPossible(ref allTakenPaths, ref allNextPoints, maxY, currentX, currentY, currentX, downY);
-                        }
-
-                        // Move Up
-                        //if ((deltaX != 0 || deltaY < 0) && upY >= 0)
-                        //{
-                        //    nextTile = allTiles[currentX, upY];
-                        //    if (nextTile.isBlocked == false)
-                        //    {
-                        //        allNextPoints.Add(new Point(currentX, upY));
-                        //    }
-                        //}
-                        if (deltaX != 0 || deltaY < 0)
-                        {
-                            success = AddPointIfPossible(ref allTakenPaths, ref allNextPoints, maxY, currentX, currentY, currentX, upY);
-                        }
-                    }
-                    else
-                    {
-                        // Move Up
-                        if (deltaX != 0 || deltaY < 0)
-                        {
-                            success = AddPointIfPossible(ref allTakenPaths, ref allNextPoints, maxY, currentX, currentY, currentX, upY);
-                        }
-
-                        // Move Down
-                        if (deltaX != 0 || deltaY > 0)
-                        {
-                            success = AddPointIfPossible(ref allTakenPaths, ref allNextPoints, maxY, currentX, currentY, currentX, downY);
+                                allPaths.Add(new List<Point>(upPath));
+                            }
+                            else
+                            {
+                                upPathBlocked = true;
+                            }
                         }
                     }
 
-                    if (allNextPoints.Count == 0)
+                    if (downPathBlocked == false)
                     {
-                        // Dead end
-                        allPaths.Remove(currentPath);
-                        continue;
-                    }
-
-                    Point nextPoint = allNextPoints[0];
-                    TakePath(ref allTakenPaths, currentPoint, nextPoint);
-
-                    //continue;   //testing
-
-                    // Branch if possible
-                    if (allNextPoints.Count > 1)
-                    {
-                        for (int i = 1; i < allNextPoints.Count; i++)
+                        int nextDownY = currentY + i;
+                        if (nextDownY <= maxY)
                         {
-                            Point branchPoint = allNextPoints[i];
+                            Tile nextDownTile = allTiles[currentX, nextDownY];
+                            if (nextDownTile.isBlocked == false && nextDownTile.isValid == true)
+                            {
+                                Point nextDownPoint = new Point(currentX, nextDownY);
+                                downPath.Add(nextDownPoint);
 
-                            List<Point> branchPath = new List<Point>(currentPath) { branchPoint };
-                            allPaths.Add(branchPath);
-                            TakePath(ref allTakenPaths, currentPoint, branchPoint);
+                                allPaths.Add(new List<Point>(downPath));
+                            }
+                            else
+                            {
+                                downPathBlocked = true;
+                            }
                         }
                     }
-
-                    // Add next point after branching
-                    currentPath.Add(nextPoint);
                 }
-            } while (pathsComplete < allPaths.Count);
+            }
 
-            return allPaths;
+            // Branch horizontally
+            if (startY == 0 || startY == maxY)
+            {
+                List<Point> rightPath = new List<Point> { startPoint };
+                List<Point> leftPath = new List<Point> { startPoint };
+
+                int maxOffset = Math.Max(currentX, maxX - currentX);
+                for (int i = 1; i <= maxOffset; i++)
+                {
+                    int nextRightX = currentX + i;
+                    if (nextRightX <= maxX)
+                    {
+                        Tile nextRightTile = allTiles[nextRightX, currentY];
+                        if (nextRightTile.isBlocked == false && nextRightTile.isValid == true)
+                        {
+                            Point nextRightPoint = new Point(nextRightX, currentY);
+                            rightPath.Add(nextRightPoint);
+
+                            allPaths.Add(new List<Point>(rightPath));
+                        }
+                    }
+
+                    int nextLeftX = currentX - i;
+                    if (nextLeftX >= 0)
+                    {
+                        Tile nextLeftTile = allTiles[nextLeftX, currentY];
+                        if (nextLeftTile.isBlocked == false && nextLeftTile.isValid == true)
+                        {
+                            Point nextLeftPoint = new Point(nextLeftX, currentY);
+                            leftPath.Add(nextLeftPoint);
+
+                            allPaths.Add(new List<Point>(leftPath));
+                        }
+                    }
+                }
+            }
+
+            // Take next steps
+            // All paths move right
+            int directionX = 0;
+            if (startX == 0)
+            {
+                directionX = 1;
+            }
+
+            // All paths move left
+            if (startX == maxX)
+            {
+                directionX = -1;
+            }
+
+            int directionY = 0;
+            // All paths move down
+            if(startY == 0)
+            {
+                directionY = 1;
+            }
+
+            // All paths move up
+            if(startY == maxY)
+            {
+                directionY = -1;
+            }
+
+            foreach (List<Point> currentPath in allPaths.ToArray())
+            {
+                Point currentPoint = currentPath[currentPath.Count - 1];
+                int nextX = currentPoint.X + directionX;
+                int nextY = currentPoint.Y + directionY;
+
+                // Check if next tile is valid
+                Tile nextTile = allTiles[nextX, nextY];
+                if (nextTile.isBlocked == true || nextTile.isValid == false)
+                {
+                    // Dead end
+                    allPaths.Remove(currentPath);
+                    continue;
+                }
+
+                Point nextPoint = new Point(nextX, nextY);
+                currentPath.Add(nextPoint);
+            }
+
+            // Prepare ending points
+            Point[] allEndingPoints = new Point[3];
+            int nextIndex = 0;
+
+            // Determine which 3 of 4 points are valid
+            // Top point
+            if (endY - 1 >= 0)
+            {
+                allEndingPoints[nextIndex] = new Point(endX, endY - 1);
+                nextIndex++;
+            }
+
+            // Right point
+            if (endX + 1 <= maxX)
+            {
+                allEndingPoints[nextIndex] = new Point(endX + 1, endY);
+                nextIndex++;
+            }
+
+            // Bottom point
+            if (endY + 1 <= maxY)
+            {
+                allEndingPoints[nextIndex] = new Point(endX, endY + 1);
+                nextIndex++;
+            }
+
+            // Left point
+            if (endX - 1 >= 0)
+            {
+                allEndingPoints[nextIndex] = new Point(endX - 1, endY);
+            }
+
+            return allEndingPoints;
         }
 
-        private static Point GetPath(Point point1, Point point2)
+        private static void FollowPaths(ref List<List<Point>> allPaths, ref List<Point[]> allCompletePaths, ref Point[] allEndingPoints, 
+            Graphics graphics, int endX, int endY)
         {
-            return GetPath(point1.X, point1.Y, point2.X, point2.Y);
-        }
-
-        private static Point GetPath(int x1, int y1, int x2, int y2)
-        {
-            int leftmostX = x1;
-
-            // Assumed
-            //if(x1 < x2)
-            //{
-            //    leftmostX = x1;
-            //}
-
-            if (x1 > x2)
+            foreach (List<Point> currentPath in allPaths.ToArray())
             {
-                leftmostX = x2;
+                if (currentPath.Count > 2 * perfectPathLength)
+                {
+                    allPaths.Remove(currentPath);
+                    continue;
+                }
+
+                //DrawPath(graphics, currentPath);
+
+                Point currentPoint = currentPath[currentPath.Count - 1];
+                int currentX = currentPoint.X;
+                int currentY = currentPoint.Y;
+
+                // Check if we've reached one of the three end points
+                bool pathComplete = false;
+                foreach (Point endPoint in allEndingPoints)
+                {
+                    int lastX = endPoint.X;
+                    int lastY = endPoint.Y;
+
+                    if (currentX != lastX || currentY != lastY)
+                    {
+                        continue;
+                    }
+
+                    // Move path to completed paths
+                    allCompletePaths.Add(currentPath.ToArray());
+                    allPaths.Remove(currentPath);
+                    pathComplete = true;
+
+                    if (allPaths.Count > 0)
+                    {
+                        break;
+                    }
+
+                    // All paths complete
+                    return;
+                }
+
+                if(pathComplete == true)
+                {
+                    continue;
+                }
+
+                // Try to move horizontally first
+                int nextX = currentX;
+                if (currentX < endX)
+                {
+                    nextX++;
+                }
+                if (currentX > endX)
+                {
+                    nextX--;
+                }
+
+                List<Point> allNextPoints = new List<Point>();
+
+                // Check if next tile is valid
+                Tile nextTile = allTiles[nextX, currentY];
+                if (nextTile.isBlocked == false && nextTile.isValid == true && nextX != currentX)
+                {
+                    allNextPoints.Add(new Point(nextX, currentY));
+                }
+
+                // Move vertically toward end point
+                int nextY = currentY;
+                if (currentY < endY)
+                {
+                    nextY++;
+                }
+                if (currentY > endY)
+                {
+                    nextY--;
+                }
+
+                // Check if next tile is valid
+                nextTile = allTiles[currentX, nextY];
+                if (nextTile.isBlocked == false && nextTile.isValid == true && nextY != currentY)
+                {
+                    allNextPoints.Add(new Point(currentX, nextY));
+                }
+
+                if (allNextPoints.Count == 0)
+                {
+                    // Dead end
+                    allPaths.Remove(currentPath);
+                    continue;
+                }
+
+                Point nextPoint = allNextPoints[0];
+
+                //continue;   //testing
+
+                // Branch if possible first so next point isn't added
+                if (allNextPoints.Count > 1)
+                {
+                    Point branchPoint = allNextPoints[1];
+
+                    List<Point> branchPath = new List<Point>(currentPath) { branchPoint };
+                    allPaths.Add(branchPath);
+                }
+
+                // Add next point after branching
+                currentPath.Add(nextPoint);
             }
-
-            if (y1 < y2)
-            {
-                leftmostX = x1;
-            }
-
-            if (y1 > y2)
-            {
-                leftmostX = x2;
-            }
-
-            int x = leftmostX;
-            int y = y1 + y2;
-            return new Point(x, y);
-        }
-
-        private static bool IsPathTaken(ref bool[,] allTakenPaths, int x1, int y1, int x2, int y2)
-        {
-            return IsPathTaken(ref allTakenPaths, new Point(x1, y1), new Point(x2, y2));
-        }
-
-        private static bool IsPathTaken(ref bool[,] allTakenPaths, Point point1, Point point2)
-        {
-            Point path = GetPath(point1, point2);
-
-            bool pathTaken = allTakenPaths[path.X, path.Y];
-            return pathTaken;
-        }
-
-        private static void TakePath(ref bool[,] allTakenPaths, Point point1, Point point2)
-        {
-            Point path = GetPath(point1, point2);
-
-            allTakenPaths[path.X, path.Y] = true;
-        }
-
-        private static bool AddPointIfPossible(ref bool[,] allTakenPaths, ref List<Point> allNextPoints, int maxY, 
-            int currentX, int currentY, int nextX, int nextY)
-        {
-            if (nextY > maxY)
-            {
-                return false;
-            }
-
-            if (nextY < 0)
-            {
-                return false;
-            }
-
-            Tile nextTile = allTiles[nextX, nextY];
-            if (nextTile.isBlocked == true)
-            {
-                return false;
-            }
-
-            if (nextTile.isValid == false)
-            {
-                return false;
-            }
-
-            bool pathTaken = IsPathTaken(ref allTakenPaths, currentX, currentY, nextX, nextY);
-            if (pathTaken == true)
-            {
-                return false;
-            }
-
-            allNextPoints.Add(new Point(nextX, nextY));
-            return true;
         }
 
         public static Tile GetTileAtPosition(Point position)
