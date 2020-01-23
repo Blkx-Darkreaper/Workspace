@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Pressure_Puzzle_Maker
@@ -8,16 +9,117 @@ namespace Pressure_Puzzle_Maker
     {
         protected int pixelWidth = 0;
         protected int pixelHeight = 0;
+        protected const int defaultWidth = 10;
+        protected const int defaultHeight = 6;
 
         public Form1()
         {
             InitializeComponent();
+            SetDisplay();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int width = (int)numericUpDown1.Value;
-            int height = (int)numericUpDown2.Value;
+            widthNumeric.Value = defaultWidth;
+            heightNumeric.Value = defaultHeight;
+
+            SetDisplay();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.FileName = "New Puzzle.png";
+            dialog.DefaultExt = "png";
+            dialog.FilterIndex = 4;
+            dialog.ValidateNames = true;
+            dialog.Filter = "Bitmap Image (.bmp)|*.bmp|Gif Image (.gif)|*.gif|JPEG Image (.jpg)|*.jpg|Png Image (.png)|*.png" +
+                "|Tiff Image (.tiff)|*.tiff|Wmf Image (.wmf)|*.wmf";
+
+            ImageFormat format = ImageFormat.Png;
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            string ext = System.IO.Path.GetExtension(dialog.FileName).ToLower();
+            switch (ext)
+            {
+                case ".bmp":
+                    format = ImageFormat.Bmp;
+                    break;
+
+                case ".gif":
+                    format = ImageFormat.Gif;
+                    break;
+
+                case ".jpg":
+                    format = ImageFormat.Jpeg;
+                    break;
+
+                case ".tiff":
+                    format = ImageFormat.Tiff;
+                    break;
+
+                case ".wmf":
+                    format = ImageFormat.Wmf;
+                    break;
+            }
+
+            puzzleImage.Image.Save(dialog.FileName, format);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void buildButton_Click(object sender, EventArgs e)
+        {
+            SetDisplay();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (puzzleImage.Image == null)
+            {
+                return;
+            }
+
+            Point position = puzzleImage.PointToClient(Cursor.Position);
+            Tile tile = Program.GetTileAtPosition(position);
+            if (tile.isValid == false)
+            {
+                return;
+            }
+
+            MouseEventArgs mouseEvent = (MouseEventArgs)e;
+            if (mouseEvent == null)
+            {
+                return;
+            }
+
+            tile.ToggleTile(mouseEvent);
+            //Program.ImageChanged();
+
+            Bitmap bitmap = (Bitmap)puzzleImage.Image;
+            if (bitmap == null)
+            {
+                bitmap = new Bitmap(pixelWidth, pixelHeight);
+            }
+
+            Program.RedrawPuzzle(ref bitmap);
+
+            puzzleImage.Image = bitmap;
+
+            //pictureBox1.Invalidate();
+            //pictureBox1.Refresh();
+        }
+
+        private void SetDisplay()
+        {
+            int width = (int)widthNumeric.Value;
+            int height = (int)heightNumeric.Value;
 
             // Resize Panel
             this.pixelWidth = width * Program.blankImage.Width;
@@ -26,49 +128,12 @@ namespace Pressure_Puzzle_Maker
             Size size = new Size(pixelWidth, pixelHeight);
 
             //pictureBox1.MaximumSize = size;
-            pictureBox1.Size = size;
+            puzzleImage.Size = size;
 
             Bitmap bitmap = new Bitmap(pixelWidth, pixelHeight);
             Program.GeneratePuzzle(ref bitmap, width, height);
 
-            pictureBox1.Image = bitmap;
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            if(pictureBox1.Image == null)
-            {
-                return;
-            }
-
-            Point position = pictureBox1.PointToClient(Cursor.Position);
-            Tile tile = Program.GetTileAtPosition(position);
-            if (tile.isValid == false)
-            {
-                return;
-            }
-
-            MouseEventArgs mouseEvent = (MouseEventArgs)e;
-            if(mouseEvent == null)
-            {
-                return;
-            }
-
-            tile.ToggleTile(mouseEvent);
-            //Program.ImageChanged();
-
-            Bitmap bitmap = (Bitmap)pictureBox1.Image;
-            if (bitmap == null)
-            {
-                bitmap = new Bitmap(pixelWidth, pixelHeight);
-            }
-
-            Program.RedrawPuzzle(ref bitmap);
-
-            pictureBox1.Image = bitmap;
-
-            //pictureBox1.Invalidate();
-            //pictureBox1.Refresh();
+            puzzleImage.Image = bitmap;
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -77,20 +142,20 @@ namespace Pressure_Puzzle_Maker
 
             return; //testing
 
-            if(pixelWidth <= 0 || pixelHeight <= 0)
+            if (pixelWidth <= 0 || pixelHeight <= 0)
             {
                 return;
             }
 
-            Bitmap bitmap = (Bitmap)pictureBox1.Image;
-            if(bitmap == null)
+            Bitmap bitmap = (Bitmap)puzzleImage.Image;
+            if (bitmap == null)
             {
                 bitmap = new Bitmap(pixelWidth, pixelHeight);
             }
 
             Program.RedrawPuzzle(ref bitmap);
 
-            pictureBox1.Image = bitmap;
+            puzzleImage.Image = bitmap;
         }
     }
 }
