@@ -54,9 +54,9 @@ namespace Pressure_Puzzle_Maker
             Application.Run(new Form1());
         }
 
-        public static void ImageChanged()
+        public static int Clamp(int value, int min, int max)
         {
-            imageOutdated = true;
+            return (value < min) ? min : (value > max) ? max : value;
         }
 
         public static void GeneratePuzzle(ref Bitmap bitmap, int width, int height)
@@ -263,8 +263,8 @@ namespace Pressure_Puzzle_Maker
             // Prepare starting paths
             allPaths.Add(new List<Point> { startPoint });   // Middle path
 
-            // Branch vertically
-            if (startX == 0 || startX == maxX)
+            // Branch vertically if ending is on a side edge
+            if (endX == 0 || endX == maxX)
             {
                 List<Point> upPath = new List<Point> { startPoint };
                 bool upPathBlocked = false;
@@ -317,8 +317,8 @@ namespace Pressure_Puzzle_Maker
                 }
             }
 
-            // Branch horizontally
-            if (startY == 0 || startY == maxY)
+            // Branch horizontally if ending is on a top or bottom edge
+            if (endY == 0 || endY == maxY)
             {
                 List<Point> rightPath = new List<Point> { startPoint };
                 List<Point> leftPath = new List<Point> { startPoint };
@@ -384,8 +384,8 @@ namespace Pressure_Puzzle_Maker
             foreach (List<Point> currentPath in allPaths.ToArray())
             {
                 Point currentPoint = currentPath[currentPath.Count - 1];
-                int nextX = currentPoint.X + directionX;
-                int nextY = currentPoint.Y + directionY;
+                int nextX = Clamp(currentPoint.X + directionX, 0, maxX);
+                int nextY = Clamp(currentPoint.Y + directionY, 0, maxY);
 
                 // Check if next tile is valid
                 Tile nextTile = allTiles[nextX, nextY];
