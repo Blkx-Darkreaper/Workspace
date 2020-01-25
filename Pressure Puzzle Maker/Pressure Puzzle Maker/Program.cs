@@ -108,6 +108,9 @@ namespace Pressure_Puzzle_Maker
 
                 //return; //testing
 
+                // Sort start tiles from left to right
+                allStartTiles.Sort(CompareByLeftmostX);
+
                 Tile startTile = allStartTiles[0];
                 int startX = startTile.position.X;
                 int startY = startTile.position.Y;
@@ -136,6 +139,11 @@ namespace Pressure_Puzzle_Maker
             imageOutdated = false;
         }
 
+        private static int CompareByLeftmostX(Tile a, Tile b)
+        {
+            return a.position.X - b.position.Y;
+        }
+
         private static int CompareByCountLongestToShortest(Point[] a, Point[] b)
         {
             return b.Length - a.Length;
@@ -154,7 +162,7 @@ namespace Pressure_Puzzle_Maker
                 return;
             }
 
-            if(pathLength > 2 * perfectPathLength)
+            if (pathLength > 2 * perfectPathLength)
             {
                 return;
             }
@@ -178,7 +186,7 @@ namespace Pressure_Puzzle_Maker
             {
                 penColour = veryLongPathColour;
             }
-            if(pathLength > veryLongPathLength)
+            if (pathLength > veryLongPathLength)
             {
                 penColour = tooLongColour;
             }
@@ -191,7 +199,7 @@ namespace Pressure_Puzzle_Maker
             {
                 penColour = veryShortPathColour;
             }
-            if(pathLength < veryShortPathLength)
+            if (pathLength < veryShortPathLength)
             {
                 penColour = tooShortColour;
             }
@@ -293,6 +301,10 @@ namespace Pressure_Puzzle_Maker
                                 upPathBlocked = true;
                             }
                         }
+                        else
+                        {
+                            upPathBlocked = true;
+                        }
                     }
 
                     if (downPathBlocked == false)
@@ -312,6 +324,10 @@ namespace Pressure_Puzzle_Maker
                             {
                                 downPathBlocked = true;
                             }
+                        }
+                        else
+                        {
+                            downPathBlocked = true;
                         }
                     }
                 }
@@ -357,26 +373,26 @@ namespace Pressure_Puzzle_Maker
             // Take next steps
             // All paths move right
             int directionX = 0;
-            if (startX == 0)
+            if (endX == maxX)
             {
                 directionX = 1;
             }
 
             // All paths move left
-            if (startX == maxX)
+            if (endX == 0)
             {
                 directionX = -1;
             }
 
             int directionY = 0;
             // All paths move down
-            if(startY == 0)
+            if (endY == maxY)
             {
                 directionY = 1;
             }
 
             // All paths move up
-            if(startY == maxY)
+            if (endY == 0)
             {
                 directionY = -1;
             }
@@ -405,49 +421,53 @@ namespace Pressure_Puzzle_Maker
 
             // Determine which 3 of 4 points are valid
             // Top point
-            if (endY - 1 >= 0)
+            int topY = endY - 1;
+            if (topY >= 0)
             {
-                Tile endTile = allTiles[endX, endY - 1];
+                Tile endTile = allTiles[endX, topY];
                 if (endTile.isBlocked == false && endTile.isValid == true)
                 {
-                    allEndingPoints.Add(new Point(endX, endY - 1));
+                    allEndingPoints.Add(new Point(endX, topY));
                 }
             }
 
             // Right point
-            if (endX + 1 <= maxX)
+            int rightX = endX + 1;
+            if (rightX <= maxX)
             {
-                Tile endTile = allTiles[endX, endY - 1];
+                Tile endTile = allTiles[rightX, endY];
                 if (endTile.isBlocked == false && endTile.isValid == true)
                 {
-                    allEndingPoints.Add(new Point(endX + 1, endY));
+                    allEndingPoints.Add(new Point(rightX, endY));
                 }
             }
 
             // Bottom point
-            if (endY + 1 <= maxY)
+            int bottomY = endY + 1;
+            if (bottomY <= maxY)
             {
-                Tile endTile = allTiles[endX, endY - 1];
+                Tile endTile = allTiles[endX, bottomY];
                 if (endTile.isBlocked == false && endTile.isValid == true)
                 {
-                    allEndingPoints.Add(new Point(endX, endY + 1));
+                    allEndingPoints.Add(new Point(endX, bottomY));
                 }
             }
 
             // Left point
-            if (endX - 1 >= 0)
+            int leftX = endX - 1;
+            if (leftX >= 0)
             {
-                Tile endTile = allTiles[endX, endY - 1];
+                Tile endTile = allTiles[leftX, endY];
                 if (endTile.isBlocked == false && endTile.isValid == true)
                 {
-                    allEndingPoints.Add(new Point(endX - 1, endY));
+                    allEndingPoints.Add(new Point(leftX, endY));
                 }
             }
 
             return allEndingPoints.ToArray();
         }
 
-        private static void FollowPaths(ref List<List<Point>> allPaths, ref List<Point[]> allCompletePaths, ref Point[] allEndingPoints, 
+        private static void FollowPaths(ref List<List<Point>> allPaths, ref List<Point[]> allCompletePaths, ref Point[] allEndingPoints,
             Graphics graphics, int endX, int endY)
         {
             foreach (List<Point> currentPath in allPaths.ToArray())
@@ -490,7 +510,7 @@ namespace Pressure_Puzzle_Maker
                     return;
                 }
 
-                if(pathComplete == true)
+                if (pathComplete == true)
                 {
                     continue;
                 }
