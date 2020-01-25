@@ -12,6 +12,7 @@ namespace Pressure_Puzzle_Maker
         protected enum TileType { blank, blocked, invalid, start };
         protected TileType type;
         public bool isBlocked { get { return type.Equals(TileType.blocked); } }
+        public bool isStart { get { return type.Equals(TileType.start); } }
 
         public Edge edge { get; protected set; }
         public bool isEdgeTile { get { return !edge.Equals(Edge.None); } }

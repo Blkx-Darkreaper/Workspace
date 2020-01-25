@@ -401,38 +401,50 @@ namespace Pressure_Puzzle_Maker
             }
 
             // Prepare ending points
-            Point[] allEndingPoints = new Point[3];
-            int nextIndex = 0;
+            List<Point> allEndingPoints = new List<Point>();
 
             // Determine which 3 of 4 points are valid
             // Top point
             if (endY - 1 >= 0)
             {
-                allEndingPoints[nextIndex] = new Point(endX, endY - 1);
-                nextIndex++;
+                Tile endTile = allTiles[endX, endY - 1];
+                if (endTile.isBlocked == false && endTile.isValid == true)
+                {
+                    allEndingPoints.Add(new Point(endX, endY - 1));
+                }
             }
 
             // Right point
             if (endX + 1 <= maxX)
             {
-                allEndingPoints[nextIndex] = new Point(endX + 1, endY);
-                nextIndex++;
+                Tile endTile = allTiles[endX, endY - 1];
+                if (endTile.isBlocked == false && endTile.isValid == true)
+                {
+                    allEndingPoints.Add(new Point(endX + 1, endY));
+                }
             }
 
             // Bottom point
             if (endY + 1 <= maxY)
             {
-                allEndingPoints[nextIndex] = new Point(endX, endY + 1);
-                nextIndex++;
+                Tile endTile = allTiles[endX, endY - 1];
+                if (endTile.isBlocked == false && endTile.isValid == true)
+                {
+                    allEndingPoints.Add(new Point(endX, endY + 1));
+                }
             }
 
             // Left point
             if (endX - 1 >= 0)
             {
-                allEndingPoints[nextIndex] = new Point(endX - 1, endY);
+                Tile endTile = allTiles[endX, endY - 1];
+                if (endTile.isBlocked == false && endTile.isValid == true)
+                {
+                    allEndingPoints.Add(new Point(endX - 1, endY));
+                }
             }
 
-            return allEndingPoints;
+            return allEndingPoints.ToArray();
         }
 
         private static void FollowPaths(ref List<List<Point>> allPaths, ref List<Point[]> allCompletePaths, ref Point[] allEndingPoints, 
