@@ -73,6 +73,8 @@ namespace Pressure_Puzzle_Maker
             shortPathLength = 2 * maxPolyominoes;
             longPathLength = 3 * maxPolyominoes;
             avgPathLength = (shortPathLength + longPathLength) / 2;
+
+            maxPathLength = longPathLength + allPathColours.Length - 1 - longColourIndex;
         }
 
         public static void GeneratePuzzle(ref Bitmap bitmap, int width, int height)
