@@ -34,6 +34,7 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.perfectOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.perfectNumeric = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -57,7 +58,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(319, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(416, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -94,6 +95,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.perfectOnlyCheckBox);
             this.panel1.Controls.Add(this.perfectNumeric);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.button1);
@@ -103,12 +105,23 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(12, 31);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(86, 212);
+            this.panel1.Size = new System.Drawing.Size(186, 212);
             this.panel1.TabIndex = 1;
+            // 
+            // perfectOnlyCheckBox
+            // 
+            this.perfectOnlyCheckBox.AutoSize = true;
+            this.perfectOnlyCheckBox.Location = new System.Drawing.Point(70, 95);
+            this.perfectOnlyCheckBox.Name = "perfectOnlyCheckBox";
+            this.perfectOnlyCheckBox.Size = new System.Drawing.Size(108, 21);
+            this.perfectOnlyCheckBox.TabIndex = 7;
+            this.perfectOnlyCheckBox.Text = "Perfect Only";
+            this.perfectOnlyCheckBox.UseVisualStyleBackColor = true;
+            this.perfectOnlyCheckBox.CheckedChanged += new System.EventHandler(this.perfectOnlyCheckBox_CheckedChanged);
             // 
             // perfectNumeric
             // 
-            this.perfectNumeric.Location = new System.Drawing.Point(3, 139);
+            this.perfectNumeric.Location = new System.Drawing.Point(3, 95);
             this.perfectNumeric.Maximum = new decimal(new int[] {
             10,
             0,
@@ -131,11 +144,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 119);
+            this.label4.Location = new System.Drawing.Point(3, 75);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 17);
+            this.label4.Size = new System.Drawing.Size(158, 17);
             this.label4.TabIndex = 5;
-            this.label4.Text = "Perfect";
+            this.label4.Text = "Perfect Path Poly Count";
             // 
             // button1
             // 
@@ -149,7 +162,7 @@
             // 
             // heightNumeric
             // 
-            this.heightNumeric.Location = new System.Drawing.Point(3, 65);
+            this.heightNumeric.Location = new System.Drawing.Point(70, 20);
             this.heightNumeric.Maximum = new decimal(new int[] {
             14,
             0,
@@ -172,7 +185,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 45);
+            this.label2.Location = new System.Drawing.Point(70, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 17);
             this.label2.TabIndex = 2;
@@ -211,7 +224,7 @@
             // 
             // puzzleImage
             // 
-            this.puzzleImage.Location = new System.Drawing.Point(104, 31);
+            this.puzzleImage.Location = new System.Drawing.Point(204, 31);
             this.puzzleImage.Name = "puzzleImage";
             this.puzzleImage.Size = new System.Drawing.Size(203, 212);
             this.puzzleImage.TabIndex = 2;
@@ -224,7 +237,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(319, 255);
+            this.ClientSize = new System.Drawing.Size(416, 255);
             this.Controls.Add(this.puzzleImage);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
@@ -261,6 +274,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.NumericUpDown perfectNumeric;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox perfectOnlyCheckBox;
     }
 }
 

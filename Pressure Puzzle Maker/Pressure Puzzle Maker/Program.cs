@@ -20,6 +20,7 @@ namespace Pressure_Puzzle_Maker
         public static Image offLimitsImage = Image.FromFile(
             @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\OffLimits.png");
 
+        public static bool perfectPathOnly = false;
         private static int avgPathLength = 12;
         private static int longPathLength = avgPathLength + offset;
         private static int shortPathLength = avgPathLength - offset;
@@ -173,6 +174,19 @@ namespace Pressure_Puzzle_Maker
             if (pathLength < 2)
             {
                 return;
+            }
+
+            if(perfectPathOnly == true)
+            {
+                if(pathLength < shortPathLength)
+                {
+                    return;
+                }
+
+                if(pathLength > longPathLength)
+                {
+                    return;
+                }
             }
 
             if(pathLength < shortPathLength - shortColourIndex)

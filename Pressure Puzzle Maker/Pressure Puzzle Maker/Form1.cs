@@ -141,7 +141,18 @@ namespace Pressure_Puzzle_Maker
             Bitmap bitmap = new Bitmap(pixelWidth, pixelHeight);
             Program.GeneratePuzzle(ref bitmap, width, height);
 
-            puzzleImage.Image = bitmap;
+            puzzleImage.Image = bitmap; // Update display
+        }
+
+        private void perfectOnlyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.perfectPathOnly = perfectOnlyCheckBox.Checked;
+
+            Size size = puzzleImage.Size;
+            Bitmap bitmap = new Bitmap(size.Width, size.Height);
+            Program.RedrawPuzzle(ref bitmap);
+
+            puzzleImage.Image = bitmap; // Update display
         }
     }
 }
