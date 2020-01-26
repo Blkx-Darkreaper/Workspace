@@ -26,6 +26,8 @@ namespace Pressure_Puzzle_Maker
         private static int shortPathLength = avgPathLength - offset;
         private static int offset = 1;
 
+        private static int maxPathLength = longPathLength + allPathColours.Length - 1 - longColourIndex;
+
         private static Color tooLongColour = Color.Purple;
         private static Color veryLongColour = Color.Indigo;
         private static Color longerColour = Color.Blue;
@@ -194,7 +196,7 @@ namespace Pressure_Puzzle_Maker
                 return;
             }
 
-            if (pathLength > longPathLength + allPathColours.Length - 1 - longColourIndex)
+            if (pathLength > maxPathLength)
             {
                 return;
             }
@@ -493,7 +495,7 @@ namespace Pressure_Puzzle_Maker
         {
             foreach (List<Point> currentPath in allPaths.ToArray())
             {
-                if (currentPath.Count > 2 * avgPathLength)
+                if (currentPath.Count > maxPathLength)
                 {
                     allPaths.Remove(currentPath);
                     continue;
