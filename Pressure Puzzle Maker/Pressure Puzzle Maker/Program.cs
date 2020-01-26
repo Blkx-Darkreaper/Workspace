@@ -252,7 +252,7 @@ namespace Pressure_Puzzle_Maker
 
             do
             {
-                FollowPaths(ref allPaths, ref allCompletePaths, ref allEndingPoints, graphics, endX, endY);
+                FollowPaths(ref allPaths, ref allCompletePaths, ref allEndingPoints, graphics, endX, endY, maxX, maxY);
             } while (allPaths.Count > 0);
 
             return allCompletePaths;
@@ -489,7 +489,7 @@ namespace Pressure_Puzzle_Maker
         }
 
         private static void FollowPaths(ref List<List<Point>> allPaths, ref List<Point[]> allCompletePaths, ref Point[] allEndingPoints,
-            Graphics graphics, int endX, int endY)
+            Graphics graphics, int endX, int endY, int maxX, int maxY)
         {
             foreach (List<Point> currentPath in allPaths.ToArray())
             {
@@ -509,10 +509,10 @@ namespace Pressure_Puzzle_Maker
                 bool pathComplete = false;
                 foreach (Point endPoint in allEndingPoints)
                 {
-                    int lastX = endPoint.X;
-                    int lastY = endPoint.Y;
+                    int endPointX = endPoint.X;
+                    int endPointY = endPoint.Y;
 
-                    if (currentX != lastX || currentY != lastY)
+                    if (currentX != endPointX || currentY != endPointY)
                     {
                         continue;
                     }
@@ -536,42 +536,123 @@ namespace Pressure_Puzzle_Maker
                     continue;
                 }
 
-                // Try to move horizontally first
-                int nextX = currentX;
-                if (currentX < endX)
+                Point lastPoint = currentPoint;
+                if (currentPath.Count > 1)
                 {
-                    nextX++;
-                }
-                if (currentX > endX)
-                {
-                    nextX--;
+                    lastPoint = currentPath[currentPath.Count - 2];
                 }
 
+                // Determine previously moved direction
+                int lastX = lastPoint.X;
+                int lastY = lastPoint.Y;
+
+                //int lastDirectionX = 0;
+                int lastDirectionY = 0;
+
+                //// Moved right
+                //if(currentX > lastX)
+                //{
+                //    lastDirectionX = 1;
+                //}
+
+                //// Moved left
+                //if(currentX < lastX)
+                //{
+                //    lastDirectionX = -1;
+                //}
+
+                // Moved up
+                if(currentY < lastY)
+                {
+                    lastDirectionY = -1;
+                }
+
+                // Moved down
+                if(currentY > lastY)
+                {
+                    lastDirectionY = 1;
+                }
+
+                // Determine direction of end point
+                int endDirectionX = 0;
+                //int endDirectionY = 0;
+
+                // Move right
+                if (endX == maxX)
+                {
+                    endDirectionX = 1;
+                }
+
+                // Move left
+                if (endX == 0)
+                {
+                    endDirectionX = -1;
+                }
+
+                //// Move down
+                //if (endY == maxY)
+                //{
+                //    endDirectionY = 1;
+                //}
+
+                //// Move up
+                //if (endY == 0)
+                //{
+                //    endDirectionY = -1;
+                //}
+
+                // Determine which 3 of 4 points are valid
+                Tile nextTile;
                 List<Point> allNextPoints = new List<Point>();
 
-                // Check if next tile is valid
-                Tile nextTile = allTiles[nextX, currentY];
-                if (nextTile.isBlocked == false && nextTile.isValid == true && nextX != currentX)
+                // Move horizontally first
+                if (endDirectionX > 0)
                 {
-                    allNextPoints.Add(new Point(nextX, currentY));
+                    // Right point
+                    int rightX = currentX + 1;
+                    if (rightX <= maxX)
+                    {
+                        nextTile = allTiles[rightX, currentY];
+                        if (nextTile.isBlocked == false && nextTile.isValid == true)
+                        {
+                            allNextPoints.Add(new Point(rightX, currentY));
+                        }
+                    }
+                }
+                else
+                {
+                    // Left point
+                    int leftX = currentX - 1;
+                    if (leftX >= 0)
+                    {
+                        nextTile = allTiles[leftX, currentY];
+                        if (nextTile.isBlocked == false && nextTile.isValid == true)
+                        {
+                            allNextPoints.Add(new Point(leftX, currentY));
+                        }
+                    }
                 }
 
-                // Move vertically toward end point
-                int nextY = currentY;
-                if (currentY < endY)
+                // Top point
+                int topY = currentY - 1;
+                if (topY >= 0 && lastDirectionY < 1)   // Keep from backtracking
                 {
-                    nextY++;
-                }
-                if (currentY > endY)
-                {
-                    nextY--;
+                    nextTile = allTiles[currentX, topY];
+                    if (nextTile.isBlocked == false && nextTile.isValid == true)
+                    {
+                        allNextPoints.Add(new Point(currentX, topY));
+                    }
                 }
 
-                // Check if next tile is valid
-                nextTile = allTiles[currentX, nextY];
-                if (nextTile.isBlocked == false && nextTile.isValid == true && nextY != currentY)
+                // Bottom point
+                int bottomY = currentY + 1;
+                if (bottomY <= maxY && lastDirectionY > -1)   // Keep from backtracking
                 {
-                    allNextPoints.Add(new Point(currentX, nextY));
+                    nextTile = allTiles[currentX, bottomY];
+                    if (nextTile.isBlocked == false && nextTile.isValid == true)
+                    {
+                        allNextPoints.Add(new Point(currentX, bottomY));
+                    }
                 }
 
                 if (allNextPoints.Count == 0)
@@ -582,16 +663,18 @@ namespace Pressure_Puzzle_Maker
                 }
 
                 Point nextPoint = allNextPoints[0];
-
                 //continue;   //testing
 
                 // Branch if possible first so next point isn't added
                 if (allNextPoints.Count > 1)
                 {
-                    Point branchPoint = allNextPoints[1];
+                    for (int i = 1; i < allNextPoints.Count; i++)
+                    {
+                        Point branchPoint = allNextPoints[i];
 
-                    List<Point> branchPath = new List<Point>(currentPath) { branchPoint };
-                    allPaths.Add(branchPath);
+                        List<Point> branchPath = new List<Point>(currentPath) { branchPoint };
+                        allPaths.Add(branchPath);
+                    }
                 }
 
                 // Add next point after branching
