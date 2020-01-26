@@ -217,7 +217,6 @@
             this.puzzleImage.TabIndex = 2;
             this.puzzleImage.TabStop = false;
             this.puzzleImage.Click += new System.EventHandler(this.pictureBox1_Click);
-            this.puzzleImage.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             // 
             // Form1
             // 

@@ -143,27 +143,5 @@ namespace Pressure_Puzzle_Maker
 
             puzzleImage.Image = bitmap;
         }
-
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            return; //testing
-
-            if (pixelWidth <= 0 || pixelHeight <= 0)
-            {
-                return;
-            }
-
-            Bitmap bitmap = (Bitmap)puzzleImage.Image;
-            if (bitmap == null)
-            {
-                bitmap = new Bitmap(pixelWidth, pixelHeight);
-            }
-
-            Program.RedrawPuzzle(ref bitmap);
-
-            puzzleImage.Image = bitmap;
-        }
     }
 }
