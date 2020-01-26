@@ -20,24 +20,30 @@ namespace Pressure_Puzzle_Maker
         public static Image offLimitsImage = Image.FromFile(
             @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\OffLimits.png");
 
-        private static int perfectPathLength = 12;
-        private static int maxOffset = 1;
-        private static int longPathLength = perfectPathLength + maxOffset;
-        private static int shortPathLength = perfectPathLength - maxOffset;
-        private static int veryShortPathLength = perfectPathLength - maxOffset * 2;
-        private static int veryLongPathLength = perfectPathLength + maxOffset * 2;
+        private static int avgPathLength = 12;
+        private static int longPathLength = avgPathLength + offset;
+        private static int shortPathLength = avgPathLength - offset;
+        private static int offset = 1;
 
-        private static Color tooLongColour = Color.DarkViolet;
-        private static Color veryLongPathColour = Color.Violet;
-        private static Color longPathColour = Color.Blue;
-        private static Color perfectPathColour = Color.YellowGreen;
-        private static Color shortPathColour = Color.Orange;
-        private static Color veryShortPathColour = Color.Red;
+        private static Color tooLongColour = Color.Purple;
+        private static Color veryLongColour = Color.Indigo;
+        private static Color longerColour = Color.Blue;
+
+        private static Color longColour = Color.Turquoise;
+        private static int longColourIndex = 5;
+
+        private static Color avgColour = Color.Green;
+        //private static int avgColourIndex = 4;
+
+        private static Color shortColour = Color.YellowGreen;
+        private static int shortColourIndex = 3;
+
+        private static Color shorterColour = Color.Orange;
+        private static Color veryShortColour = Color.Red;
         private static Color tooShortColour = Color.DarkRed;
 
-        private static Color[] allPathColours = {Color.PaleVioletRed, Color.MediumVioletRed, Color.Red,
-            Color.OrangeRed, Color.Orange, Color.Yellow, Color.YellowGreen, Color.GreenYellow, Color.Green,
-            Color.SkyBlue, Color.LightBlue, Color.Blue, Color.Indigo, Color.Violet};
+        private static Color[] allPathColours = { tooShortColour, veryShortColour, shorterColour, shortColour, avgColour,
+            longColour, longerColour, veryLongColour, tooLongColour};
 
         public static Tile[,] allTiles;
         public static List<Tile> allStartTiles;
@@ -57,6 +63,13 @@ namespace Pressure_Puzzle_Maker
         public static int Clamp(int value, int min, int max)
         {
             return (value < min) ? min : (value > max) ? max : value;
+        }
+
+        public static void SetPerfectPathLength(int maxPolyominoes)
+        {
+            shortPathLength = 2 * maxPolyominoes;
+            longPathLength = 3 * maxPolyominoes;
+            avgPathLength = (shortPathLength + longPathLength) / 2;
         }
 
         public static void GeneratePuzzle(ref Bitmap bitmap, int width, int height)
@@ -151,7 +164,7 @@ namespace Pressure_Puzzle_Maker
 
         private static int CompareByCountClosestToPerfect(Point[] a, Point[] b)
         {
-            return (int)Math.Abs(perfectPathLength - b.Length) - (int)Math.Abs(perfectPathLength - a.Length);
+            return (int)Math.Abs(avgPathLength - b.Length) - (int)Math.Abs(avgPathLength - a.Length);
         }
 
         private static void DrawPath(Graphics graphics, Point[] path)
@@ -162,46 +175,40 @@ namespace Pressure_Puzzle_Maker
                 return;
             }
 
-            if (pathLength > 2 * perfectPathLength)
+            if(pathLength < shortPathLength - shortColourIndex)
             {
                 return;
             }
 
-            //if (pathLength > veryLongPathLength)
-            //{
-            //    return;
-            //}
-            //if(pathLength < veryShortPathLength)
-            //{
-            //    return;
-            //}
-
-            Color penColour = perfectPathColour;
-
-            if (pathLength > perfectPathLength)
+            if (pathLength > longPathLength + allPathColours.Length - 1 - longColourIndex)
             {
-                penColour = longPathColour;
+                return;
+            }
+
+            Color penColour = avgColour;
+
+            if (pathLength == longPathLength)
+            {
+                penColour = longColour;
             }
             if (pathLength > longPathLength)
             {
-                penColour = veryLongPathColour;
-            }
-            if (pathLength > veryLongPathLength)
-            {
-                penColour = tooLongColour;
+                int diff = pathLength - longPathLength;
+                int index = Clamp(longColourIndex + diff, 0, allPathColours.Length - 1);
+
+                penColour = allPathColours[index];
             }
 
-            if (pathLength < perfectPathLength)
+            if (pathLength == shortPathLength)
             {
-                penColour = shortPathColour;
+                penColour = shorterColour;
             }
-            if (pathLength < shortPathLength)
+            if(pathLength < shortPathLength)
             {
-                penColour = veryShortPathColour;
-            }
-            if (pathLength < veryShortPathLength)
-            {
-                penColour = tooShortColour;
+                int diff = shortPathLength - pathLength;
+                int index = Clamp(shortColourIndex - diff, 0, allPathColours.Length - 1);
+
+                penColour = allPathColours[index];
             }
 
             Pen pen = new Pen(penColour, 4f);
@@ -472,7 +479,7 @@ namespace Pressure_Puzzle_Maker
         {
             foreach (List<Point> currentPath in allPaths.ToArray())
             {
-                if (currentPath.Count > 2 * perfectPathLength)
+                if (currentPath.Count > 2 * avgPathLength)
                 {
                     allPaths.Remove(currentPath);
                     continue;

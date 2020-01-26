@@ -15,7 +15,8 @@ namespace Pressure_Puzzle_Maker
         public Form1()
         {
             InitializeComponent();
-            SetDisplay();
+
+            BuildPuzzle();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -23,7 +24,7 @@ namespace Pressure_Puzzle_Maker
             widthNumeric.Value = defaultWidth;
             heightNumeric.Value = defaultHeight;
 
-            SetDisplay();
+            BuildPuzzle();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -76,7 +77,7 @@ namespace Pressure_Puzzle_Maker
 
         private void buildButton_Click(object sender, EventArgs e)
         {
-            SetDisplay();
+            BuildPuzzle();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -114,6 +115,13 @@ namespace Pressure_Puzzle_Maker
 
             //pictureBox1.Invalidate();
             //pictureBox1.Refresh();
+        }
+
+        private void BuildPuzzle()
+        {
+            Program.SetPerfectPathLength((int)perfectNumeric.Value);
+
+            SetDisplay();
         }
 
         private void SetDisplay()
