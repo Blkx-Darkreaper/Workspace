@@ -26,7 +26,7 @@ namespace Pressure_Puzzle_Maker
         private static int shortPathLength = avgPathLength - offset;
         private static int offset = 1;
 
-        private static int maxPathLength = longPathLength + allPathColours.Length - 1 - longColourIndex;
+        private static int maxPathLength = 2 * avgPathLength;
 
         private static Color tooLongColour = Color.Purple;
         private static Color veryLongColour = Color.Indigo;
