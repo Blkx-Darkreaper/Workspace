@@ -314,7 +314,7 @@ namespace Pressure_Puzzle_Maker
                         if (nextUpY >= 0)
                         {
                             Tile nextUpTile = allTiles[currentX, nextUpY];
-                            if (nextUpTile.isBlocked == false && nextUpTile.isValid == true)
+                            if (nextUpTile.isBlocked == false && nextUpTile.isValid == true && nextUpTile.isStart == false)
                             {
                                 Point nextUpPoint = new Point(currentX, nextUpY);
                                 upPath.Add(nextUpPoint);
@@ -338,7 +338,7 @@ namespace Pressure_Puzzle_Maker
                         if (nextDownY <= maxY)
                         {
                             Tile nextDownTile = allTiles[currentX, nextDownY];
-                            if (nextDownTile.isBlocked == false && nextDownTile.isValid == true)
+                            if (nextDownTile.isBlocked == false && nextDownTile.isValid == true && nextDownTile.isStart == false)
                             {
                                 Point nextDownPoint = new Point(currentX, nextDownY);
                                 downPath.Add(nextDownPoint);
@@ -371,7 +371,7 @@ namespace Pressure_Puzzle_Maker
                     if (nextRightX <= maxX)
                     {
                         Tile nextRightTile = allTiles[nextRightX, currentY];
-                        if (nextRightTile.isBlocked == false && nextRightTile.isValid == true)
+                        if (nextRightTile.isBlocked == false && nextRightTile.isValid == true && nextRightTile.isStart == false)
                         {
                             Point nextRightPoint = new Point(nextRightX, currentY);
                             rightPath.Add(nextRightPoint);
@@ -384,7 +384,7 @@ namespace Pressure_Puzzle_Maker
                     if (nextLeftX >= 0)
                     {
                         Tile nextLeftTile = allTiles[nextLeftX, currentY];
-                        if (nextLeftTile.isBlocked == false && nextLeftTile.isValid == true)
+                        if (nextLeftTile.isBlocked == false && nextLeftTile.isValid == true && nextLeftTile.isStart == false)
                         {
                             Point nextLeftPoint = new Point(nextLeftX, currentY);
                             leftPath.Add(nextLeftPoint);
