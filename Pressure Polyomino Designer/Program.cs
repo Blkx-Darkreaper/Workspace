@@ -12,7 +12,7 @@ namespace Polyominoes
 
         //public static Tile[,] allTiles;
         public static EndTile[,] allTiles;
-        public enum PuzzleType { Elec, Mech, Plm};
+        public enum PuzzleType { Elec, Mech, Plm };
         public static PuzzleType puzzleType = PuzzleType.Elec;
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace Polyominoes
         {
             Tile.size = tileImage.Width;
 
-            int width = Tile.size * (3 * 2 + 1);
-            int height = Tile.size * (3 * 15 + 14);
+            int width = Tile.size * (37 + 14);
+            int height = Tile.size * (3 * 2 + 1);
 
             //allTiles = new Tile[width, height];
             allTiles = new EndTile[width, height];
@@ -53,7 +53,7 @@ namespace Polyominoes
                 AddDrawTile(x + 2, y + 1, false, graphics);
                 AddDrawTile(x + 2, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // Block
                 AddDrawTile(x, y, true, graphics);
@@ -61,7 +61,7 @@ namespace Polyominoes
                 AddDrawTile(x, y + 1, true, graphics);
                 AddDrawTile(x + 1, y + 1, true, graphics);
 
-                y += 3;
+                x += 3;
 
                 // C
                 AddDrawTile(x + 1, y, true, graphics);
@@ -70,20 +70,20 @@ namespace Polyominoes
                 AddDrawTile(x, y + 2, false, graphics);
                 AddDrawTile(x + 1, y + 2, true, graphics);
 
-                y += 4;
+                x += 3;
 
                 // Hyphen
                 AddDrawTile(x, y, true, graphics);
                 AddDrawTile(x + 1, y, true, graphics);
 
-                y += 2;
+                x += 3;
 
                 // I
                 AddDrawTile(x, y, true, graphics);
                 AddDrawTile(x, y + 1, false, graphics);
                 AddDrawTile(x, y + 2, true, graphics);
 
-                y += 4;
+                x += 2;
 
                 // J
                 AddDrawTile(x + 1, y, true, graphics);
@@ -92,7 +92,7 @@ namespace Polyominoes
                 AddDrawTile(x + 1, y + 2, false, graphics);
                 AddDrawTile(x, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // L
                 AddDrawTile(x, y, true, graphics);
@@ -100,7 +100,7 @@ namespace Polyominoes
                 AddDrawTile(x, y + 2, false, graphics);
                 AddDrawTile(x + 1, y + 2, true, graphics);
 
-                y += 4;
+                x += 3;
 
                 // M
                 AddDrawTile(x, y, true, graphics);
@@ -109,7 +109,7 @@ namespace Polyominoes
                 AddDrawTile(x + 2, y + 1, false, graphics);
                 AddDrawTile(x + 2, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // P
                 AddDrawTile(x, y, false, graphics);
@@ -118,7 +118,7 @@ namespace Polyominoes
                 AddDrawTile(x + 1, y + 1, true, graphics);
                 AddDrawTile(x, y + 2, true, graphics);
 
-                y += 4;
+                x += 3;
 
                 // S
                 AddDrawTile(x + 1, y, false, graphics);
@@ -127,7 +127,7 @@ namespace Polyominoes
                 AddDrawTile(x + 1, y + 2, false, graphics);
                 AddDrawTile(x, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // T
                 AddDrawTile(x, y, true, graphics);
@@ -135,14 +135,14 @@ namespace Polyominoes
                 AddDrawTile(x + 2, y, true, graphics);
                 AddDrawTile(x + 1, y + 1, true, graphics);
 
-                y += 3;
+                x += 4;
 
                 // V
                 AddDrawTile(x + 1, y, true, graphics);
                 AddDrawTile(x + 1, y + 1, false, graphics);
                 AddDrawTile(x, y + 1, true, graphics);
 
-                y += 3;
+                x += 3;
 
                 // X
                 AddDrawTile(x + 1, y, true, graphics);
@@ -151,7 +151,7 @@ namespace Polyominoes
                 AddDrawTile(x + 2, y + 1, true, graphics);
                 AddDrawTile(x + 1, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // Y
                 AddDrawTile(x, y, true, graphics);
@@ -159,9 +159,9 @@ namespace Polyominoes
                 AddDrawTile(x, y + 1, false, graphics);
                 AddDrawTile(x + 1, y + 1, false, graphics);
                 AddDrawTile(x + 2, y + 1, false, graphics);
-                AddDrawTile(x+ 1, y + 2, true, graphics);
+                AddDrawTile(x + 1, y + 2, true, graphics);
 
-                y += 4;
+                x += 4;
 
                 // Z
                 AddDrawTile(x, y, true, graphics);
@@ -173,11 +173,11 @@ namespace Polyominoes
 
         public static void RedrawPolys(ref Bitmap bitmap)
         {
-            using(Graphics graphics = Graphics.FromImage(bitmap))
+            using (Graphics graphics = Graphics.FromImage(bitmap))
             {
-                foreach(Tile tile in allTiles)
+                foreach (Tile tile in allTiles)
                 {
-                    if(tile == null)
+                    if (tile == null)
                     {
                         continue;
                     }
@@ -227,17 +227,17 @@ namespace Polyominoes
             if (isEndTile == true)
             {
                 //tile = new EndTile(6-x, y);
-                tile = new EndTile(6 - x, y, EndTile.Elec.positive, EndTile.Mech.jagged, EndTile.Plm.open);
+                tile = new EndTile(x, 6 - y, EndTile.Elec.positive, EndTile.Mech.jagged, EndTile.Plm.open);
             }
             else
             {
                 //tile = new Tile(6 - x, y);
-                tile = new EndTile(6 - x, y);
+                tile = new EndTile(x, 6 - y);
             }
 
             tile.Draw(graphics);
 
-            allTiles[6 - x, y] = tile;
+            allTiles[x, 6 - y] = tile;
         }
 
         public static EndTile GetEndTileAtPosition(Point position)
@@ -255,7 +255,7 @@ namespace Polyominoes
 
             //EndTile endTile = (EndTile)tile;
             EndTile endTile = allTiles[x, y];
-            if(endTile.IsEndTile != true)
+            if (endTile.IsEndTile != true)
             {
                 return null;
             }

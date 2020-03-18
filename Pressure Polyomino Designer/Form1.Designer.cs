@@ -54,9 +54,8 @@
             // 
             this.pictureBox1.Enabled = false;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox1.MinimumSize = new System.Drawing.Size(280, 2120);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(280, 2120);
+            this.pictureBox1.Size = new System.Drawing.Size(2140, 240);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.PictureBox1_Click);
@@ -117,7 +116,7 @@
             this.polyominoToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(326, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1008, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -197,19 +196,18 @@
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(12, 66);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(307, 684);
+            this.panel2.Size = new System.Drawing.Size(984, 363);
             this.panel2.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(326, 761);
+            this.ClientSize = new System.Drawing.Size(1008, 441);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(342, 800);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Polyomino Designer";

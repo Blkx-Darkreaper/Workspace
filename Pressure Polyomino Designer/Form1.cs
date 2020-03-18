@@ -69,8 +69,8 @@ namespace Polyominoes
         {
             Tile.size = Program.tileImage.Width;
 
-            int width = Tile.size * (3 * 2 + 1);
-            int height = Tile.size * (3 + 2 + 3 + 1 + 3 + 3 + 3 + 3 + 3 + 3 + 2 + 2 + 3 + 3 + 2 + 14);
+            int width = Tile.size * (37 + 14);
+            int height = Tile.size * (3 * 2 + 1);
 
             Bitmap bitmap = new Bitmap(width, height);
 
