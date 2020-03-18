@@ -158,18 +158,18 @@ namespace Pressure_Puzzle_Maker
                     }
                 }
 
-                //// Draw off limits areas
-                //for (int i = 0; i < allStartTiles.Count; i++)
-                //{
-                //    Tile tile = allStartTiles[i];
+                // Draw off limits areas
+                for (int i = 0; i < allStartTiles.Count; i++)
+                {
+                    Tile tile = allStartTiles[i];
 
-                //    int x = tile.position.X;
-                //    int y = tile.position.Y;
+                    int x = tile.position.X;
+                    int y = tile.position.Y;
 
-                //    Rectangle bounds = new Rectangle((x - 1) * blankImage.Width, (y - 1) * blankImage.Height, blankImage.Width * 3, blankImage.Height * 3);
+                    Rectangle bounds = new Rectangle((x - 1) * blankImage.Width, (y - 1) * blankImage.Height, blankImage.Width * 3, blankImage.Height * 3);
 
-                //    graphics.DrawImage(offLimitsImage, bounds);
-                //}
+                    graphics.DrawImage(offLimitsImage, bounds);
+                }
             }
 
             imageOutdated = false;
