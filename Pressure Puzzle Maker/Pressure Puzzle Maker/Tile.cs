@@ -51,7 +51,7 @@ namespace Pressure_Puzzle_Maker
                 this.edge = Edge.Top;
             }
 
-            // Botoom edge
+            // Bottom edge
             if (y == maxY)
             {
                 // Handle Corners
@@ -152,6 +152,16 @@ namespace Pressure_Puzzle_Maker
 
         public void Draw(Graphics graphics)
         {
+            //if(isStart == true)
+            //{
+            //    // Draw off limits areas
+            //    int x = position.X;
+            //    int y = position.Y;
+            //    Point point = new Point(x * Image.Width, y * Image.Height);
+
+            //    graphics.DrawImage(Program.offLimitsImage, point);
+            //}
+
             graphics.DrawImage(Image, Bounds);
         }
     }

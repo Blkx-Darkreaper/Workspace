@@ -16,6 +16,8 @@ namespace Pressure_Puzzle_Maker
         {
             InitializeComponent();
 
+            Program.LoadImages();
+
             BuildPuzzle();
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Pressure_Puzzle_Maker
@@ -9,16 +10,11 @@ namespace Pressure_Puzzle_Maker
 
     static class Program
     {
-        public static Image blankImage = Image.FromFile(
-            @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\Blank.png");
-        public static Image blockedImage = Image.FromFile(
-            @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\Blocked.png");
-        public static Image startImage = Image.FromFile(
-            @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\Start.png");
-        public static Image invalidImage = Image.FromFile(
-            @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\Invalid.png");
-        public static Image offLimitsImage = Image.FromFile(
-            @"D:\Users\Darkreaper\Git\Workspace\Pressure Puzzle Maker\Pressure Puzzle Maker\Images\OffLimits.png");
+        public static Image blankImage;
+        public static Image blockedImage;
+        public static Image startImage;
+        public static Image invalidImage;
+        public static Image offLimitsImage;
 
         public static bool perfectPathOnly = false;
         private static int avgPathLength = 12;
@@ -61,6 +57,15 @@ namespace Pressure_Puzzle_Maker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+        }
+        public static void LoadImages()
+        {
+            string imagesPath = Path.GetFullPath(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + @"\Images");
+            blankImage = Image.FromFile(imagesPath + @"\Blank.png");
+            blockedImage = Image.FromFile(imagesPath + @"\Blocked.png");
+            startImage = Image.FromFile(imagesPath + @"\Start.png");
+            invalidImage = Image.FromFile(imagesPath + @"\Invalid.png");
+            offLimitsImage = Image.FromFile(imagesPath + @"\OffLimits.png");
         }
 
         public static int Clamp(int value, int min, int max)
@@ -152,6 +157,19 @@ namespace Pressure_Puzzle_Maker
                         DrawPath(graphics, path);
                     }
                 }
+
+                //// Draw off limits areas
+                //for (int i = 0; i < allStartTiles.Count; i++)
+                //{
+                //    Tile tile = allStartTiles[i];
+
+                //    int x = tile.position.X;
+                //    int y = tile.position.Y;
+
+                //    Rectangle bounds = new Rectangle((x - 1) * blankImage.Width, (y - 1) * blankImage.Height, blankImage.Width * 3, blankImage.Height * 3);
+
+                //    graphics.DrawImage(offLimitsImage, bounds);
+                //}
             }
 
             imageOutdated = false;
